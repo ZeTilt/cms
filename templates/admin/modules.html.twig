@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Module Management - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <h1 class="text-xl font-semibold text-gray-900">ZeTilt CMS Super Admin</h1>
+                    <a href="{{ path('admin_dashboard') }}" class="text-indigo-600 hover:text-indigo-900">← Back to Dashboard</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-700">{{ app.user.fullName }}</span>
+                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-900">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h2 class="text-lg leading-6 font-medium text-gray-900 mb-6">Module Management</h2>
+                    
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600">
+                            Activate or deactivate modules to control which features are available in the CMS.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 flow-root">
+                        <ul role="list" class="-my-5 divide-y divide-gray-200">
+                            {% for module in modules %}
+                                <li class="py-5">
+                                    <div class="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-10 h-10 {{ module.active ? 'bg-green-500' : 'bg-gray-400' }} rounded-full flex items-center justify-center">
+                                                        <span class="text-white font-medium text-sm">{{ module.name|slice(0, 2)|upper }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="focus:outline-none">
+                                                        <span class="absolute inset-0" aria-hidden="true"></span>
+                                                        <p class="text-sm font-medium text-gray-900">{{ module.displayName }}</p>
+                                                        <p class="text-sm text-gray-500">{{ module.description ?: 'No description available' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                {% if module.active %}
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        Active
+                                                    </span>
+                                                    <button 
+                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        onclick="toggleModule('{{ module.name }}', false)"
+                                                    >
+                                                        Deactivate
+                                                    </button>
+                                                {% else %}
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        Inactive
+                                                    </span>
+                                                    <button 
+                                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        onclick="toggleModule('{{ module.name }}', true)"
+                                                    >
+                                                        Activate
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleModule(moduleName, activate) {
+    const action = activate ? 'activate' : 'deactivate';
+    
+    if (confirm(`Are you sure you want to ${action} the ${moduleName} module?`)) {
+        // For now, just show an alert - in a real implementation, this would make an AJAX call
+        alert(`Module ${moduleName} would be ${activate ? 'activated' : 'deactivated'}. Please refresh the page.`);
+        
+        // You can implement AJAX functionality here later
+        // fetch('/admin/modules/' + moduleName + '/' + action, {method: 'POST'})
+        //   .then(response => response.json())
+        //   .then(data => window.location.reload());
+    }
+}
+</script>
+{% endblock %}

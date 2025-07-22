@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Welcome - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+    <div class="max-w-4xl mx-auto text-center text-white px-4">
+        <h1 class="text-6xl font-bold mb-8">
+            ZeTilt CMS
+        </h1>
+        <p class="text-xl mb-8 opacity-90">
+            A modular, business-focused content management system built with Symfony
+        </p>
+        
+        <div class="grid md:grid-cols-3 gap-8 mb-12">
+            <div class="bg-white bg-opacity-20 rounded-lg p-6 backdrop-blur-sm">
+                <h3 class="text-lg font-semibold mb-3">Modular Architecture</h3>
+                <p class="text-sm opacity-80">Activate only the modules you need for maximum performance and simplicity.</p>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-lg p-6 backdrop-blur-sm">
+                <h3 class="text-lg font-semibold mb-3">Dynamic Attributes</h3>
+                <p class="text-sm opacity-80">Add custom fields to any entity without touching code through our EAV system.</p>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-lg p-6 backdrop-blur-sm">
+                <h3 class="text-lg font-semibold mb-3">Business Focused</h3>
+                <p class="text-sm opacity-80">Designed for real-world use cases: diving clubs, photographers, portfolios.</p>
+            </div>
+        </div>
+        
+        <div class="space-x-4">
+            <a href="{{ path('app_login') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all">
+                Admin Login
+            </a>
+            <a href="#" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all">
+                Learn More
+            </a>
+        </div>
+        
+        <div class="mt-12 text-sm opacity-60">
+            <p>Phase 0 Complete: Core infrastructure ready</p>
+            <p class="mt-2">Next: Portfolio Module Development</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
