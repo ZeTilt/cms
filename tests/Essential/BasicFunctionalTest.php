@@ -13,6 +13,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  */
 class BasicFunctionalTest extends WebTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function testHomePageLoads(): void
     {
         $client = static::createClient();
@@ -43,12 +48,12 @@ class BasicFunctionalTest extends WebTestCase
     {
         $client = static::createClient();
         
-        // Create admin user
+        // Create admin user with unique email
         $entityManager = static::getContainer()->get('doctrine')->getManager();
         $passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         
         $admin = new User();
-        $admin->setEmail('test-admin@example.com')
+        $admin->setEmail('test-admin-' . uniqid() . '@example.com')
               ->setFirstName('Test')
               ->setLastName('Admin')
               ->setRoles(['ROLE_ADMIN']);
@@ -75,7 +80,7 @@ class BasicFunctionalTest extends WebTestCase
         $passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         
         $admin = new User();
-        $admin->setEmail('gallery-admin@example.com')
+        $admin->setEmail('gallery-admin-' . uniqid() . '@example.com')
               ->setFirstName('Gallery')
               ->setLastName('Admin')
               ->setRoles(['ROLE_ADMIN']);
@@ -102,7 +107,7 @@ class BasicFunctionalTest extends WebTestCase
         $passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         
         $admin = new User();
-        $admin->setEmail('pages-admin@example.com')
+        $admin->setEmail('pages-admin-' . uniqid() . '@example.com')
               ->setFirstName('Pages')
               ->setLastName('Admin')
               ->setRoles(['ROLE_ADMIN']);
@@ -146,7 +151,7 @@ class BasicFunctionalTest extends WebTestCase
         $passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         
         $admin = new User();
-        $admin->setEmail('create-admin@example.com')
+        $admin->setEmail('create-admin-' . uniqid() . '@example.com')
               ->setFirstName('Create')
               ->setLastName('Admin')
               ->setRoles(['ROLE_ADMIN']);
@@ -186,7 +191,7 @@ class BasicFunctionalTest extends WebTestCase
         $passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         
         $admin = new User();
-        $admin->setEmail('page-create-admin@example.com')
+        $admin->setEmail('page-create-admin-' . uniqid() . '@example.com')
               ->setFirstName('PageCreate')
               ->setLastName('Admin')
               ->setRoles(['ROLE_ADMIN']);
