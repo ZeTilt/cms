@@ -77,6 +77,7 @@ class Page
     public function setTitle(string $title): static
     {
         $this->title = $title;
+        $this->generateSlug();
         return $this;
     }
 

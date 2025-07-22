@@ -1,0 +1,143 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ isEdit ? 'Edit Gallery' : 'New Gallery' }} - Admin{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center space-x-4">
+            <a href="{{ path('admin_galleries_list') }}" class="text-gray-400 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-900">
+                {{ isEdit ? 'Edit Gallery' : 'New Gallery' }}
+            </h1>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            <!-- Basic Information -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h2>
+                
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- Title -->
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+                        <input type="text" id="title" name="title" value="{{ gallery.title }}" 
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
+                               required maxlength="255">
+                        <p class="mt-1 text-sm text-gray-500">The name of your gallery</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="description" name="description" rows="4" 
+                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ gallery.description }}</textarea>
+                        <p class="mt-1 text-sm text-gray-500">Optional description for your gallery</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visibility Settings -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Visibility Settings</h2>
+                
+                <div class="space-y-4">
+                    <!-- Visibility -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
+                        <div class="space-y-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="visibility" value="public" {{ gallery.visibility != 'private' ? 'checked' : '' }} 
+                                       class="form-radio text-indigo-600">
+                                <span class="ml-2">
+                                    <span class="text-sm font-medium text-gray-900">Public</span>
+                                    <span class="text-sm text-gray-500 block">Anyone can view this gallery</span>
+                                </span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="visibility" value="private" {{ gallery.visibility == 'private' ? 'checked' : '' }} 
+                                       class="form-radio text-indigo-600" onchange="toggleAccessCode()">
+                                <span class="ml-2">
+                                    <span class="text-sm font-medium text-gray-900">Private</span>
+                                    <span class="text-sm text-gray-500 block">Only you and people with the access code can view</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Access Code -->
+                    <div id="access-code-field" class="{{ gallery.visibility != 'private' ? 'hidden' : '' }}">
+                        <label for="access_code" class="block text-sm font-medium text-gray-700">Access Code</label>
+                        <input type="text" id="access_code" name="access_code" value="{{ gallery.accessCode }}" 
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
+                               maxlength="50">
+                        <p class="mt-1 text-sm text-gray-500">Leave empty to make it accessible to logged-in users only</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cover Image -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Cover Image</h2>
+                
+                <div class="space-y-4">
+                    {% if gallery.coverImage %}
+                        <div class="mb-4">
+                            <img src="{{ gallery.coverImage }}" alt="Current cover" class="h-32 w-48 object-cover rounded border">
+                            <p class="text-sm text-gray-500 mt-1">Current cover image</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div>
+                        <label for="cover_image" class="block text-sm font-medium text-gray-700">
+                            {{ gallery.coverImage ? 'Replace cover image' : 'Upload cover image' }}
+                        </label>
+                        <input type="file" id="cover_image" name="cover_image" accept="image/*" 
+                               class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-sm text-gray-500">Optional. If not provided, the first image will be used as cover.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-3">
+                <a href="{{ path('admin_galleries_list') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    {{ isEdit ? 'Update Gallery' : 'Create Gallery' }}
+                </button>
+            </div>
+        </form>
+</div>
+
+<script>
+function toggleAccessCode() {
+    const privateRadio = document.querySelector('input[name="visibility"][value="private"]');
+    const accessCodeField = document.getElementById('access-code-field');
+    
+    if (privateRadio.checked) {
+        accessCodeField.classList.remove('hidden');
+    } else {
+        accessCodeField.classList.add('hidden');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const visibilityRadios = document.querySelectorAll('input[name="visibility"]');
+    visibilityRadios.forEach(radio => {
+        radio.addEventListener('change', toggleAccessCode);
+    });
+});
+</script>
+{% endblock %}

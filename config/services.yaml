@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    uploads_directory: '%kernel.project_dir%/public/uploads/images'
+    thumbnails_directory: '%kernel.project_dir%/public/uploads/thumbnails'
 
 services:
     # default configuration for services in *this* file
@@ -23,6 +25,12 @@ services:
         resource: '../src/ZeTilt/Cms/'
         exclude:
             - '../src/ZeTilt/Cms/Entity/'
+
+    # Image Upload Service
+    App\Service\ImageUploadService:
+        arguments:
+            $uploadDirectory: '%uploads_directory%'
+            $thumbnailDirectory: '%thumbnails_directory%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

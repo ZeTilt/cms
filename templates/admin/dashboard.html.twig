@@ -1,32 +1,23 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% block title %}Dashboard - ZeTilt CMS{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-gray-100">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-semibold text-gray-900">ZeTilt CMS Admin</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-700">Welcome, {{ app.user.fullName }}</span>
-                    {% if is_granted('ROLE_SUPER_ADMIN') %}
-                        <a href="{{ path('admin_modules') }}" class="text-indigo-600 hover:text-indigo-900">Super Admin</a>
-                    {% endif %}
-                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-900">Logout</a>
-                </div>
-            </div>
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p class="mt-1 text-sm text-gray-500">Welcome back, {{ app.user.fullName }}!</p>
         </div>
-    </nav>
+    </div>
+</div>
 
-    <!-- Main content -->
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div class="px-4 py-6 sm:px-0">
-            <div class="border-4 border-dashed border-gray-200 rounded-lg p-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Dashboard</h2>
+<!-- Main content -->
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="space-y-8">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Overview</h2>
                 
                 <!-- Active Modules -->
                 <div class="mb-8">
@@ -76,19 +67,19 @@
                 <!-- Quick Actions -->
                 <div class="mb-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <a href="{{ path('admin_pages_new') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
                             Create Page
                         </a>
                         <a href="{{ path('admin_pages_list') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
                             Manage Pages
                         </a>
-                        <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                            Upload Media
-                        </button>
-                        <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-                            View Reports
-                        </button>
+                        <a href="{{ path('admin_galleries_new') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
+                            Create Gallery
+                        </a>
+                        <a href="{{ path('admin_galleries_list') }}" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded text-center">
+                            Manage Galleries
+                        </a>
                     </div>
                 </div>
 
@@ -117,7 +108,6 @@
                         </ul>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>

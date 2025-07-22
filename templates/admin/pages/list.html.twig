@@ -1,0 +1,109 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Pages - Admin{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Pages</h1>
+                <p class="mt-1 text-sm text-gray-500">Manage your pages and blog posts</p>
+            </div>
+            <a href="{{ path('admin_pages_new') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                Create Page
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    {% if pages is empty %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No pages yet</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by creating your first page or blog post.</p>
+            <div class="mt-6">
+                <a href="{{ path('admin_pages_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Create Page
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <!-- Pages List -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul class="divide-y divide-gray-200">
+                {% for page in pages %}
+                    <li>
+                        <div class="px-4 py-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    {% if page.type == 'blog' %}
+                                        <div class="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            </svg>
+                                        </div>
+                                    {% else %}
+                                        <div class="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="flex items-center">
+                                        <p class="text-sm font-medium text-gray-900">{{ page.title }}</p>
+                                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ page.status == 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                            {{ page.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-2 flex items-center text-sm text-gray-500">
+                                        <p>{{ page.type|title }} • {{ page.updatedAt|date('M j, Y') }}</p>
+                                        {% if page.tags is not empty %}
+                                            <span class="mx-2">•</span>
+                                            <div class="flex space-x-1">
+                                                {% for tag in page.tags|slice(0, 2) %}
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-800">
+                                                        {{ tag }}
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <a href="{{ path('admin_pages_edit', {id: page.id}) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                                    Edit
+                                </a>
+                                {% if page.status == 'draft' %}
+                                    <form method="post" action="{{ path('admin_pages_publish', {id: page.id}) }}" class="inline">
+                                        <button type="submit" class="text-green-600 hover:text-green-900 text-sm font-medium">
+                                            Publish
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                <form method="post" action="{{ path('admin_pages_delete', {id: page.id}) }}" class="inline" onsubmit="return confirm('Are you sure?')">
+                                    <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

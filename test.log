@@ -1,0 +1,1291 @@
+PHPUnit 12.2.7 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.10
+Configuration: /home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/phpunit.dist.xml
+
+.......Uncaught PHP Exception Twig\Error\LoaderError: "Unable to find template "public/blog/list.html.twig" (looked into: /home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/templates, /home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/twig-bridge/Resources/views/Form)." at FilesystemLoader.php line 234
+.....EUncaught PHP Exception Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException: "Access Denied. The user doesn't have ROLE_SUPER_ADMIN." at ExceptionListener.php line 126
+.E...EEEEEEEEE.F.FEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE  63 / 121 ( 52%)
+EEEEEE........F........F........F....EF..E.....F..F...Failed to upload invalid.txt: File type text/plain is not allowed. Allowed types: image/jpeg, image/png, image/gif, image/webp
+....      121 / 121 (100%)
+
+Time: 00:12.703, Memory: 44.50 MB
+
+There was 1 PHPUnit test runner warning:
+
+1) No code coverage driver available
+
+--
+
+There were 51 errors:
+
+1) App\Tests\Functional\Controller\AdminControllerTest::testDashboardRoute
+Doctrine\DBAL\Exception\UniqueConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: users.email
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/WebTestTrait.php:37
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/AdminControllerTest.php:38
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: users.email
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/WebTestTrait.php:37
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/AdminControllerTest.php:38
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: users.email
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/WebTestTrait.php:37
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/AdminControllerTest.php:38
+
+2) App\Tests\Functional\Controller\AdminControllerTest::testModulesPageWithSuperAdmin
+Doctrine\DBAL\Exception\UniqueConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: users.email
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/WebTestTrait.php:37
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/AdminControllerTest.php:65
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: users.email
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/WebTestTrait.php:37
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/AdminControllerTest.php:65
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: users.email
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/WebTestTrait.php:37
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/AdminControllerTest.php:65
+
+3) App\Tests\Functional\Controller\GalleryControllerTest::testGalleryListRequiresAuthentication
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:38
+
+4) App\Tests\Functional\Controller\GalleryControllerTest::testGalleryListWhenAuthenticated
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:47
+
+5) App\Tests\Functional\Controller\GalleryControllerTest::testCreateGalleryForm
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:59
+
+6) App\Tests\Functional\Controller\GalleryControllerTest::testCreateGallerySubmission
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:73
+
+7) App\Tests\Functional\Controller\GalleryControllerTest::testCreatePrivateGalleryWithAccessCode
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:106
+
+8) App\Tests\Functional\Controller\GalleryControllerTest::testEditGallery
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:143
+
+9) App\Tests\Functional\Controller\GalleryControllerTest::testDeleteGallery
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:181
+
+10) App\Tests\Functional\Controller\GalleryControllerTest::testGalleryFormValidation
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:198
+
+11) App\Tests\Functional\Controller\GalleryControllerTest::testShowGallery
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/GalleryControllerTest.php:227
+
+12) App\Tests\Functional\Controller\PagesControllerTest::testPageListRequiresAuthentication
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:37
+
+13) App\Tests\Functional\Controller\PagesControllerTest::testPageListWhenAuthenticated
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:46
+
+14) App\Tests\Functional\Controller\PagesControllerTest::testCreatePageForm
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:58
+
+15) App\Tests\Functional\Controller\PagesControllerTest::testCreatePageSubmission
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:73
+
+16) App\Tests\Functional\Controller\PagesControllerTest::testCreateBlogPost
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:103
+
+17) App\Tests\Functional\Controller\PagesControllerTest::testEditPage
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:135
+
+18) App\Tests\Functional\Controller\PagesControllerTest::testDeletePage
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:176
+
+19) App\Tests\Functional\Controller\PagesControllerTest::testPublishPage
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:202
+
+20) App\Tests\Functional\Controller\PagesControllerTest::testPageFormValidation
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:218
+
+21) App\Tests\Functional\Controller\PagesControllerTest::testPageSlugGeneration
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:234
+
+22) App\Tests\Functional\Controller\PagesControllerTest::testPagesListDisplay
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PagesControllerTest.php:273
+
+23) App\Tests\Functional\Controller\PublicGalleryControllerTest::testPublicGalleryList
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+24) App\Tests\Functional\Controller\PublicGalleryControllerTest::testPublicGalleryShow
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+25) App\Tests\Functional\Controller\PublicGalleryControllerTest::testPrivateGalleryAccessWithoutCode
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+26) App\Tests\Functional\Controller\PublicGalleryControllerTest::testPrivateGalleryAccessWithCorrectCode
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+27) App\Tests\Functional\Controller\PublicGalleryControllerTest::testPrivateGalleryAccessWithWrongCode
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+28) App\Tests\Functional\Controller\PublicGalleryControllerTest::testGalleryNotFound
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+29) App\Tests\Functional\Controller\PublicGalleryControllerTest::testEmptyGalleryList
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+30) App\Tests\Functional\Controller\PublicGalleryControllerTest::testGalleryListMetadata
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+31) App\Tests\Functional\Controller\PublicGalleryControllerTest::testGalleryNavigation
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicGalleryControllerTest.php:27
+
+32) App\Tests\Functional\Controller\PublicPagesControllerTest::testBlogListEmpty
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+33) App\Tests\Functional\Controller\PublicPagesControllerTest::testBlogListWithPosts
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+34) App\Tests\Functional\Controller\PublicPagesControllerTest::testBlogPostShow
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+35) App\Tests\Functional\Controller\PublicPagesControllerTest::testBlogPostNotFound
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+36) App\Tests\Functional\Controller\PublicPagesControllerTest::testDraftBlogPostNotAccessible
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+37) App\Tests\Functional\Controller\PublicPagesControllerTest::testPublicPageShow
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+38) App\Tests\Functional\Controller\PublicPagesControllerTest::testPublicPageNotFound
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+39) App\Tests\Functional\Controller\PublicPagesControllerTest::testDraftPageNotAccessible
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+40) App\Tests\Functional\Controller\PublicPagesControllerTest::testBlogListOrdering
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+41) App\Tests\Functional\Controller\PublicPagesControllerTest::testBlogPostMetadata
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+42) App\Tests\Functional\Controller\PublicPagesControllerTest::testPageWithTags
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+43) App\Tests\Functional\Controller\PublicPagesControllerTest::testBlogListNavigation
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+44) App\Tests\Functional\Controller\PublicPagesControllerTest::testPublicPageNavigation
+Doctrine\DBAL\Exception\NotNullConstraintViolationException: An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php:48
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1976
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Connection.php:1918
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:194
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Exception.php:24
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:132
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.password
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/PDO/Statement.php:130
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php:69
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/doctrine-bridge/Middleware/Debug/DBAL3/Statement.php:70
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:190
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/dbal/src/Statement.php:249
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/Persisters/Entity/BasicEntityPersister.php:261
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:1057
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/UnitOfWork.php:402
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/doctrine/orm/src/EntityManager.php:268
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/PublicPagesControllerTest.php:27
+
+45) App\Tests\Functional\Controller\SecurityControllerTest::testLoginPageAccess
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/SecurityControllerTest.php:22
+
+46) App\Tests\Functional\Controller\SecurityControllerTest::testLoginForm
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/SecurityControllerTest.php:34
+
+47) App\Tests\Functional\Controller\SecurityControllerTest::testSuccessfulLogin
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/SecurityControllerTest.php:65
+
+48) App\Tests\Functional\Controller\SecurityControllerTest::testLogout
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/SecurityControllerTest.php:79
+
+49) App\Tests\Functional\Controller\SecurityControllerTest::testAdminRedirectWhenNotLoggedIn
+LogicException: Booting the kernel before calling "Symfony\Bundle\FrameworkBundle\Test\WebTestCase::createClient()" is not supported, the kernel should only be booted once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/WebTestCase.php:41
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/SecurityControllerTest.php:88
+
+50) App\Tests\Unit\Entity\PageTest::testTypeManagement
+Error: Call to undefined method App\Entity\Page::isStaticPage()
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Unit/Entity/PageTest.php:87
+
+51) App\Tests\Unit\Entity\PageTest::testPreUpdateCallback
+Error: Call to undefined method App\Entity\Page::preUpdate()
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Unit/Entity/PageTest.php:131
+
+--
+
+There were 8 failures:
+
+1) App\Tests\Functional\Controller\HomeControllerTest::testHomepageLinks
+Failed asserting that Symfony\Component\DomCrawler\Crawler Object #4324 (
+    'defaultNamespacePrefix' => 'default',
+    'namespaces' => Array &0 [],
+    'cachedNamespaces' => ArrayObject Object #4551 (),
+    'baseHref' => 'http://localhost/',
+    'document' => DOMDocument Object #4556 (),
+    'nodes' => Array &1 [
+        0 => DOMElement Object #4554 (),
+    ],
+    'isHtml' => true,
+    'html5Parser' => Masterminds\HTML5 Object #4193 (
+        'defaultOptions' => Array &2 [
+            'encode_entities' => false,
+            'disable_html_ns' => true,
+        ],
+        'errors' => Array &3 [],
+    ),
+    'uri' => 'http://localhost/',
+) matches selector "a" and the text "View Galleries" of the node matching selector "a" contains "Read Blog".
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/DomCrawlerAssertionsTrait.php:44
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/HomeControllerTest.php:32
+
+2) App\Tests\Functional\Controller\HomeControllerTest::testHomepageMetadata
+Failed asserting that the Crawler matches selector "html[lang]".
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/vendor/symfony/framework-bundle/Test/DomCrawlerAssertionsTrait.php:29
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Functional/Controller/HomeControllerTest.php:54
+
+3) App\Tests\Unit\Entity\GalleryTest::testImageManagement
+App\Entity\Image::setGallery(null): static was not expected to be called more than once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/src/Entity/Gallery.php:206
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Unit/Entity/GalleryTest.php:139
+
+4) App\Tests\Unit\Entity\ImageTest::testUrls
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'/uploads/thumbnails/my-photo_thumb.jpg'
++'/uploads/images/my-photo.jpg'
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Unit/Entity/ImageTest.php:63
+
+5) App\Tests\Unit\Entity\PageTest::testPageCreation
+Failed asserting that null is an instance of class DateTimeImmutable.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Unit/Entity/PageTest.php:24
+
+6) App\Tests\Unit\Entity\PageTest::testStatusManagement
+Failed asserting that false is true.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Unit/Entity/PageTest.php:101
+
+7) App\Tests\Unit\Entity\UserTest::testGalleryManagement
+App\Entity\Gallery::setAuthor(null): static was not expected to be called more than once.
+
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/src/Entity/User.php:175
+/home/fabrice/ZeTilt/Projects/008-ZeTiltCms/symfony-project/tests/Unit/Entity/UserTest.php:74
+
+8) App\Tests\Unit\Service\ImageUploadServiceTest::testValidateFileSuccess
+Expectation failed for method name is "persist" when invoked 1 time.
+Method was expected to be called 1 time, actually called 0 times.
+
+ERRORS!
+Tests: 121, Assertions: 264, Errors: 51, Failures: 8, PHPUnit Warnings: 1.
