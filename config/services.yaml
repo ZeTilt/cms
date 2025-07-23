@@ -32,5 +32,10 @@ services:
             $uploadDirectory: '%uploads_directory%'
             $thumbnailDirectory: '%thumbnails_directory%'
 
+    # Page Template Service
+    App\Service\PageTemplateService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

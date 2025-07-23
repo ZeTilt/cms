@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Page;
 use App\Entity\User;
+use App\Service\PageTemplateService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class PagesController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private PageTemplateService $templateService
     ) {
     }
 
@@ -41,6 +43,7 @@ class PagesController extends AbstractController
         return $this->render('admin/pages/edit.html.twig', [
             'page' => null,
             'title' => 'Create New Page',
+            'available_templates' => $this->templateService->getAvailableTemplates(),
         ]);
     }
 
@@ -54,16 +57,23 @@ class PagesController extends AbstractController
         return $this->render('admin/pages/edit.html.twig', [
             'page' => $page,
             'title' => 'Edit Page: ' . $page->getTitle(),
+            'available_templates' => $this->templateService->getAvailableTemplates(),
+            'template_exists' => $this->templateService->templateExists($page->getTemplatePath()),
         ]);
     }
 
     #[Route('/{id}/delete', name: 'admin_pages_delete', methods: ['POST'])]
     public function delete(Page $page): Response
     {
+        // Delete template file if it exists
+        if ($page->getTemplatePath()) {
+            $this->templateService->deleteTemplate($page->getTemplatePath());
+        }
+
         $this->entityManager->remove($page);
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'Page deleted successfully.');
+        $this->addFlash('success', 'Page and template deleted successfully.');
         return $this->redirectToRoute('admin_pages_list');
     }
 
@@ -77,6 +87,23 @@ class PagesController extends AbstractController
         return $this->redirectToRoute('admin_pages_list');
     }
 
+    #[Route('/{id}/preview', name: 'admin_pages_preview')]
+    public function preview(Page $page): Response
+    {
+        // Render the page using the public template but with admin privileges
+        if ($page->getType() === 'blog') {
+            return $this->render('public/blog/show.html.twig', [
+                'page' => $page,
+                'is_preview' => true,
+            ]);
+        } else {
+            return $this->render('public/page/show.html.twig', [
+                'page' => $page,
+                'is_preview' => true,
+            ]);
+        }
+    }
+
     private function handleSave(Request $request, ?Page $page = null): Response
     {
         $isNew = $page === null;
@@ -88,20 +115,20 @@ class PagesController extends AbstractController
 
         // Basic validation
         $title = $request->request->get('title');
-        $content = $request->request->get('content');
+        $templatePath = $request->request->get('template_path');
         $type = $request->request->get('type', 'page');
         $status = $request->request->get('status', 'draft');
 
-        if (!$title || !$content) {
-            $this->addFlash('error', 'Title and content are required.');
+        if (!$title) {
+            $this->addFlash('error', 'Title is required.');
             return $this->render('admin/pages/edit.html.twig', [
                 'page' => $page,
                 'title' => $isNew ? 'Create New Page' : 'Edit Page: ' . $page->getTitle(),
+                'available_templates' => $this->templateService->getAvailableTemplates(),
             ]);
         }
 
         $page->setTitle($title);
-        $page->setContent($content);
         $page->setType($type);
         $page->setStatus($status);
         $page->setExcerpt($request->request->get('excerpt'));
@@ -113,6 +140,22 @@ class PagesController extends AbstractController
             $page->generateSlug();
         } else {
             $page->setSlug($request->request->get('slug'));
+        }
+
+        // Handle template path
+        if ($isNew) {
+            // For new pages, create template automatically
+            $templatePath = $this->templateService->createTemplate($page);
+            $page->setTemplatePath($templatePath);
+        } else {
+            // For existing pages, update template path if changed
+            if ($templatePath && $templatePath !== $page->getTemplatePath()) {
+                // Rename template file if path changed
+                if ($page->getTemplatePath()) {
+                    $this->templateService->renameTemplate($page->getTemplatePath(), $templatePath);
+                }
+                $page->setTemplatePath($templatePath);
+            }
         }
 
         // Handle tags

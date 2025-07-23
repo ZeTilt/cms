@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Page;
+use App\Service\PageTemplateService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +13,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class PublicPagesController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private PageTemplateService $templateService
     ) {
     }
 
@@ -49,7 +51,15 @@ class PublicPagesController extends AbstractController
     {
         $page = $this->findPublishedPage($slug, 'page');
 
-        return $this->render('public/page/show.html.twig', [
+        // Use the custom template for this page
+        $templatePath = $this->templateService->getTemplatePath($page->getTemplatePath());
+        
+        // Check if template exists, fallback to generic template if not
+        if (!$this->templateService->templateExists($page->getTemplatePath())) {
+            $templatePath = 'public/page/show.html.twig';
+        }
+
+        return $this->render($templatePath, [
             'page' => $page,
         ]);
     }
