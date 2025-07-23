@@ -68,7 +68,7 @@ class PublicPagesController extends AbstractController
                ->setParameter('type', $type);
         }
 
-        $page = $qb->getQuery()->getOneOrNull();
+        $page = $qb->getQuery()->getOneOrNullResult();
 
         if (!$page) {
             throw new NotFoundHttpException('Page not found');
