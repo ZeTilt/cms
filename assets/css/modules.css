@@ -1,0 +1,49 @@
+/**
+ * Module Management Styles
+ */
+
+.notification {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.fade-out {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+/* Button states */
+button:disabled {
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    background-color: inherit !important;
+}
+
+/* Module status indicators */
+.module-active {
+    background-color: #10b981;
+}
+
+.module-inactive {
+    background-color: #6b7280;
+}
+
+/* Responsive improvements for mobile */
+@media (max-width: 640px) {
+    .notification {
+        right: 1rem;
+        left: 1rem;
+        top: 1rem;
+    }
+    
+    .module-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .module-actions button {
+        width: 100%;
+    }
+}
