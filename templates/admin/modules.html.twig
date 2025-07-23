@@ -1,37 +1,43 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
-{% block title %}Module Management - ZeTilt CMS{% endblock %}
+{% block title %}Module Management - Admin{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-gray-100">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <h1 class="text-xl font-semibold text-gray-900">ZeTilt CMS Super Admin</h1>
-                    <a href="{{ path('admin_dashboard') }}" class="text-indigo-600 hover:text-indigo-900">← Back to Dashboard</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-700">{{ app.user.fullName }}</span>
-                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-900">Logout</a>
-                </div>
-            </div>
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/modules.css') }}">
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">Module Management</span>
         </div>
-    </nav>
+    </li>
+{% endblock %}
 
-    <!-- Main content -->
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div class="px-4 py-6 sm:px-0">
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h2 class="text-lg leading-6 font-medium text-gray-900 mb-6">Module Management</h2>
-                    
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600">
-                            Activate or deactivate modules to control which features are available in the CMS.
-                        </p>
-                    </div>
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center space-x-2 sm:space-x-4">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                Module Management
+            </h1>
+        </div>
+        <p class="mt-2 text-sm text-gray-600">
+            Activate or deactivate modules to control which features are available in the CMS.
+        </p>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="space-y-6">
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
 
                     <div class="mt-6 flow-root">
                         <ul role="list" class="-my-5 divide-y divide-gray-200">
@@ -47,20 +53,22 @@
                                                 </div>
                                                 <div class="min-w-0 flex-1">
                                                     <div class="focus:outline-none">
-                                                        <span class="absolute inset-0" aria-hidden="true"></span>
                                                         <p class="text-sm font-medium text-gray-900">{{ module.displayName }}</p>
                                                         <p class="text-sm text-gray-500">{{ module.description ?: 'No description available' }}</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="flex items-center space-x-2">
+                                            <div class="flex items-center space-x-2 module-actions">
                                                 {% if module.active %}
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                         Active
                                                     </span>
                                                     <button 
-                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        type="button"
+                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                                                         onclick="toggleModule('{{ module.name }}', false)"
+                                                        data-module="{{ module.name }}"
+                                                        data-action="deactivate"
                                                     >
                                                         Deactivate
                                                     </button>
@@ -69,8 +77,11 @@
                                                         Inactive
                                                     </span>
                                                     <button 
-                                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        type="button"
+                                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                                                         onclick="toggleModule('{{ module.name }}', true)"
+                                                        data-module="{{ module.name }}"
+                                                        data-action="activate"
                                                     >
                                                         Activate
                                                     </button>
@@ -86,21 +97,63 @@
             </div>
         </div>
     </div>
-</div>
 
+<!-- Clean Module Management Script -->
 <script>
 function toggleModule(moduleName, activate) {
     const action = activate ? 'activate' : 'deactivate';
     
-    if (confirm(`Are you sure you want to ${action} the ${moduleName} module?`)) {
-        // For now, just show an alert - in a real implementation, this would make an AJAX call
-        alert(`Module ${moduleName} would be ${activate ? 'activated' : 'deactivated'}. Please refresh the page.`);
-        
-        // You can implement AJAX functionality here later
-        // fetch('/admin/modules/' + moduleName + '/' + action, {method: 'POST'})
-        //   .then(response => response.json())
-        //   .then(data => window.location.reload());
+    if (!confirm(`Are you sure you want to ${action} the ${moduleName} module?`)) {
+        return;
     }
+    
+    // Disable all buttons during request
+    const buttons = document.querySelectorAll('button[data-module]');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-50');
+    });
+    
+    const formData = new FormData();
+    formData.append('action', action);
+    
+    fetch(`/admin/modules/${moduleName}/toggle`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg z-50';
+            notification.textContent = data.message;
+            document.body.appendChild(notification);
+            
+            // Reload page after short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error'));
+            // Re-enable buttons
+            buttons.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            });
+        }
+    })
+    .catch(error => {
+        alert('Network error: ' + error.message);
+        // Re-enable buttons
+        buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+        });
+    });
 }
 </script>
 {% endblock %}

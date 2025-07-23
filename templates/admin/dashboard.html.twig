@@ -68,18 +68,33 @@
                 <div class="mb-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Pages (always available) -->
                         <a href="{{ path('admin_pages_new') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
                             Create Page
                         </a>
                         <a href="{{ path('admin_pages_list') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
                             Manage Pages
                         </a>
-                        <a href="{{ path('admin_galleries_new') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
-                            Create Gallery
-                        </a>
-                        <a href="{{ path('admin_galleries_list') }}" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded text-center">
-                            Manage Galleries
-                        </a>
+                        
+                        <!-- Blog Actions (if blog module is active) -->
+                        {% if is_module_active('blog') %}
+                            <a href="{{ path('admin_articles_new') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-center">
+                                Create Article
+                            </a>
+                            <a href="{{ path('admin_articles_list') }}" class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded text-center">
+                                Manage Articles
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Gallery Actions (if gallery module is active) -->
+                        {% if is_module_active('gallery') %}
+                            <a href="{{ path('admin_galleries_new') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
+                                Create Gallery
+                            </a>
+                            <a href="{{ path('admin_galleries_list') }}" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded text-center">
+                                Manage Galleries
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
 
