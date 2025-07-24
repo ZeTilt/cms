@@ -41,13 +41,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne(targetEntity: UserType::class, inversedBy: 'users')]
+    private ?UserType $userType = null;
+
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Gallery::class, orphanRemoval: true)]
     private Collection $galleries;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserAttribute::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $userAttributes;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->galleries = new ArrayCollection();
+        $this->userAttributes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,5 +184,142 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getUserType(): ?UserType
+    {
+        return $this->userType;
+    }
+
+    public function setUserType(?UserType $userType): static
+    {
+        $this->userType = $userType;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserAttribute>
+     */
+    public function getUserAttributes(): Collection
+    {
+        return $this->userAttributes;
+    }
+
+    public function addUserAttribute(UserAttribute $userAttribute): static
+    {
+        if (!$this->userAttributes->contains($userAttribute)) {
+            $this->userAttributes->add($userAttribute);
+            $userAttribute->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserAttribute(UserAttribute $userAttribute): static
+    {
+        if ($this->userAttributes->removeElement($userAttribute)) {
+            if ($userAttribute->getUser() === $this) {
+                $userAttribute->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get user attribute by key
+     */
+    public function getUserAttributeByKey(string $key): ?UserAttribute
+    {
+        foreach ($this->userAttributes as $attribute) {
+            if ($attribute->getAttributeKey() === $key) {
+                return $attribute;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get user attribute value by key
+     */
+    public function getUserAttributeValue(string $key): mixed
+    {
+        $attribute = $this->getUserAttributeByKey($key);
+        return $attribute ? $attribute->getTypedValue() : null;
+    }
+
+    /**
+     * Set user attribute value by key
+     */
+    public function setUserAttributeValue(string $key, mixed $value, string $type = 'text'): static
+    {
+        $attribute = $this->getUserAttributeByKey($key);
+        
+        if (!$attribute) {
+            $attribute = new UserAttribute();
+            $attribute->setUser($this);
+            $attribute->setAttributeKey($key);
+            $attribute->setAttributeType($type);
+            $this->addUserAttribute($attribute);
+        }
+        
+        $attribute->setTypedValue($value);
+        return $this;
+    }
+
+    /**
+     * Initialize user attributes based on user type
+     */
+    public function initializeAttributesFromType(): static
+    {
+        if (!$this->userType) {
+            return $this;
+        }
+
+        foreach ($this->userType->getAttributes() as $typeAttribute) {
+            if (!$this->getUserAttributeByKey($typeAttribute->getAttributeKey())) {
+                $userAttribute = new UserAttribute();
+                $userAttribute->setUser($this);
+                $userAttribute->setAttributeKey($typeAttribute->getAttributeKey());
+                $userAttribute->setAttributeType($typeAttribute->getAttributeType());
+                
+                if ($typeAttribute->getDefaultValue()) {
+                    $userAttribute->setTypedValue($typeAttribute->getDefaultValue());
+                }
+                
+                $this->addUserAttribute($userAttribute);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get missing required attributes for this user
+     */
+    public function getMissingRequiredAttributes(): array
+    {
+        if (!$this->userType) {
+            return [];
+        }
+
+        $missing = [];
+        foreach ($this->userType->getRequiredAttributes() as $typeAttribute) {
+            $userAttribute = $this->getUserAttributeByKey($typeAttribute->getAttributeKey());
+            if (!$userAttribute || empty($userAttribute->getAttributeValue())) {
+                $missing[] = $typeAttribute;
+            }
+        }
+
+        return $missing;
+    }
+
+    /**
+     * Check if user has all required attributes filled
+     */
+    public function hasAllRequiredAttributes(): bool
+    {
+        return empty($this->getMissingRequiredAttributes());
     }
 }
