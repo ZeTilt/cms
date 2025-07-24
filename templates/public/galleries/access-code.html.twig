@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Access Required - {{ gallery.title }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="mx-auto h-12 w-12 flex items-center justify-center bg-red-100 rounded-full">
+            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-bold text-gray-900">
+            Private Gallery
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            This gallery is private and requires an access code
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-gray-900">{{ gallery.title }}</h3>
+                {% if gallery.description %}
+                    <p class="mt-2 text-sm text-gray-600">{{ gallery.description }}</p>
+                {% endif %}
+            </div>
+
+            {% if error %}
+                <div class="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-800">{{ error }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form class="space-y-6" method="GET">
+                <div>
+                    <label for="code" class="block text-sm font-medium text-gray-700">
+                        Access Code
+                    </label>
+                    <div class="mt-1">
+                        <input id="code" name="code" type="text" required 
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                               placeholder="Enter access code">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Access Gallery
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6">
+                <div class="text-center">
+                    <a href="{{ path('public_galleries_list') }}" class="text-sm text-indigo-600 hover:text-indigo-500">
+                        ← Back to all galleries
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

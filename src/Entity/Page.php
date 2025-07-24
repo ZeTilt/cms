@@ -14,16 +14,16 @@ class Page
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private string $title;
+    private string $title = '';
 
     #[ORM\Column(length: 255, unique: true)]
-    private string $slug;
+    private string $slug = '';
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $excerpt = null;
 
-    #[ORM\Column(type: 'text')]
-    private string $content;
+    #[ORM\Column(length: 255)]
+    private string $template_path = '';
 
     #[ORM\Column(length: 50)]
     private string $type = 'page'; // 'page' or 'blog'
@@ -77,6 +77,7 @@ class Page
     public function setTitle(string $title): static
     {
         $this->title = $title;
+        $this->generateSlug();
         return $this;
     }
 
@@ -102,14 +103,14 @@ class Page
         return $this;
     }
 
-    public function getContent(): string
+    public function getTemplatePath(): string
     {
-        return $this->content;
+        return $this->template_path;
     }
 
-    public function setContent(string $content): static
+    public function setTemplatePath(string $template_path): static
     {
-        $this->content = $content;
+        $this->template_path = $template_path;
         $this->updatedAt = new \DateTimeImmutable();
         return $this;
     }

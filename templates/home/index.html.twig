@@ -5,9 +5,12 @@
 {% block body %}
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
     <div class="max-w-4xl mx-auto text-center text-white px-4">
-        <h1 class="text-6xl font-bold mb-8">
-            ZeTilt CMS
-        </h1>
+        <div class="flex items-center justify-center space-x-4 mb-8">
+            <img src="{{ asset('assets/logo sans fond.png') }}" alt="ZeTilt" class="h-16 w-auto">
+            <h1 class="text-6xl font-bold">
+                ZeTilt CMS
+            </h1>
+        </div>
         <p class="text-xl mb-8 opacity-90">
             A modular, business-focused content management system built with Symfony
         </p>
@@ -28,17 +31,20 @@
         </div>
         
         <div class="space-x-4">
-            <a href="{{ path('app_login') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all">
-                Admin Login
+            <a href="{{ path('public_galleries_list') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all">
+                View Galleries
             </a>
-            <a href="#" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all">
-                Learn More
+            <a href="{{ path('public_blog_list') }}" class="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all">
+                Read Blog
+            </a>
+            <a href="{{ path('app_login') }}" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all">
+                Admin Login
             </a>
         </div>
         
         <div class="mt-12 text-sm opacity-60">
-            <p>Phase 0 Complete: Core infrastructure ready</p>
-            <p class="mt-2">Next: Portfolio Module Development</p>
+            <p>Phase 2 Complete: Gallery Module ready</p>
+            <p class="mt-2">✅ Portfolio sites ✅ Blog functionality ✅ Photo galleries ✅ Admin interface</p>
         </div>
     </div>
 </div>

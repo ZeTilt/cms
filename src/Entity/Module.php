@@ -14,10 +14,10 @@ class Module
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
-    private string $name;
+    private string $name = '';
 
     #[ORM\Column(length: 100)]
-    private string $displayName;
+    private string $displayName = '';
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
