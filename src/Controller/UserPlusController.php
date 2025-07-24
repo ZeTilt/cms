@@ -40,8 +40,9 @@ class UserPlusController extends AbstractController
         ]);
     }
 
-    // User Type Management
+    // User Type Management (SUPER_ADMIN only)
     #[Route('/user-types', name: 'admin_userplus_user_types')]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function userTypes(): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
@@ -56,6 +57,7 @@ class UserPlusController extends AbstractController
     }
 
     #[Route('/user-types/new', name: 'admin_userplus_user_types_new')]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function newUserType(): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
@@ -69,6 +71,7 @@ class UserPlusController extends AbstractController
     }
 
     #[Route('/user-types/{id}/edit', name: 'admin_userplus_user_types_edit', requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function editUserType(UserType $userType): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
@@ -82,6 +85,7 @@ class UserPlusController extends AbstractController
     }
 
     #[Route('/user-types/save', name: 'admin_userplus_user_types_save', methods: ['POST'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function saveUserType(Request $request): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
@@ -111,6 +115,7 @@ class UserPlusController extends AbstractController
     }
 
     #[Route('/user-types/{id}/delete', name: 'admin_userplus_user_types_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function deleteUserType(UserType $userType): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
@@ -129,8 +134,9 @@ class UserPlusController extends AbstractController
         return $this->redirectToRoute('admin_userplus_user_types');
     }
 
-    // User Type Attributes Management
+    // User Type Attributes Management (SUPER_ADMIN only)
     #[Route('/user-types/{id}/attributes', name: 'admin_userplus_user_type_attributes', requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function userTypeAttributes(UserType $userType): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
@@ -143,6 +149,7 @@ class UserPlusController extends AbstractController
     }
 
     #[Route('/user-types/{id}/attributes/add', name: 'admin_userplus_add_user_type_attribute', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function addUserTypeAttribute(UserType $userType, Request $request): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
@@ -179,6 +186,7 @@ class UserPlusController extends AbstractController
     }
 
     #[Route('/user-type-attributes/{id}/delete', name: 'admin_userplus_delete_user_type_attribute', methods: ['DELETE'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function deleteUserTypeAttribute(UserTypeAttribute $attribute): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
