@@ -30,6 +30,21 @@
                                 Galleries
                             </a>
                         {% endif %}
+                        {% if is_module_active('userplus') %}
+                            <a href="{{ path('admin_userplus_list') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_userplus' ? 'text-indigo-600 bg-indigo-50' : '' }}">
+                                Users
+                            </a>
+                        {% endif %}
+                        {% if is_module_active('events') %}
+                            <a href="{{ path('admin_events_list') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_events' ? 'text-indigo-600 bg-indigo-50' : '' }}">
+                                Events
+                            </a>
+                        {% endif %}
+                        {% if is_module_active('business') %}
+                            <a href="{{ path('admin_business_dashboard') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_business' ? 'text-indigo-600 bg-indigo-50' : '' }}">
+                                Business
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -75,6 +90,21 @@
                 {% if is_module_active('gallery') %}
                     <a href="{{ path('admin_galleries_list') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_galleries' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                         Galleries
+                    </a>
+                {% endif %}
+                {% if is_module_active('userplus') %}
+                    <a href="{{ path('admin_userplus_list') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_userplus' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        Users
+                    </a>
+                {% endif %}
+                {% if is_module_active('events') %}
+                    <a href="{{ path('admin_events_list') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_events' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        Events
+                    </a>
+                {% endif %}
+                {% if is_module_active('business') %}
+                    <a href="{{ path('admin_business_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_business' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        Business
                     </a>
                 {% endif %}
             </div>
