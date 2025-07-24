@@ -31,7 +31,7 @@
                             </a>
                         {% endif %}
                         {% if is_module_active('userplus') %}
-                            <a href="{{ path('admin_userplus_list') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_userplus' ? 'text-indigo-600 bg-indigo-50' : '' }}">
+                            <a href="{{ path('admin_userplus_dashboard') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_userplus' ? 'text-indigo-600 bg-indigo-50' : '' }}">
                                 Users
                             </a>
                         {% endif %}
@@ -93,7 +93,7 @@
                     </a>
                 {% endif %}
                 {% if is_module_active('userplus') %}
-                    <a href="{{ path('admin_userplus_list') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_userplus' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                    <a href="{{ path('admin_userplus_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_userplus' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                         Users
                     </a>
                 {% endif %}
