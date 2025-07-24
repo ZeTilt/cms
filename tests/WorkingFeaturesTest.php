@@ -31,6 +31,31 @@ class WorkingFeaturesTest extends WebTestCase
         return $admin;
     }
 
+    private function activateAllModules(): void
+    {
+        $moduleManager = static::getContainer()->get('App\Service\ModuleManager');
+        
+        // Register and activate blog module
+        if (!$moduleManager->getModule('blog')) {
+            $moduleManager->registerModule('blog', 'Blog Management', 'Articles with WYSIWYG and categories', [
+                'posts_per_page' => 10,
+                'enable_comments' => false,
+                'enable_categories' => true
+            ]);
+        }
+        $moduleManager->activateModule('blog');
+        
+        // Register and activate gallery module  
+        if (!$moduleManager->getModule('gallery')) {
+            $moduleManager->registerModule('gallery', 'Gallery Management', 'Image galleries with thumbnails', [
+                'max_images_per_gallery' => 50,
+                'thumbnail_size' => 200,
+                'enable_captions' => true
+            ]);
+        }
+        $moduleManager->activateModule('gallery');
+    }
+
     private function cleanup(User ...$users): void
     {
         $entityManager = static::getContainer()->get('doctrine')->getManager();
@@ -82,6 +107,7 @@ class WorkingFeaturesTest extends WebTestCase
     public function testAdminDashboardWithAuth(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
         $admin = $this->createAdminUser();
         
         $client->loginUser($admin);
@@ -103,6 +129,8 @@ class WorkingFeaturesTest extends WebTestCase
     public function testPublicBlogList(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
+        
         $client->request('GET', '/blog');
         
         $this->assertResponseIsSuccessful();
@@ -113,6 +141,7 @@ class WorkingFeaturesTest extends WebTestCase
     public function testPagesListWithAuth(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
         $admin = $this->createAdminUser();
         
         $client->loginUser($admin);
@@ -126,6 +155,7 @@ class WorkingFeaturesTest extends WebTestCase
     public function testCreatePageForm(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
         $admin = $this->createAdminUser();
         
         $client->loginUser($admin);
@@ -139,6 +169,7 @@ class WorkingFeaturesTest extends WebTestCase
     public function testGalleriesListWithAuth(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
         $admin = $this->createAdminUser();
         
         $client->loginUser($admin);
@@ -152,6 +183,7 @@ class WorkingFeaturesTest extends WebTestCase
     public function testCreateGalleryForm(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
         $admin = $this->createAdminUser();
         
         $client->loginUser($admin);
@@ -167,6 +199,7 @@ class WorkingFeaturesTest extends WebTestCase
     public function testCreatePage(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
         $admin = $this->createAdminUser();
         
         $client->loginUser($admin);
@@ -193,6 +226,7 @@ class WorkingFeaturesTest extends WebTestCase
     public function testCreateGallery(): void
     {
         $client = static::createClient();
+        $this->activateAllModules();
         $admin = $this->createAdminUser();
         
         $client->loginUser($admin);

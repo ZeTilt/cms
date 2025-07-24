@@ -145,6 +145,12 @@ public/
 - **Images** : Vignettes automatiques
 - **Templates** : Compilation Twig
 
+### Monitoring
+- **MonitoringService** : Collecte automatique de métriques
+- **Types de métriques** : Performance, cache, sécurité, contenu
+- **Nettoyage** : Commande `app:monitoring:cleanup` pour éviter la surcharge BDD
+- **Rétention** : 72h recommandé pour le debug, plus pour l'analyse
+
 ## 🧪 Tests
 
 ### Lancer les Tests
@@ -173,6 +179,9 @@ php bin/console app:create-user email password "Full Name"
 
 # Initialiser les modules
 php bin/console app:init-blog-module
+
+# Nettoyer les métriques de monitoring (recommandé quotidiennement)
+php bin/console app:monitoring:cleanup --older-than-hours=72
 
 # Vider le cache
 php bin/console cache:clear
@@ -251,6 +260,9 @@ php bin/console cache:clear --env=prod
 
 # Optimiser les assets
 php bin/console assets:install --env=prod
+
+# Configurer le nettoyage automatique des métriques (cron)
+# Ajouter à crontab : 0 2 * * * /path/to/php /path/to/bin/console app:monitoring:cleanup --older-than-hours=72
 ```
 
 ### Variables d'Environnement
