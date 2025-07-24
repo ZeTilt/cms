@@ -1,0 +1,159 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Search by Attributes - User Management - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol role="list" class="flex items-center space-x-4">
+                        <li>
+                            <a href="{{ path('admin_userplus_list') }}" class="text-gray-400 hover:text-gray-500">
+                                Users Management
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="ml-4 text-sm font-medium text-gray-500">Search by Attributes</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="mt-2 text-3xl font-bold text-gray-900">Search Users by Attributes</h1>
+                <p class="mt-1 text-sm text-gray-500">Find users based on their custom attributes</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Search Form -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Search Criteria</h3>
+        
+        <form method="GET" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="key" class="block text-sm font-medium text-gray-700">Attribute Key</label>
+                    <select name="key" id="key" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">-- Select an attribute key --</option>
+                        {% for key in attributeKeys %}
+                            <option value="{{ key }}" {% if key == searchKey %}selected{% endif %}>{{ key }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="value" class="block text-sm font-medium text-gray-700">Attribute Value (optional)</label>
+                    <input type="text" name="value" id="value" value="{{ searchValue }}" placeholder="Leave empty to find all users with this attribute" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <a href="{{ path('admin_userplus_search_attributes') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                    Clear
+                </a>
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search Results -->
+    {% if searchKey %}
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">
+                    Search Results
+                    {% if searchValue %}
+                        for "{{ searchKey }}" = "{{ searchValue }}"
+                    {% else %}
+                        for attribute "{{ searchKey }}"
+                    {% endif %}
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">{{ users|length }} user(s) found</p>
+            </div>
+            
+            {% if users is empty %}
+                <div class="px-6 py-12 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No users found</h3>
+                    <p class="mt-1 text-sm text-gray-500">Try adjusting your search criteria.</p>
+                </div>
+            {% else %}
+                <ul role="list" class="divide-y divide-gray-200">
+                    {% for user in users %}
+                        <li>
+                            <a href="{{ path('admin_userplus_detail', {id: user.id}) }}" class="block hover:bg-gray-50">
+                                <div class="px-6 py-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                                                    <span class="text-white font-medium text-sm">{{ user.firstName|slice(0, 1)|upper }}{{ user.lastName|slice(0, 1)|upper }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="flex items-center">
+                                                    <p class="text-sm font-medium text-indigo-600">{{ user.fullName }}</p>
+                                                    {% if not user.active %}
+                                                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                            Inactive
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex items-center text-sm text-gray-500">
+                                                    <p>{{ user.email }}</p>
+                                                    <span class="mx-2">•</span>
+                                                    <p>
+                                                        {% for role in user.roles %}
+                                                            {% if role != 'ROLE_USER' %}
+                                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-1">
+                                                                    {{ role|replace({'ROLE_': ''})|title }}
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- Available Attributes Overview -->
+    {% if attributeKeys is not empty %}
+        <div class="mt-8 bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Available Attribute Keys</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for key in attributeKeys %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                        {{ key }}
+                    </span>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

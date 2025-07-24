@@ -1,0 +1,91 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Users Management - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Users Management</h1>
+                <p class="mt-1 text-sm text-gray-500">Manage users and their custom attributes</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ path('admin_userplus_search_attributes') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Search by Attributes
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Users List -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">All Users</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Click on a user to manage their custom attributes</p>
+        </div>
+        
+        {% if users is empty %}
+            <div class="px-4 py-12 text-center">
+                <p class="text-gray-500">No users found.</p>
+            </div>
+        {% else %}
+            <ul role="list" class="divide-y divide-gray-200">
+                {% for user in users %}
+                    <li>
+                        <a href="{{ path('admin_userplus_detail', {id: user.id}) }}" class="block hover:bg-gray-50">
+                            <div class="px-4 py-4 sm:px-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                                                <span class="text-white font-medium text-sm">{{ user.firstName|slice(0, 1)|upper }}{{ user.lastName|slice(0, 1)|upper }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="flex items-center">
+                                                <p class="text-sm font-medium text-indigo-600">{{ user.fullName }}</p>
+                                                {% if not user.active %}
+                                                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                        Inactive
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-500">
+                                                <p>{{ user.email }}</p>
+                                                <span class="mx-2">•</span>
+                                                <p>
+                                                    {% for role in user.roles %}
+                                                        {% if role != 'ROLE_USER' %}
+                                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-1">
+                                                                {{ role|replace({'ROLE_': ''})|title }}
+                                                            </span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <p>Created {{ user.createdAt|date('M j, Y') }}</p>
+                                        <svg class="ml-2 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
