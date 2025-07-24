@@ -1,0 +1,125 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ user.fullName }} - User Management - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol role="list" class="flex items-center space-x-4">
+                <li>
+                    <a href="{{ path('admin_userplus_dashboard') }}" class="text-gray-400 hover:text-gray-500">User Management</a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <a href="{{ path('admin_userplus_users') }}" class="ml-4 text-gray-400 hover:text-gray-500">Users</a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="ml-4 text-sm font-medium text-gray-500">{{ user.fullName }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <h1 class="mt-2 text-3xl font-bold text-gray-900">{{ user.fullName }}</h1>
+    </div>
+    
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">User Information</h3>
+                <dl class="space-y-3">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Email</dt>
+                        <dd class="text-sm text-gray-900">{{ user.email }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Full Name</dt>
+                        <dd class="text-sm text-gray-900">{{ user.fullName }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Status</dt>
+                        <dd class="text-sm">
+                            {% if user.active %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">User Type</dt>
+                        <dd class="text-sm">
+                            {% if user.userType %}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ user.userType.badgeColor }}">
+                                    {{ user.userType.displayName }}
+                                </span>
+                            {% else %}
+                                <span class="text-gray-400">No type assigned</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Created</dt>
+                        <dd class="text-sm text-gray-900">{{ user.createdAt|date('F j, Y g:i A') }}</dd>
+                    </div>
+                </dl>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">User Attributes</h3>
+                {% if user.userType and user.userType.attributes.count > 0 %}
+                    <div class="space-y-4">
+                        {% for typeAttribute in user.userType.attributes %}
+                            {% set userAttribute = user.getUserAttributeByKey(typeAttribute.attributeKey) %}
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-sm font-medium text-gray-900">{{ typeAttribute.displayName }}</h4>
+                                    {% if typeAttribute.required %}
+                                        <span class="text-xs text-red-600">Required</span>
+                                    {% endif %}
+                                </div>
+                                {% if userAttribute %}
+                                    <p class="text-sm text-gray-600">{{ userAttribute.attributeValue ?: 'Not set' }}</p>
+                                {% else %}
+                                    <p class="text-sm text-gray-400 italic">Not set</p>
+                                {% endif %}
+                                {% if typeAttribute.description %}
+                                    <p class="text-xs text-gray-500 mt-1">{{ typeAttribute.description }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">No custom attributes available.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if not user.hasAllRequiredAttributes %}
+            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-yellow-800">Missing Required Attributes</h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <p>This user is missing some required attributes for their user type.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Users Management - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Users Management</h1>
+    
+    <div class="bg-white shadow rounded-lg p-6">
+        <p class="text-gray-600">Users management interface - Template à compléter</p>
+        
+        {% if users is not empty %}
+            <div class="mt-6">
+                <h3 class="text-lg font-medium mb-4">Users ({{ totalUsers }})</h3>
+                <div class="space-y-4">
+                    {% for user in users %}
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">{{ user.fullName }}</h4>
+                                    <p class="text-sm text-gray-500">{{ user.email }}</p>
+                                    {% if user.userType %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ user.userType.badgeColor }}">
+                                            {{ user.userType.displayName }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-xs text-gray-400">No type assigned</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ path('admin_userplus_user_detail', {id: user.id}) }}" class="text-indigo-600 hover:text-indigo-900">View Details</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-500 mt-4">No users found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
