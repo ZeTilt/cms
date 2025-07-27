@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Welcome - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'title'|trans({}, 'home') }}{% endblock %}
 
 {% block body %}
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
@@ -12,39 +12,39 @@
             </h1>
         </div>
         <p class="text-xl mb-8 opacity-90">
-            A modular, business-focused content management system built with Symfony
+            {{ 'subtitle'|trans({}, 'home') }}
         </p>
         
         <div class="grid md:grid-cols-3 gap-8 mb-12">
             <div class="bg-white bg-opacity-20 rounded-lg p-6 backdrop-blur-sm">
-                <h3 class="text-lg font-semibold mb-3">Modular Architecture</h3>
-                <p class="text-sm opacity-80">Activate only the modules you need for maximum performance and simplicity.</p>
+                <h3 class="text-lg font-semibold mb-3">{{ 'features.modular_architecture.title'|trans({}, 'home') }}</h3>
+                <p class="text-sm opacity-80">{{ 'features.modular_architecture.description'|trans({}, 'home') }}</p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-lg p-6 backdrop-blur-sm">
-                <h3 class="text-lg font-semibold mb-3">Dynamic Attributes</h3>
-                <p class="text-sm opacity-80">Add custom fields to any entity without touching code through our EAV system.</p>
+                <h3 class="text-lg font-semibold mb-3">{{ 'features.dynamic_attributes.title'|trans({}, 'home') }}</h3>
+                <p class="text-sm opacity-80">{{ 'features.dynamic_attributes.description'|trans({}, 'home') }}</p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-lg p-6 backdrop-blur-sm">
-                <h3 class="text-lg font-semibold mb-3">Business Focused</h3>
-                <p class="text-sm opacity-80">Designed for real-world use cases: diving clubs, photographers, portfolios.</p>
+                <h3 class="text-lg font-semibold mb-3">{{ 'features.business_focused.title'|trans({}, 'home') }}</h3>
+                <p class="text-sm opacity-80">{{ 'features.business_focused.description'|trans({}, 'home') }}</p>
             </div>
         </div>
         
         <div class="space-x-4">
             <a href="{{ path('public_galleries_list') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all">
-                View Galleries
+                {{ 'navigation.view_galleries'|trans({}, 'home') }}
             </a>
             <a href="{{ path('public_blog_list') }}" class="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all">
-                Read Blog
+                {{ 'navigation.read_blog'|trans({}, 'home') }}
             </a>
             <a href="{{ path('app_login') }}" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all">
-                Admin Login
+                {{ 'navigation.admin_login'|trans({}, 'home') }}
             </a>
         </div>
         
         <div class="mt-12 text-sm opacity-60">
-            <p>Phase 2 Complete: Gallery Module ready</p>
-            <p class="mt-2">✅ Portfolio sites ✅ Blog functionality ✅ Photo galleries ✅ Admin interface</p>
+            <p>{{ 'status.phase_complete'|trans({}, 'home') }}</p>
+            <p class="mt-2">{{ 'status.features_ready'|trans({}, 'home') }}</p>
         </div>
     </div>
 </div>

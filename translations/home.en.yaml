@@ -1,0 +1,23 @@
+# Home page - English
+title: "Welcome - ZeTilt CMS"
+subtitle: "A modular, business-focused content management system built with Symfony"
+
+features:
+  modular_architecture:
+    title: "Modular Architecture"
+    description: "Activate only the modules you need for maximum performance and simplicity."
+  dynamic_attributes:
+    title: "Dynamic Attributes"
+    description: "Add custom fields to any entity without touching code through our EAV system."
+  business_focused:
+    title: "Business Focused"
+    description: "Designed for real-world use cases: diving clubs, photographers, portfolios."
+
+navigation:
+  view_galleries: "View Galleries"
+  read_blog: "Read Blog"
+  admin_login: "Admin Login"
+
+status:
+  phase_complete: "Phase 2 Complete: Gallery Module ready"
+  features_ready: "✅ Portfolio sites ✅ Blog functionality ✅ Photo galleries ✅ Admin interface"
