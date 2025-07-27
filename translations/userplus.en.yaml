@@ -1,0 +1,324 @@
+# English translations for UserPlus module
+# Navigation and main titles
+title: "User Management"
+
+view_mode:
+  title: "View mode"
+  list: "List"
+  table: "Table"
+
+# Keys with userplus prefix for template compatibility
+userplus:
+  title: "User Management"
+  breadcrumb:
+    user_management: "User Management"
+    users: "Users"
+    user_types: "User Types"
+    user_detail: "User Detail"
+    new_user_type: "New"
+    new: "New"
+    edit_user_type: "Edit"
+    edit: "Edit"
+    attributes: "Attributes"
+  users:
+    title: "User Management"
+    subtitle: "Manage users and assign them to specific user types with custom attributes"
+    add_user: "Add User"
+    no_users_found: "No users found"
+    try_adjusting_filters: "Try adjusting your filters or search terms."
+    get_started: "Get started by creating your first user."
+    total_users: "total users"
+    showing_page: "Showing page"
+    of: "of"
+    filtered: "Filtered"
+  filters:
+    title: "Filters & Search"
+    search: "Search"
+    search_placeholder: "Name or email..."
+    user_type: "User Type"
+    all_types: "All Types"
+    no_type_assigned: "No Type Assigned"
+    status: "Status"
+    all_statuses: "All Statuses"
+    filter_button: "Filter"
+breadcrumb:
+  user_management: "User Management"
+  users: "Users"
+  user_types: "User Types"
+  user_detail: "User Detail"
+  new_user_type: "New"
+  edit_user_type: "Edit"
+  attributes: "Attributes"
+
+# Main users page
+users:
+  title: "User Management"
+  subtitle: "Manage users and assign them to specific user types with custom attributes"
+  add_user: "Add User"
+  no_users_found: "No users found"
+  try_adjusting_filters: "Try adjusting your filters or search terms."
+  get_started: "Get started by creating your first user."
+  total_users: "total users"
+  showing_page: "Showing page"
+  of: "of"
+  filtered: "Filtered"
+  
+# Filters and search
+filters:
+  title: "Filters & Search"
+  search: "Search"
+  search_placeholder: "Name or email..."
+  user_type: "User Type"
+  all_types: "All Types"
+  no_type_assigned: "No Type Assigned"
+  status: "Status"
+  all_statuses: "All Statuses"
+  filter_button: "Filter"
+  
+# Status
+status:
+  active: "Active"
+  inactive: "Inactive"
+  
+# Roles
+roles:
+  super_admin: "Super Admin"
+  admin: "Admin"
+  user: "User"
+  regular_user: "Regular User"
+  
+# Actions
+actions:
+  details: "Details"
+  edit: "Edit"
+  delete: "Delete"
+  change_type: "Change Type"
+  assign_type: "Assign Type"
+  edit_attributes: "Edit Attributes"
+  add_attribute: "Add Attribute"
+  add_certification: "Add Certification"
+  view: "View"
+  remove: "Remove"
+  save: "Save"
+  save_changes: "Save Changes"
+  cancel: "Cancel"
+  create: "Create"
+  update: "Update"
+  previous: "Previous"
+  next: "Next"
+  
+# User types
+user_types:
+  title: "User Types"
+  subtitle: "Define user types and their custom attributes"
+  new_user_type: "New User Type"
+  no_user_types: "No user types"
+  get_started_types: "Get started by creating your first user type."
+  users_count: "users"
+  attributes_count: "attributes"
+  required_count: "required"
+  view_only: "View only"
+  readonly: "Read-only"
+  
+# User type form
+user_type_form:
+  name_label: "Name (identifier)"
+  name_help: "Internal identifier (lowercase, no spaces)"
+  display_name_label: "Display Name"
+  display_name_help: "Human-readable name"
+  description_label: "Description"
+  description_help: "Optional description of this user type"
+  active_label: "Active"
+  active_help: "Only active user types can be assigned to users"
+  create_title: "Create New User Type"
+  edit_title: "Edit User Type"
+  
+# Attributes
+attributes:
+  title: "Custom Attributes"
+  no_attributes: "No custom attributes"
+  get_started_attributes: "Get started by adding a custom attribute to this user type."
+  add_attribute_title: "Add Custom Attribute"
+  edit_attributes_button: "Edit Attributes"
+  user_attributes: "User Attributes"
+  no_custom_attributes: "No custom attributes available."
+  assign_user_type: "Assign User Type"
+  not_set: "Not set"
+  required: "Required"
+  filled_attributes: "attributes"
+  
+# Attribute form
+attribute_form:
+  key_label: "Attribute Key"
+  key_help: "Internal identifier (lowercase, no spaces)"
+  display_name_label: "Display Name"
+  display_name_help: "Human-readable name"
+  type_label: "Attribute Type"
+  type_placeholder: "Select type..."
+  display_order_label: "Display Order"
+  display_order_help: "Order in forms (0 = first)"
+  description_label: "Description"
+  description_help: "Optional help text for users"
+  required_label: "Required"
+  required_help: "Must be filled by users"
+  default_value_label: "Default Value"
+  default_value_help: "Pre-filled value"
+  
+# Attribute types
+attribute_types:
+  text: "Text"
+  textarea: "Textarea"
+  number: "Number"
+  boolean: "Boolean (Yes/No)"
+  date: "Date"
+  select: "Select (Dropdown)"
+  file: "File Upload"
+  json: "JSON Data"
+  
+# Select options
+select_options:
+  title: "Select Options"
+  add_option: "Add Option"
+  option_value_placeholder: "Option value"
+  option_label_placeholder: "Option label"
+  
+# File configuration
+file_config:
+  title: "File Configuration"
+  allowed_types: "Allowed File Types"
+  max_file_size: "Max File Size (MB)"
+  max_file_size_help: "Maximum file size allowed in megabytes"
+  
+# File categories
+file_categories:
+  images: "Images"
+  documents: "Documents"
+  archives: "Archives"
+  
+# File types
+file_types:
+  jpeg: "JPEG Image (.jpg, .jpeg)"
+  png: "PNG Image (.png)"
+  gif: "GIF Image (.gif)"
+  webp: "WebP Image (.webp)"
+  svg: "SVG Image (.svg)"
+  pdf: "PDF Document (.pdf)"
+  doc: "Word Document (.doc)"
+  docx: "Word Document (.docx)"
+  txt: "Text File (.txt)"
+  zip: "ZIP Archive (.zip)"
+  rar: "RAR Archive (.rar)"
+  
+# Validation rules
+validation:
+  title: "Validation Rules (Optional)"
+  min_length: "Min Length"
+  max_length: "Max Length"
+  min_value: "Min Value"
+  max_value: "Max Value"
+  
+# User detail
+user_detail:
+  user_information: "User Information"
+  email: "Email"
+  full_name: "Full Name"
+  status: "Status"
+  user_type: "User Type"
+  created: "Created"
+  attribute_validation_issues: "Attribute Validation Issues"
+  
+# Certifications
+certifications:
+  title: "Certifications"
+  no_certifications: "No certifications"
+  no_certifications_assigned: "This user has no certifications assigned yet."
+  add_first_certification: "Add First Certification"
+  obtained: "Obtained"
+  expires: "Expires"
+  days_left: "days left"
+  certificate_number: "Certificate #"
+  issuing_authority: "Issuing Authority"
+  notes: "Notes"
+  
+# Add certification modal
+add_certification:
+  title: "Add Certification"
+  certification_label: "Certification"
+  certification_placeholder: "Select a certification..."
+  date_obtained: "Date Obtained"
+  expiration_date: "Expiration Date"
+  expiration_help: "Leave empty if certification doesn't expire"
+  certificate_number_label: "Certificate Number"
+  issuing_authority_label: "Issuing Authority"
+  notes_label: "Notes"
+  
+# Create user form
+create_user:
+  title: "Create New User"
+  first_name: "First Name"
+  last_name: "Last Name"
+  email: "Email Address"
+  email_help: "Must be unique and valid"
+  password: "Password"
+  password_help: "Minimum 6 characters"
+  user_type_optional: "User Type (Optional)"
+  no_type_option: "No Type (can be assigned later)"
+  assign_later: "You can assign a type now or later"
+  role: "Role"
+  active_checkbox: "Active"
+  active_help: "User can log in and access the system"
+  create_user_button: "Create User"
+  
+# Messages and notifications
+messages:
+  user_created: "User created successfully"
+  user_creation_failed: "Failed to create user"
+  user_creation_error: "An error occurred while creating the user"
+  attributes_saved: "Attributes saved successfully"
+  attributes_save_failed: "Failed to save attributes"
+  attributes_save_error: "An error occurred while saving attributes"
+  attribute_added: "Attribute added successfully"
+  attribute_add_failed: "Failed to add attribute"
+  attribute_add_error: "An error occurred while adding the attribute"
+  attribute_deleted: "Attribute deleted successfully"
+  attribute_delete_failed: "Failed to delete attribute"
+  attribute_delete_error: "An error occurred while deleting the attribute"
+  confirm_delete_attribute: "Are you sure you want to delete this attribute?"
+  key_already_exists: "This attribute key already exists for this user type"
+  certification_removed: "Certification removed successfully"
+  certification_remove_error: "Error removing certification"
+  confirm_remove_certification: "Are you sure you want to remove the"
+  edit_functionality_todo: "Edit functionality will be implemented next"
+  
+# Boolean values
+boolean:
+  yes: "Yes"
+  no: "No"
+  not_set: "Not set"
+
+# Additional fixes for hardcoded text
+dashboard:
+  user_types_overview: "User Types Overview"
+  user_types_description: "Distribution of users by type and their configured attributes"
+  active_users: "Active Users"
+  user_types: "User Types"
+
+create:
+  title: "Create User Type"
+  page_title: "Create New User Type"
+
+edit:
+  title: "Edit User Type"
+  page_title: "Edit User Type"
+
+fields:
+  name_identifier: "Name (identifier)"
+  name_pattern_help: "Only lowercase letters, numbers, and underscores"
+  name_help: "Internal identifier (lowercase, no spaces)"
+  display_name: "Display Name"
+  display_name_help: "Human-readable name"
+  description_help: "Optional description of this user type"
+  active_help: "Only active user types can be assigned to users"
+
+entity:
+  user_type: "User Type"

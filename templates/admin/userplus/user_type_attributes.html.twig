@@ -81,6 +81,14 @@
                                 {% if attribute.defaultValue %}
                                     <p class="mt-1 text-xs text-gray-500">Default: {{ attribute.defaultValue }}</p>
                                 {% endif %}
+                                {% if attribute.options %}
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        Options: 
+                                        {% for value, label in attribute.options %}
+                                            <span class="inline-block bg-blue-100 text-blue-800 px-1 py-0.5 rounded text-xs mr-1">{{ label }}</span>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
                             </div>
                             <button type="button" onclick="deleteAttribute({{ attribute.id }})" 
                                     class="ml-4 text-red-600 hover:text-red-900">
@@ -96,29 +104,281 @@
     </div>
 </div>
 
-<!-- Add Attribute Modal Placeholder -->
-<div id="addAttributeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+<!-- Add Attribute Modal -->
+<div id="addAttributeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-10 mx-auto p-5 border max-w-2xl shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Add Custom Attribute</h3>
-            <p class="text-sm text-gray-500">This feature will be implemented in the next version.</p>
-            <div class="flex justify-end mt-6">
-                <button type="button" onclick="hideAddAttributeModal()" 
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
-                    Close
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-medium text-gray-900">Add Custom Attribute</h3>
+                <button type="button" onclick="hideAddAttributeModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
             </div>
+            
+            <form id="addAttributeForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="attribute_key" class="block text-sm font-medium text-gray-700">Attribute Key *</label>
+                        <input type="text" id="attribute_key" name="key" required 
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                               pattern="^[a-z0-9_]+$" title="Only lowercase letters, numbers, and underscores"
+                               onblur="validateAttributeKey(this.value)">
+                        <p class="mt-1 text-xs text-gray-500">Internal identifier (lowercase, no spaces)</p>
+                    </div>
+                    
+                    <div>
+                        <label for="display_name" class="block text-sm font-medium text-gray-700">Display Name *</label>
+                        <input type="text" id="display_name" name="display_name" required 
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">Human-readable name</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="attribute_type" class="block text-sm font-medium text-gray-700">Attribute Type *</label>
+                        <select id="attribute_type" name="type" required onchange="handleAttributeTypeChange()"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Select type...</option>
+                            <option value="text">Text</option>
+                            <option value="textarea">Textarea</option>
+                            <option value="number">Number</option>
+                            <option value="boolean">Boolean (Yes/No)</option>
+                            <option value="date">{{ 'fields.date'|trans({}, 'admin') }}</option>
+                            <option value="select">Select (Dropdown)</option>
+                            <option value="file">File Upload</option>
+                            <option value="json">JSON Data</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="display_order" class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" id="display_order" name="display_order" min="0" value="0"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">Order in forms (0 = first)</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">{{ 'fields.description'|trans({}, 'admin') }}</label>
+                    <textarea id="description" name="description" rows="2"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <p class="mt-1 text-xs text-gray-500">Optional help text for users</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="required" name="required" value="1"
+                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="required" class="ml-2 block text-sm text-gray-900">Required</label>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Must be filled by users</p>
+                    </div>
+                    
+                    <div>
+                        <label for="default_value" class="block text-sm font-medium text-gray-700">Default Value</label>
+                        <input type="text" id="default_value" name="default_value"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">Pre-filled value</p>
+                    </div>
+                </div>
+                
+                <!-- Select Options (shown only for select type) -->
+                <div id="select_options_section" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700">Select Options</label>
+                    <div id="select_options_container" class="mt-2 space-y-2">
+                        <!-- Options will be added dynamically -->
+                    </div>
+                    <button type="button" onclick="addSelectOption()" 
+                            class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
+                        <svg class="-ml-0.5 mr-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add Option
+                    </button>
+                </div>
+                
+                <!-- File Configuration (shown only for file type) -->
+                <div id="file_config_section" class="hidden">
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">File Configuration</h4>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Allowed File Types</label>
+                            <div class="space-y-3">
+                                {% set mimeTypes = {
+                                    'Images': {
+                                        'image/jpeg': 'JPEG Image (.jpg, .jpeg)',
+                                        'image/png': 'PNG Image (.png)',
+                                        'image/gif': 'GIF Image (.gif)',
+                                        'image/webp': 'WebP Image (.webp)',
+                                        'image/svg+xml': 'SVG Image (.svg)'
+                                    },
+                                    'Documents': {
+                                        'application/pdf': 'PDF Document (.pdf)',
+                                        'application/msword': 'Word Document (.doc)',
+                                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word Document (.docx)',
+                                        'text/plain': 'Text File (.txt)'
+                                    },
+                                    'Archives': {
+                                        'application/zip': 'ZIP Archive (.zip)',
+                                        'application/vnd.rar': 'RAR Archive (.rar)'
+                                    }
+                                } %}
+                                
+                                {% for category, types in mimeTypes %}
+                                    <div class="border rounded-lg p-3">
+                                        <div class="flex items-center mb-2">
+                                            <input type="checkbox" id="category_{{ category|lower }}" class="mime-category-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                            <label for="category_{{ category|lower }}" class="ml-2 text-sm font-medium text-gray-700">{{ category }}</label>
+                                        </div>
+                                        <div class="ml-6 grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            {% for mimeType, description in types %}
+                                                <label class="flex items-center">
+                                                    <input type="checkbox" name="allowed_mime_types[]" value="{{ mimeType }}" 
+                                                           class="mime-type-checkbox category-{{ category|lower }} h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                                    <span class="ml-2 text-sm text-gray-600">{{ description }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="max_file_size" class="block text-sm font-medium text-gray-700">Max File Size (MB)</label>
+                            <input type="number" id="max_file_size" name="max_file_size" min="0.1" max="100" step="0.1" value="5"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <p class="mt-1 text-xs text-gray-500">Maximum file size allowed in megabytes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Validation Rules -->
+                <div id="validation_section" class="border-t pt-4">
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">Validation Rules (Optional)</h4>
+                    
+                    <div id="text_validation" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="min_length" class="block text-sm font-medium text-gray-700">Min Length</label>
+                            <input type="number" id="min_length" name="min_length" min="0"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="max_length" class="block text-sm font-medium text-gray-700">Max Length</label>
+                            <input type="number" id="max_length" name="max_length" min="0"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    
+                    <div id="number_validation" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="min_value" class="block text-sm font-medium text-gray-700">Min Value</label>
+                            <input type="number" id="min_value" name="min_value" step="any"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="max_value" class="block text-sm font-medium text-gray-700">Max Value</label>
+                            <input type="number" id="max_value" name="max_value" step="any"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-6 border-t">
+                    <button type="button" onclick="hideAddAttributeModal()" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700">
+                        Add Attribute
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <script>
+let selectOptionCounter = 0;
+const existingAttributeKeys = [
+    {% for attribute in userType.attributes %}
+        '{{ attribute.attributeKey }}'{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
 function showAddAttributeModal() {
     document.getElementById('addAttributeModal').classList.remove('hidden');
+    resetForm();
 }
 
 function hideAddAttributeModal() {
     document.getElementById('addAttributeModal').classList.add('hidden');
+    resetForm();
+}
+
+function resetForm() {
+    document.getElementById('addAttributeForm').reset();
+    document.getElementById('select_options_section').classList.add('hidden');
+    document.getElementById('file_config_section').classList.add('hidden');
+    document.getElementById('text_validation').classList.add('hidden');
+    document.getElementById('number_validation').classList.add('hidden');
+    document.getElementById('select_options_container').innerHTML = '';
+    selectOptionCounter = 0;
+}
+
+function handleAttributeTypeChange() {
+    const type = document.getElementById('attribute_type').value;
+    
+    // Hide all conditional sections
+    document.getElementById('select_options_section').classList.add('hidden');
+    document.getElementById('file_config_section').classList.add('hidden');
+    document.getElementById('text_validation').classList.add('hidden');
+    document.getElementById('number_validation').classList.add('hidden');
+    
+    // Show relevant sections based on type
+    if (type === 'select') {
+        document.getElementById('select_options_section').classList.remove('hidden');
+        if (document.getElementById('select_options_container').children.length === 0) {
+            addSelectOption();
+            addSelectOption();
+        }
+    } else if (type === 'file') {
+        document.getElementById('file_config_section').classList.remove('hidden');
+    } else if (type === 'text' || type === 'textarea') {
+        document.getElementById('text_validation').classList.remove('hidden');
+    } else if (type === 'number') {
+        document.getElementById('number_validation').classList.remove('hidden');
+    }
+}
+
+function addSelectOption() {
+    const container = document.getElementById('select_options_container');
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'flex items-center space-x-2';
+    optionDiv.innerHTML = `
+        <input type="text" name="option_values[]" placeholder="Option value" required
+               class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+        <input type="text" name="option_labels[]" placeholder="Option label" required
+               class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+        <button type="button" onclick="removeSelectOption(this)" 
+                class="text-red-600 hover:text-red-900 p-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        </button>
+    `;
+    container.appendChild(optionDiv);
+    selectOptionCounter++;
+}
+
+function removeSelectOption(button) {
+    button.parentElement.remove();
 }
 
 function deleteAttribute(attributeId) {
@@ -126,8 +386,211 @@ function deleteAttribute(attributeId) {
         return;
     }
     
-    // This feature will be implemented in the next version
-    alert('Delete functionality will be implemented in the next version.');
+    fetch(`/admin/userplus/user-type-attributes/${attributeId}/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove the attribute from the UI
+            const attributeElement = document.querySelector(`[data-attribute-id="${attributeId}"]`);
+            if (attributeElement) {
+                attributeElement.remove();
+            }
+            showNotification('Attribute deleted successfully', 'success');
+            
+            // Check if there are no attributes left
+            const remainingAttributes = document.querySelectorAll('.attribute-item');
+            if (remainingAttributes.length === 0) {
+                location.reload(); // Reload to show the "no attributes" message
+            }
+        } else {
+            showNotification(data.message || 'Failed to delete attribute', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred while deleting the attribute', 'error');
+    });
+}
+
+// Handle form submission
+document.getElementById('addAttributeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {};
+    
+    // Convert FormData to object
+    for (let [key, value] of formData.entries()) {
+        if (key.endsWith('[]')) {
+            // Handle arrays (like select options)
+            const arrayKey = key.slice(0, -2);
+            if (!data[arrayKey]) data[arrayKey] = [];
+            data[arrayKey].push(value);
+        } else {
+            data[key] = value;
+        }
+    }
+    
+    // Build validation rules object
+    const validationRules = {};
+    const type = data.type;
+    
+    if (type === 'text' || type === 'textarea') {
+        if (data.min_length) validationRules.min_length = parseInt(data.min_length);
+        if (data.max_length) validationRules.max_length = parseInt(data.max_length);
+    } else if (type === 'number') {
+        if (data.min_value) validationRules.min_value = parseFloat(data.min_value);
+        if (data.max_value) validationRules.max_value = parseFloat(data.max_value);
+    } else if (type === 'file') {
+        if (data.allowed_mime_types && data.allowed_mime_types.length > 0) {
+            validationRules.allowed_mime_types = data.allowed_mime_types;
+        }
+        if (data.max_file_size) {
+            // Convert MB to bytes
+            validationRules.max_size = parseFloat(data.max_file_size) * 1024 * 1024;
+        }
+    }
+    
+    // Build options object for select type
+    let options = null;
+    if (type === 'select' && data.option_values && data.option_labels) {
+        options = {};
+        for (let i = 0; i < data.option_values.length; i++) {
+            if (data.option_values[i] && data.option_labels[i]) {
+                options[data.option_values[i]] = data.option_labels[i];
+            }
+        }
+    }
+    
+    // Prepare the payload
+    const payload = {
+        key: data.key,
+        display_name: data.display_name,
+        type: data.type,
+        required: data.required === '1',
+        default_value: data.default_value || null,
+        description: data.description || null,
+        validation_rules: Object.keys(validationRules).length > 0 ? validationRules : null,
+        options: options,
+        display_order: parseInt(data.display_order) || 0
+    };
+    
+    // Submit to server
+    fetch(`/admin/userplus/user-types/{{ userType.id }}/attributes/add`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Attribute added successfully', 'success');
+            hideAddAttributeModal();
+            location.reload(); // Reload to show the new attribute
+        } else {
+            showNotification(data.message || 'Failed to add attribute', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred while adding the attribute', 'error');
+    });
+});
+
+function validateAttributeKey(key) {
+    const input = document.getElementById('attribute_key');
+    const keyError = document.getElementById('key_error');
+    
+    // Remove existing error
+    if (keyError) {
+        keyError.remove();
+    }
+    
+    if (key && existingAttributeKeys.includes(key)) {
+        const errorDiv = document.createElement('p');
+        errorDiv.id = 'key_error';
+        errorDiv.className = 'mt-1 text-xs text-red-600';
+        errorDiv.textContent = 'This attribute key already exists for this user type';
+        input.parentNode.appendChild(errorDiv);
+        input.setCustomValidity('Attribute key already exists');
+    } else {
+        input.setCustomValidity('');
+    }
+}
+
+// Handle MIME type category checkboxes
+document.addEventListener('DOMContentLoaded', function() {
+    // Category checkbox handlers
+    document.querySelectorAll('.mime-category-checkbox').forEach(categoryCheckbox => {
+        categoryCheckbox.addEventListener('change', function() {
+            const category = this.id.replace('category_', '');
+            const categoryCheckboxes = document.querySelectorAll(`.category-${category}`);
+            
+            categoryCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    });
+    
+    // Individual MIME type checkbox handlers
+    document.querySelectorAll('.mime-type-checkbox').forEach(mimeCheckbox => {
+        mimeCheckbox.addEventListener('change', function() {
+            const category = Array.from(this.classList).find(cls => cls.startsWith('category-')).replace('category-', '');
+            const categoryCheckbox = document.getElementById(`category_${category}`);
+            const categoryMimeCheckboxes = document.querySelectorAll(`.category-${category}`);
+            
+            // Update category checkbox based on individual selections
+            const checkedCount = Array.from(categoryMimeCheckboxes).filter(cb => cb.checked).length;
+            const totalCount = categoryMimeCheckboxes.length;
+            
+            if (checkedCount === 0) {
+                categoryCheckbox.checked = false;
+                categoryCheckbox.indeterminate = false;
+            } else if (checkedCount === totalCount) {
+                categoryCheckbox.checked = true;
+                categoryCheckbox.indeterminate = false;
+            } else {
+                categoryCheckbox.checked = false;
+                categoryCheckbox.indeterminate = true;
+            }
+        });
+    });
+});
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg ${
+        type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 
+        'bg-red-100 text-red-800 border border-red-200'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${type === 'success' ? 
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' :
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                }
+            </svg>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 </script>
 {% endblock %}

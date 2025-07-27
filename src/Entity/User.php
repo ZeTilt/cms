@@ -50,6 +50,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserAttribute::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $userAttributes;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $metadata = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -321,5 +324,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function hasAllRequiredAttributes(): bool
     {
         return empty($this->getMissingRequiredAttributes());
+    }
+
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(?array $metadata): static
+    {
+        $this->metadata = $metadata;
+        return $this;
+    }
+
+    public function getMetadataValue(string $key): mixed
+    {
+        return $this->metadata[$key] ?? null;
+    }
+
+    public function setMetadataValue(string $key, mixed $value): static
+    {
+        if ($this->metadata === null) {
+            $this->metadata = [];
+        }
+        $this->metadata[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * Get username by concatenating first name and last name
+     */
+    public function getUsername(): string
+    {
+        return trim($this->firstName . ' ' . $this->lastName);
     }
 }

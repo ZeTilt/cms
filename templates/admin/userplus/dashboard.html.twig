@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}User Management Dashboard - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'dashboard.title'|trans({}, 'userplus') }} - ZeTilt CMS{% endblock %}
 
 {% block content %}
 <!-- Header -->
@@ -8,8 +8,8 @@
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">User Management Dashboard</h1>
-                <p class="mt-1 text-sm text-gray-500">Manage user types, custom attributes, and user assignments</p>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'dashboard.title'|trans({}, 'userplus') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ 'dashboard.subtitle'|trans({}, 'userplus') }}</p>
             </div>
             <div class="flex space-x-3">
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
@@ -17,14 +17,14 @@
                         <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
-                        Manage User Types
+                        {{ 'dashboard.manage_user_types'|trans({}, 'userplus') }}
                     </a>
                 {% endif %}
                 <a href="{{ path('admin_userplus_users') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
                     </svg>
-                    Manage Users
+                    {{ 'dashboard.manage_users'|trans({}, 'userplus') }}
                 </a>
             </div>
         </div>
@@ -54,7 +54,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'dashboard.total_users'|trans({}, 'userplus') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ totalUsers }}</dd>
                         </dl>
                     </div>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Active Users</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'dashboard.active_users'|trans({}, 'userplus') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ totalActiveUsers }}</dd>
                         </dl>
                     </div>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">User Types</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'dashboard.user_types'|trans({}, 'userplus') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ statistics|length }}</dd>
                         </dl>
                     </div>
@@ -108,7 +108,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Attributes</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'dashboard.total_attributes'|trans({}, 'userplus') }}</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ totalAttributes }}</dd>
                         </dl>
                     </div>
@@ -120,8 +120,8 @@
     <!-- User Types Overview -->
     <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">User Types Overview</h3>
-            <p class="mt-1 text-sm text-gray-500">Breakdown of users by type and their configured attributes</p>
+            <h3 class="text-lg font-medium text-gray-900">{{ 'dashboard.user_types_overview'|trans({}, 'userplus') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ 'dashboard.user_types_description'|trans({}, 'userplus') }}</p>
         </div>
         <div class="p-6">
             {% if statistics is empty %}
@@ -129,20 +129,20 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No user types found</h3>
-                    <p class="mt-1 text-sm text-gray-500">Get started by creating your first user type.</p>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'dashboard.no_user_types'|trans({}, 'userplus') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'dashboard.get_started'|trans({}, 'userplus') }}</p>
                     {% if is_granted('ROLE_SUPER_ADMIN') %}
                         <div class="mt-6">
                             <a href="{{ path('admin_userplus_user_types_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
-                                Create User Type
+                                {{ 'dashboard.create_user_type'|trans({}, 'userplus') }}
                             </a>
                         </div>
                     {% else %}
                         <div class="mt-6 text-center">
-                            <p class="text-sm text-gray-500">Contact a Super Admin to create user types</p>
+                            <p class="text-sm text-gray-500">{{ 'dashboard.contact_super_admin'|trans({}, 'userplus') }}</p>
                         </div>
                     {% endif %}
                 </div>
@@ -163,22 +163,22 @@
                             
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Total Users</dt>
+                                    <dt class="text-sm font-medium text-gray-500">{{ 'dashboard.total_users'|trans({}, 'userplus') }}</dt>
                                     <dd class="text-lg font-semibold text-gray-900">{{ stat.totalUsers }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Active Users</dt>
+                                    <dt class="text-sm font-medium text-gray-500">{{ 'dashboard.active_users'|trans({}, 'userplus') }}</dt>
                                     <dd class="text-lg font-semibold text-green-600">{{ stat.activeUsers }}</dd>
                                 </div>
                             </div>
                             
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Attributes</dt>
+                                    <dt class="text-sm font-medium text-gray-500">{{ 'dashboard.attributes'|trans({}, 'userplus') }}</dt>
                                     <dd class="text-lg font-semibold text-blue-600">{{ stat.totalAttributes }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Required</dt>
+                                    <dt class="text-sm font-medium text-gray-500">{{ 'dashboard.required'|trans({}, 'userplus') }}</dt>
                                     <dd class="text-lg font-semibold text-orange-600">{{ stat.requiredAttributes }}</dd>
                                 </div>
                             </div>
@@ -186,15 +186,15 @@
                             {% if is_granted('ROLE_SUPER_ADMIN') %}
                                 <div class="flex space-x-2">
                                     <a href="{{ path('admin_userplus_user_types_edit', {id: stat.userType.id}) }}" class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                        Edit Type
+                                        {{ 'dashboard.modify_type'|trans({}, 'userplus') }}
                                     </a>
                                     <a href="{{ path('admin_userplus_user_type_attributes', {id: stat.userType.id}) }}" class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                        Attributes
+                                        {{ 'dashboard.attributes'|trans({}, 'userplus') }}
                                     </a>
                                 </div>
                             {% else %}
                                 <div class="text-center text-sm text-gray-500">
-                                    View only - Contact Super Admin to modify types
+                                    {{ 'dashboard.readonly_notice'|trans({}, 'userplus') }}
                                 </div>
                             {% endif %}
                         </div>

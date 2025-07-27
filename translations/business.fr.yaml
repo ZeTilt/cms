@@ -1,0 +1,48 @@
+# Module Business - Français
+title: "Profils Business"
+subtitle: "Configurez votre profil métier spécifique"
+
+# Clés avec préfixe business pour compatibilité template
+business:
+  title: "Profils Business"
+  subtitle: "Configurez votre profil métier spécifique"
+  breadcrumb:
+    business: "Business"
+  profile:
+    title: "Configuration du Profil"
+    business_info: "Informations Business"
+    business_info_desc: "Configurez les détails de votre entreprise"
+    custom_fields: "Champs Personnalisés"
+    custom_fields_desc: "Ajoutez des champs spécifiques à votre métier"
+    templates: "Modèles"
+    templates_desc: "Personnalisez l'apparence de votre site"
+  stats:
+    total_users: "Total Utilisateurs"
+    active_modules: "Modules Actifs"
+    total_content: "Total Contenu"
+    site_status: "Statut du Site"
+  coming_soon:
+    title: "Bientôt Disponible"
+    description: "Les fonctionnalités avancées de business seront disponibles prochainement"
+
+breadcrumb:
+  business: "Business"
+
+profile:
+  title: "Configuration du Profil"
+  business_info: "Informations Business"
+  business_info_desc: "Configurez les détails de votre entreprise"
+  custom_fields: "Champs Personnalisés"
+  custom_fields_desc: "Ajoutez des champs spécifiques à votre métier"
+  templates: "Modèles"
+  templates_desc: "Personnalisez l'apparence de votre site"
+
+stats:
+  total_users: "Total Utilisateurs"
+  active_modules: "Modules Actifs"
+  total_content: "Total Contenu"
+  site_status: "Statut du Site"
+
+coming_soon:
+  title: "Bientôt Disponible"
+  description: "Les fonctionnalités avancées de business seront disponibles prochainement"

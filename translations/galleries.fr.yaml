@@ -1,0 +1,67 @@
+# Module Galleries - Français
+title: "Gestion des Galeries"
+subtitle: "Organisez vos images et galeries photo"
+
+breadcrumb:
+  galleries: "Galeries"
+  images: "Images"
+  create: "Créer une galerie"
+  edit: "Modifier la galerie"
+
+list:
+  title: "Mes Galeries"
+  no_galleries: "Aucune galerie trouvée"
+  create_first: "Créer votre première galerie"
+
+create:
+  title: "Créer une Galerie"
+  success: "Galerie créée avec succès"
+
+edit:
+  title: "Modifier la Galerie"
+  success: "Galerie modifiée avec succès"
+
+fields:
+  name: "Nom de la galerie"
+  description: "Description"
+  cover_image: "Image de couverture"
+  is_public: "Galerie publique"
+  is_featured: "Galerie à la une"
+  tags: "Étiquettes"
+  client_access: "Accès client"
+  password: "Mot de passe"
+
+images:
+  title: "Images"
+  upload: "Envoyer des images"
+  select_all: "Tout sélectionner"
+  delete_selected: "Supprimer la sélection"
+  download_selected: "Télécharger la sélection"
+  set_cover: "Définir comme couverture"
+  alt_text: "Texte alternatif"
+  caption: "Légende"
+
+actions:
+  create_gallery: "Créer une Galerie"
+  view_gallery: "Voir la galerie"
+  edit_gallery: "Modifier"
+  delete_gallery: "Supprimer"
+  share_gallery: "Partager"
+
+view_mode:
+  title: "Mode d'affichage"
+  grid: "Grille"
+  table: "Tableau"
+
+client:
+  access_code: "Code d'accès"
+  password_required: "Mot de passe requis"
+  download_all: "Télécharger tout"
+  slideshow: "Diaporama"
+
+storage:
+  used: "Stockage utilisé"
+
+status:
+  private: "Privée"
+  public: "Publique"

@@ -1,0 +1,163 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'attributes.title'|trans({}, 'events') }} - {{ event.title }} - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'attributes.title'|trans({}, 'events') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ event.title }} - {{ 'attributes.subtitle'|trans({}, 'events') }}</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ path('admin_events_edit', {'id': event.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5 5-5m6 10l-5-5 5-5"></path>
+                    </svg>
+                    {{ 'actions.back_to_event'|trans({}, 'events') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Attribute Form -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">{{ 'attributes.add_new'|trans({}, 'events') }}</h2>
+        </div>
+        <div class="p-6">
+            <form method="POST" action="{{ path('admin_events_attributes_add', {'id': event.id}) }}">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="attribute_key" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ 'attributes.key'|trans({}, 'events') }} *
+                        </label>
+                        <input type="text" 
+                               id="attribute_key" 
+                               name="attribute_key" 
+                               required
+                               placeholder="{{ 'attributes.key_placeholder'|trans({}, 'events') }}"
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label for="attribute_type" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ 'fields.type'|trans({}, 'admin') }}
+                        </label>
+                        <select id="attribute_type" 
+                                name="attribute_type" 
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="text">{{ 'types.text'|trans({}, 'admin') }}</option>
+                            <option value="textarea">{{ 'types.textarea'|trans({}, 'admin') }}</option>
+                            <option value="number">{{ 'types.number'|trans({}, 'admin') }}</option>
+                            <option value="boolean">{{ 'types.boolean'|trans({}, 'admin') }}</option>
+                            <option value="date">{{ 'fields.date'|trans({}, 'admin') }}</option>
+                            <option value="select">{{ 'types.select'|trans({}, 'admin') }}</option>
+                            <option value="json">{{ 'types.json'|trans({}, 'admin') }}</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="attribute_value" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ 'attributes.initial_value'|trans({}, 'events') }}
+                        </label>
+                        <input type="text" 
+                               id="attribute_value" 
+                               name="attribute_value" 
+                               placeholder="{{ 'attributes.initial_value_placeholder'|trans({}, 'events') }}"
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        {{ 'attributes.add'|trans({}, 'events') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Attributes -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">{{ 'attributes.current'|trans({}, 'events') }}</h2>
+        </div>
+        <div class="p-6">
+            {% if event.eventAttributes|length > 0 %}
+                <div class="space-y-4">
+                    {% for attribute in event.eventAttributes %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <h3 class="text-sm font-medium text-gray-900">{{ attribute.attributeKey }}</h3>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ attribute.attributeType }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="text-sm text-gray-600 mb-2">
+                                        <strong>{{ 'attributes.current_value'|trans({}, 'events') }}:</strong>
+                                        {% set value = attribute.typedValue %}
+                                        {% if value is same as(true) %}
+                                            <span class="text-green-600">✓ {{ 'values.yes'|trans({}, 'admin') }}</span>
+                                        {% elseif value is same as(false) %}
+                                            <span class="text-red-600">✗ {{ 'values.no'|trans({}, 'admin') }}</span>
+                                        {% elseif value is null %}
+                                            <span class="text-gray-400 italic">{{ 'values.not_set'|trans({}, 'admin') }}</span>
+                                        {% elseif attribute.attributeType == 'date' and value %}
+                                            {{ value|date('Y-m-d H:i') }}
+                                        {% elseif attribute.attributeType == 'json' and value %}
+                                            <code class="bg-gray-100 px-2 py-1 rounded">{{ value|json_encode }}</code>
+                                        {% else %}
+                                            {{ value|slice(0, 100) }}{% if value|length > 100 %}...{% endif %}
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="text-xs text-gray-500">
+                                        {{ 'fields.created'|trans({}, 'admin') }}: {{ attribute.createdAt|date('Y-m-d H:i') }}
+                                        {% if attribute.updatedAt %}
+                                            | {{ 'fields.updated'|trans({}, 'admin') }}: {{ attribute.updatedAt|date('Y-m-d H:i') }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="ml-4">
+                                    <form method="POST" 
+                                          action="{{ path('admin_events_attributes_delete', {'id': event.id, 'attributeId': attribute.id}) }}" 
+                                          onsubmit="return confirm('{{ 'messages.confirm_delete_attribute'|trans({}, 'events') }}')"
+                                          class="inline">
+                                        <button type="submit" 
+                                                class="text-red-600 hover:text-red-800 text-sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'attributes.no_attributes'|trans({}, 'events') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                        {{ 'attributes.no_attributes_help'|trans({}, 'events') }}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

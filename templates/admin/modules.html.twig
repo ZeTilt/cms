@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Module Management - Admin{% endblock %}
+{% block title %}{{ 'modules.title'|trans({}, 'admin') }} - Admin{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -13,7 +13,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">Module Management</span>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ 'modules.title'|trans({}, 'admin') }}</span>
         </div>
     </li>
 {% endblock %}
@@ -24,11 +24,11 @@
     <div class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex items-center space-x-2 sm:space-x-4">
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                Module Management
+                {{ 'modules.title'|trans({}, 'admin') }}
             </h1>
         </div>
         <p class="mt-2 text-sm text-gray-600">
-            Activate or deactivate modules to control which features are available in the CMS.
+            Activez ou désactivez les modules pour contrôler quelles fonctionnalités sont disponibles dans le CMS.
         </p>
     </div>
 </div>
@@ -54,14 +54,14 @@
                                                 <div class="min-w-0 flex-1">
                                                     <div class="focus:outline-none">
                                                         <p class="text-sm font-medium text-gray-900">{{ module.displayName }}</p>
-                                                        <p class="text-sm text-gray-500">{{ module.description ?: 'No description available' }}</p>
+                                                        <p class="text-sm text-gray-500">{{ module.description ?: ('modules.no_description'|trans({}, 'admin')) }}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="flex items-center space-x-2 module-actions">
                                                 {% if module.active %}
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                        Active
+                                                        {{ 'status.active'|trans({}, 'admin') }}
                                                     </span>
                                                     <button 
                                                         type="button"
@@ -70,11 +70,11 @@
                                                         data-module="{{ module.name }}"
                                                         data-action="deactivate"
                                                     >
-                                                        Deactivate
+                                                        {{ 'actions.deactivate'|trans({}, 'admin') }}
                                                     </button>
                                                 {% else %}
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                        Inactive
+                                                        {{ 'status.inactive'|trans({}, 'admin') }}
                                                     </span>
                                                     <button 
                                                         type="button"
@@ -83,7 +83,7 @@
                                                         data-module="{{ module.name }}"
                                                         data-action="activate"
                                                     >
-                                                        Activate
+                                                        {{ 'actions.activate'|trans({}, 'admin') }}
                                                     </button>
                                                 {% endif %}
                                             </div>
@@ -103,7 +103,7 @@
 function toggleModule(moduleName, activate) {
     const action = activate ? 'activate' : 'deactivate';
     
-    if (!confirm(`Are you sure you want to ${action} the ${moduleName} module?`)) {
+    if (!confirm(`Êtes-vous sûr de vouloir ${action === 'activate' ? 'activer' : 'désactiver'} le module ${moduleName} ?`)) {
         return;
     }
     
@@ -138,7 +138,7 @@ function toggleModule(moduleName, activate) {
                 window.location.reload();
             }, 1500);
         } else {
-            alert('Error: ' + (data.message || 'Unknown error'));
+            alert('{{ 'errors.operation_error'|trans({}, 'admin') }} ' + (data.message || '{{ 'errors.unknown_error'|trans({}, 'admin') }}'));
             // Re-enable buttons
             buttons.forEach(btn => {
                 btn.disabled = false;
@@ -147,7 +147,7 @@ function toggleModule(moduleName, activate) {
         }
     })
     .catch(error => {
-        alert('Network error: ' + error.message);
+        alert('Erreur réseau: ' + error.message);
         // Re-enable buttons
         buttons.forEach(btn => {
             btn.disabled = false;

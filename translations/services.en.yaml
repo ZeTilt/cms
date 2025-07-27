@@ -1,0 +1,41 @@
+# Services Module - English
+title: "Service Management"
+subtitle: "Showcase your services and offers"
+
+view_mode:
+  title: "View mode"
+  list: "List"
+  table: "Table"
+
+breadcrumb:
+  services: "Services"
+  packages: "Packages"
+  create: "Create service"
+  edit: "Edit service"
+
+list:
+  title: "My Services"
+  no_services: "No services found"
+
+create:
+  title: "Create Service"
+  success: "Service created successfully"
+
+edit:
+  title: "Edit Service"
+  success: "Service updated successfully"
+
+fields:
+  name: "Service name"
+  description: "Description"
+  price: "Price"
+  duration: "Duration"
+  features: "Features"
+  is_active: "Active service"
+  category: "Category"
+
+actions:
+  create_service: "Create Service"
+  view_service: "View service"
+  edit_service: "Edit"
+  delete_service: "Delete"

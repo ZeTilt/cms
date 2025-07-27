@@ -1,0 +1,225 @@
+# Events Module - English
+title: "Event Management"
+subtitle: "Organize and manage your events"
+
+view_mode:
+  title: "View mode"
+  list: "List"
+  table: "Table"
+
+breadcrumb:
+  events: "Events"
+  calendar: "Calendar"
+  create: "Create event"
+  edit: "Edit event"
+  registrations: "Registrations"
+
+dashboard:
+  title: "Events Dashboard"
+  upcoming_events: "Upcoming events"
+  past_events: "Past events"
+  total_registrations: "Total registrations"
+  pending_registrations: "Pending registrations"
+
+list:
+  title: "Event List"
+  no_events: "No events found"
+  create_first: "Create your first event"
+  
+header:
+  title: "Title"
+  date: "Date"
+  location: "Location"
+  capacity: "Capacity"
+  registrations: "Registrations"
+  status: "Status"
+  actions: "Actions"
+  organizer: "Organizer"
+
+create:
+  title: "Create Event"
+  subtitle: "Add a new event to your calendar"
+  success: "Event created successfully"
+
+edit:
+  title: "Edit Event"
+  subtitle: "Modify this event details"
+  success: "Event updated successfully"
+
+delete:
+  confirm: "Are you sure you want to delete this event?"
+  success: "Event deleted successfully"
+  warning: "Warning: this event has registered participants"
+
+fields:
+  title: "Event title"
+  title_help: "The name of your event"
+  description: "Description"
+  description_help: "Describe your event in detail"
+  start_date: "Start date"
+  end_date: "End date"
+  start_time: "Start time"
+  end_time: "End time"
+  location: "Location"
+  location_help: "Where the event takes place"
+  address: "Address"
+  address_help: "Full address of the venue"
+  capacity: "Maximum capacity"
+  capacity_help: "Maximum number of participants (0 = unlimited)"
+  price: "Price"
+  price_help: "Participation fee (0 = free)"
+  currency: "Currency"
+  registration_required: "Registration required"
+  registration_deadline: "Registration deadline"
+  featured_image: "Featured image"
+  category: "Category"
+  tags: "Tags"
+  organizer: "Organizer"
+  contact_email: "Contact email"
+  contact_phone: "Contact phone"
+  website_url: "Website"
+  is_public: "Public event"
+  is_featured: "Featured event"
+  status: "Status"
+
+status:
+  draft: "Draft"
+  published: "Published"
+  cancelled: "Cancelled"
+  postponed: "Postponed"
+  full: "Full"
+
+categories:
+  conference: "Conference"
+  workshop: "Workshop"
+  training: "Training"
+  meeting: "Meeting"
+  seminar: "Seminar"
+  webinar: "Webinar"
+  social: "Social event"
+  sport: "Sport"
+  culture: "Culture"
+  other: "Other"
+
+registration:
+  title: "Registration Management"
+  list_title: "Participant List"
+  register: "Register"
+  unregister: "Unregister"
+  registered: "Registered"
+  unregistered: "Unregistered"
+  pending: "Pending"
+  confirmed: "Confirmed"
+  cancelled: "Cancelled"
+  waitlist: "Waitlist"
+  available_spots: "Available spots"
+  waiting_list_position: "Waitlist position"
+  registration_closed: "Registration closed"
+  registration_full: "Event full"
+  registration_success: "Registration successful"
+  unregistration_success: "Unregistration successful"
+  
+participant:
+  name: "Participant name"
+  email: "Email"
+  phone: "Phone"
+  registered_at: "Registered at"
+  status: "Status"
+  notes: "Notes"
+  export_list: "Export list"
+  send_email: "Send email"
+
+calendar:
+  title: "Event Calendar"
+  month_view: "Month view"
+  week_view: "Week view"
+  day_view: "Day view"
+  list_view: "List view"
+  today: "Today"
+  month: "Month"
+  week: "Week"
+  day: "Day"
+  events_on: "Events on"
+  no_events_today: "No events today"
+  
+actions:
+  create_event: "Create Event"
+  edit_event: "Edit"
+  view_event: "View event"
+  duplicate_event: "Duplicate"
+  delete_event: "Delete"
+  publish: "Publish"
+  unpublish: "Unpublish"
+  cancel: "Cancel"
+  postpone: "Postpone"
+  view_registrations: "View registrations"
+  export_registrations: "Export registrations"
+  send_reminders: "Send reminders"
+  clear_filters: "Clear"
+  previous: "Previous"
+  next: "Next"
+
+search:
+  placeholder: "Search events..."
+  by_title: "By title"
+  by_location: "By location"
+  by_date: "By date"
+  by_category: "By category"
+  
+filters:
+  all: "All events"
+  upcoming: "Upcoming"
+  past: "Past"
+  today: "Today"
+  this_week: "This week"
+  this_month: "This month"
+  published: "Published"
+  draft: "Drafts"
+  cancelled: "Cancelled"
+  apply: "Filter"
+  
+bulk_actions:
+  select_action: "Select action"
+  publish_selected: "Publish selected"
+  unpublish_selected: "Unpublish selected"
+  cancel_selected: "Cancel selected"
+  delete_selected: "Delete selected"
+  export_selected: "Export selected"
+  apply: "Apply"
+
+validation:
+  title_required: "Title is required"
+  start_date_required: "Start date is required"
+  end_date_after_start: "End date must be after start date"
+  capacity_positive: "Capacity must be a positive number"
+  price_positive: "Price must be a positive number"
+  email_invalid: "Invalid email address"
+  url_invalid: "Invalid URL"
+  registration_deadline_before_event: "Registration deadline must be before the event"
+
+notifications:
+  registration_confirmation: "Registration confirmation"
+  registration_reminder: "Event reminder"
+  event_cancelled: "Event cancelled"
+  event_updated: "Event updated"
+  waitlist_promotion: "Spot available"
+
+export:
+  participants: "Participants"
+  events: "Events"
+  format: "Format"
+  csv: "CSV"
+  excel: "Excel"
+  pdf: "PDF"
+  
+statistics:
+  total_events: "Total events"
+  total_participants: "Total participants"
+  average_attendance: "Average attendance"
+  popular_categories: "Popular categories"
+  monthly_trends: "Monthly trends"
+
+pagination:
+  page: "Page"
+  of: "of"
+  total_events: "total events"

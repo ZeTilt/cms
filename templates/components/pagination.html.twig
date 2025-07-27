@@ -15,7 +15,7 @@
                     <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
-                    Précédent
+                    {{ 'pagination.previous'|trans({}, 'admin') }}
                 </a>
             {% endif %}
         </div>
@@ -65,7 +65,7 @@
         <div class="-mt-px w-0 flex-1 flex justify-end">
             {% if current_page < total_pages %}
                 <a href="{{ path(route_name, route_params|default({})|merge({page: current_page + 1})) }}" class="border-t-2 border-transparent pt-4 pl-1 inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                    Suivant
+                    {{ 'pagination.next'|trans({}, 'admin') }}
                     <svg class="ml-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
@@ -75,7 +75,7 @@
     </nav>
     
     <div class="text-center mt-4 text-sm text-gray-500">
-        Page {{ current_page }} sur {{ total_pages }}
+        {{ 'pagination.page'|trans({}, 'admin') }} {{ current_page }} {{ 'pagination.of'|trans({}, 'admin') }} {{ total_pages }}
         {% if total_articles is defined %}
             ({{ total_articles }} article{{ total_articles > 1 ? 's' : '' }} au total)
         {% endif %}

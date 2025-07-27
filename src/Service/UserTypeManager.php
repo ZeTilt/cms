@@ -154,9 +154,9 @@ class UserTypeManager
                 'How would you prefer to be contacted?',
                 null,
                 [
-                    ['value' => 'email', 'label' => 'Email'],
-                    ['value' => 'phone', 'label' => 'Phone'],
-                    ['value' => 'sms', 'label' => 'SMS']
+                    'email' => 'Email',
+                    'phone' => 'Phone',
+                    'sms' => 'SMS'
                 ],
                 3
             );
@@ -195,12 +195,12 @@ class UserTypeManager
                 'Your main area of expertise',
                 null,
                 [
-                    ['value' => 'wedding', 'label' => 'Wedding Photography'],
-                    ['value' => 'portrait', 'label' => 'Portrait Photography'],
-                    ['value' => 'landscape', 'label' => 'Landscape Photography'],
-                    ['value' => 'commercial', 'label' => 'Commercial Photography'],
-                    ['value' => 'event', 'label' => 'Event Photography'],
-                    ['value' => 'fashion', 'label' => 'Fashion Photography']
+                    'wedding' => 'Wedding Photography',
+                    'portrait' => 'Portrait Photography',
+                    'landscape' => 'Landscape Photography',
+                    'commercial' => 'Commercial Photography',
+                    'event' => 'Event Photography',
+                    'fashion' => 'Fashion Photography'
                 ],
                 2
             );
@@ -278,13 +278,13 @@ class UserTypeManager
                 'Type of business or service you provide',
                 null,
                 [
-                    ['value' => 'catering', 'label' => 'Catering'],
-                    ['value' => 'decoration', 'label' => 'Decoration'],
-                    ['value' => 'music', 'label' => 'Music/DJ'],
-                    ['value' => 'venue', 'label' => 'Venue'],
-                    ['value' => 'flowers', 'label' => 'Flowers'],
-                    ['value' => 'transport', 'label' => 'Transportation'],
-                    ['value' => 'other', 'label' => 'Other']
+                    'catering' => 'Catering',
+                    'decoration' => 'Decoration',
+                    'music' => 'Music/DJ',
+                    'venue' => 'Venue',
+                    'flowers' => 'Flowers',
+                    'transport' => 'Transportation',
+                    'other' => 'Other'
                 ],
                 2
             );

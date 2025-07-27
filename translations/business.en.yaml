@@ -1,0 +1,48 @@
+# Business Module - English
+title: "Business Profiles"
+subtitle: "Configure your specific business profile"
+
+# Keys with business prefix for template compatibility
+business:
+  title: "Business Profiles"
+  subtitle: "Configure your specific business profile"
+  breadcrumb:
+    business: "Business"
+  profile:
+    title: "Profile Configuration"
+    business_info: "Business Information"
+    business_info_desc: "Configure your company details"
+    custom_fields: "Custom Fields"
+    custom_fields_desc: "Add fields specific to your business"
+    templates: "Templates"
+    templates_desc: "Customize your site appearance"
+  stats:
+    total_users: "Total Users"
+    active_modules: "Active Modules"
+    total_content: "Total Content"
+    site_status: "Site Status"
+  coming_soon:
+    title: "Coming Soon"
+    description: "Advanced business features will be available soon"
+
+breadcrumb:
+  business: "Business"
+
+profile:
+  title: "Profile Configuration"
+  business_info: "Business Information"
+  business_info_desc: "Configure your company details"
+  custom_fields: "Custom Fields"
+  custom_fields_desc: "Add fields specific to your business"
+  templates: "Templates"
+  templates_desc: "Customize your site appearance"
+
+stats:
+  total_users: "Total Users"
+  active_modules: "Active Modules"
+  total_content: "Total Content"
+  site_status: "Site Status"
+
+coming_soon:
+  title: "Coming Soon"
+  description: "Advanced business features will be available soon"

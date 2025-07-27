@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}User Types Management - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'user_types.title'|trans({}, 'userplus') }} - ZeTilt CMS{% endblock %}
 
 {% block content %}
 <!-- Header -->
@@ -12,7 +12,7 @@
                     <ol role="list" class="flex items-center space-x-4">
                         <li>
                             <a href="{{ path('admin_userplus_dashboard') }}" class="text-gray-400 hover:text-gray-500">
-                                User Management
+                                {{ 'title'|trans({}, 'userplus') }}
                             </a>
                         </li>
                         <li>
@@ -20,13 +20,13 @@
                                 <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                                 </svg>
-                                <span class="ml-4 text-sm font-medium text-gray-500">User Types</span>
+                                <span class="ml-4 text-sm font-medium text-gray-500">Types d'Utilisateurs</span>
                             </div>
                         </li>
                     </ol>
                 </nav>
-                <h1 class="mt-2 text-3xl font-bold text-gray-900">User Types</h1>
-                <p class="mt-1 text-sm text-gray-500">Define user types and their custom attributes</p>
+                <h1 class="mt-2 text-3xl font-bold text-gray-900">Types d'Utilisateurs</h1>
+                <p class="mt-1 text-sm text-gray-500">Définissez les types d'utilisateurs et leurs attributs personnalisés</p>
             </div>
             {% if is_granted('ROLE_SUPER_ADMIN') %}
                 <div class="flex space-x-3">
@@ -34,7 +34,7 @@
                         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
-                        New User Type
+                        {{ 'user_types.new_type'|trans({}, 'userplus') }}
                     </a>
                 </div>
             {% endif %}
@@ -49,14 +49,14 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No user types</h3>
-            <p class="mt-1 text-sm text-gray-500">Get started by creating your first user type.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'user_types.no_types'|trans({}, 'userplus') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">Commencez par créer votre premier type d'utilisateur.</p>
             <div class="mt-6">
                 <a href="{{ path('admin_userplus_user_types_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    New User Type
+                    {{ 'user_types.new_type'|trans({}, 'userplus') }}
                 </a>
             </div>
         </div>
@@ -88,16 +88,16 @@
                                                 <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                                 </svg>
-                                                {{ userType.userCount }} users
+                                                {{ userType.userCount }} utilisateurs
                                             </p>
                                             <span class="mx-2">•</span>
                                             <p class="flex items-center">
                                                 <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
-                                                {{ userType.attributes.count }} attributes
+                                                {{ userType.attributes.count }} attributs
                                                 {% if userType.requiredAttributes.count > 0 %}
-                                                    ({{ userType.requiredAttributes.count }} required)
+                                                    ({{ userType.requiredAttributes.count }} requis)
                                                 {% endif %}
                                             </p>
                                         </div>
@@ -109,16 +109,16 @@
                                             <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
-                                            Attributes
+                                            Attributs
                                         </a>
                                         <a href="{{ path('admin_userplus_user_types_edit', {id: userType.id}) }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                                             <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                             </svg>
-                                            Edit
+                                            {{ 'actions.edit'|trans({}, 'admin') }}
                                         </a>
                                     {% else %}
-                                        <span class="text-sm text-gray-400">View only</span>
+                                        <span class="text-sm text-gray-400">{{ 'user_types.readonly'|trans({}, 'userplus') }}</span>
                                     {% endif %}
                                 </div>
                             </div>

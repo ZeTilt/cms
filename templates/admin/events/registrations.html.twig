@@ -1,0 +1,232 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Event Registrations - {{ event.title }} - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Event Registrations</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ event.title }} - Registration management</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ path('admin_events_edit', {'id': event.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5 5-5m6 10l-5-5 5-5"></path>
+                    </svg>
+                    Back to Event
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Info & Stats -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Event Information</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-indigo-600">{{ event.confirmedRegistrations|length }}</div>
+                    <div class="text-sm text-gray-500">Confirmed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-600">{{ event.waitingListRegistrations|length }}</div>
+                    <div class="text-sm text-gray-500">Waiting List</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-600">
+                        {% if event.maxParticipants %}
+                            {{ event.maxParticipants }}
+                        {% else %}
+                            ∞
+                        {% endif %}
+                    </div>
+                    <div class="text-sm text-gray-500">Max Capacity</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold {% if event.availableSpots == 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                        {% if event.availableSpots is not null %}
+                            {{ event.availableSpots }}
+                        {% else %}
+                            ∞
+                        {% endif %}
+                    </div>
+                    <div class="text-sm text-gray-500">Available Spots</div>
+                </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-center space-x-4 text-sm">
+                <span class="flex items-center">
+                    <span class="w-3 h-3 bg-indigo-500 rounded-full mr-2"></span>
+                    Accepts Registrations: 
+                    {% if event.acceptsRegistrations %}
+                        <span class="text-green-600 ml-1">Yes</span>
+                    {% else %}
+                        <span class="text-red-600 ml-1">No</span>
+                    {% endif %}
+                </span>
+                <span class="flex items-center">
+                    <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                    Requires Waiting List: 
+                    {% if event.requiresWaitingList %}
+                        <span class="text-yellow-600 ml-1">Yes</span>
+                    {% else %}
+                        <span class="text-green-600 ml-1">No</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Registration Form -->
+    {% if event.acceptsRegistrations %}
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Register New User</h2>
+        </div>
+        <div class="p-6">
+            <form method="POST" action="{{ path('admin_events_register', {'id': event.id}) }}">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2">
+                        <label for="user_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            Select User *
+                        </label>
+                        <select id="user_id" 
+                                name="user_id" 
+                                required
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">Choose a user...</option>
+                            {% for user in availableUsers %}
+                                <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                            Notes
+                        </label>
+                        <input type="text" 
+                               id="notes" 
+                               name="notes" 
+                               placeholder="Optional notes"
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Register User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Current Registrations -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Current Registrations</h2>
+        </div>
+        <div class="p-6">
+            {% if event.registrations|length > 0 %}
+                <div class="space-y-4">
+                    {% for registration in event.registrations %}
+                        <div class="border border-gray-200 rounded-lg p-4 {% if registration.status == 'cancelled' %}opacity-60{% endif %}">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <h3 class="text-sm font-medium text-gray-900">{{ registration.user.username }}</h3>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ registration.statusColor }}">
+                                            {{ registration.statusLabel }}
+                                        </span>
+                                        {% if registration.registeredAt %}
+                                            <span class="text-xs text-gray-500">
+                                                Registered: {{ registration.registeredAt|date('Y-m-d H:i') }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="text-sm text-gray-600 mb-2">
+                                        <strong>Email:</strong> {{ registration.user.email }}
+                                        {% if registration.user.userType %}
+                                            | <strong>Type:</strong> {{ registration.user.userType.name }}
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if registration.notes %}
+                                        <div class="text-sm text-gray-600 mb-2">
+                                            <strong>Notes:</strong> {{ registration.notes }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if registration.updatedAt %}
+                                        <div class="text-xs text-gray-500">
+                                            Last updated: {{ registration.updatedAt|date('Y-m-d H:i') }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="ml-4 flex items-center space-x-2">
+                                    <!-- Status Update Form -->
+                                    <form method="POST" 
+                                          action="{{ path('admin_events_registration_status', {'id': event.id, 'registrationId': registration.id}) }}" 
+                                          class="inline-flex items-center space-x-2">
+                                        <select name="status" 
+                                                class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
+                                            <option value="registered" {% if registration.status == 'registered' %}selected{% endif %}>Confirmed</option>
+                                            <option value="waiting_list" {% if registration.status == 'waiting_list' %}selected{% endif %}>Waiting List</option>
+                                            <option value="cancelled" {% if registration.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                            <option value="no_show" {% if registration.status == 'no_show' %}selected{% endif %}>No Show</option>
+                                        </select>
+                                        <button type="submit" 
+                                                class="text-xs bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700">
+                                            Update
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Delete Form -->
+                                    <form method="POST" 
+                                          action="{{ path('admin_events_registration_delete', {'id': event.id, 'registrationId': registration.id}) }}" 
+                                          onsubmit="return confirm('Are you sure you want to delete this registration?')"
+                                          class="inline">
+                                        <button type="submit" 
+                                                class="text-red-600 hover:text-red-800 text-sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No registrations</h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                        {% if event.acceptsRegistrations %}
+                            No one has registered for this event yet. Use the form above to register users.
+                        {% else %}
+                            This event does not accept registrations.
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

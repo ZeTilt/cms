@@ -1,0 +1,303 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    {% if isEdit %}
+        Edit Event: {{ event.title }} - ZeTilt CMS
+    {% else %}
+        New Event - ZeTilt CMS
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol role="list" class="flex items-center space-x-4">
+                <li>
+                    <a href="{{ path('admin_events_list') }}" class="text-gray-400 hover:text-gray-500">Events</a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="ml-4 text-sm font-medium text-gray-500">
+                            {% if isEdit %}Edit Event{% else %}New Event{% endif %}
+                        </span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <h1 class="mt-2 text-3xl font-bold text-gray-900">
+            {% if isEdit %}
+                Edit Event: {{ event.title }}
+            {% else %}
+                Create New Event
+            {% endif %}
+        </h1>
+    </div>
+
+    <form method="post" action="{{ path('admin_events_save') }}" class="space-y-8">
+        {% if isEdit %}
+            <input type="hidden" name="id" value="{{ event.id }}">
+        {% endif %}
+
+        <!-- Basic Information -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Basic Information</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" 
+                           name="title" 
+                           id="title" 
+                           value="{{ event.title ?? '' }}"
+                           required
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+
+                <div>
+                    <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
+                    <input type="text" 
+                           name="slug" 
+                           id="slug" 
+                           value="{{ event.slug ?? '' }}"
+                           required
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p class="mt-2 text-sm text-gray-500">URL-friendly version of the title</p>
+                </div>
+
+                <div>
+                    <label for="short_description" class="block text-sm font-medium text-gray-700">Short Description</label>
+                    <textarea name="short_description" 
+                              id="short_description" 
+                              rows="3"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ event.shortDescription ?? '' }}</textarea>
+                    <p class="mt-2 text-sm text-gray-500">Brief summary for listings and previews</p>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">{{ 'fields.description'|trans({}, 'admin') }}</label>
+                    <textarea name="description" 
+                              id="description" 
+                              rows="8"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ event.description ?? '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date and Time -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Date and Time</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date & Time</label>
+                        <input type="datetime-local" 
+                               name="start_date" 
+                               id="start_date" 
+                               value="{{ event.startDate ? event.startDate.format('Y-m-d\\TH:i') : '' }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+
+                    <div>
+                        <label for="end_date" class="block text-sm font-medium text-gray-700">End Date & Time</label>
+                        <input type="datetime-local" 
+                               name="end_date" 
+                               id="end_date" 
+                               value="{{ event.endDate ? event.endDate.format('Y-m-d\\TH:i') : '' }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Location</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700">Venue Name</label>
+                    <input type="text" 
+                           name="location" 
+                           id="location" 
+                           value="{{ event.location ?? '' }}"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                    <textarea name="address" 
+                              id="address" 
+                              rows="3"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ event.address ?? '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Event Settings</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <select name="status" 
+                                id="status" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="draft" {{ (event.status ?? 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="published" {{ (event.status ?? '') == 'published' ? 'selected' : '' }}>Published</option>
+                            <option value="cancelled" {{ (event.status ?? '') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                        <select name="type" 
+                                id="type" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="event" {{ (event.type ?? 'event') == 'event' ? 'selected' : '' }}>Event</option>
+                            <option value="meeting" {{ (event.type ?? '') == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                            <option value="conference" {{ (event.type ?? '') == 'conference' ? 'selected' : '' }}>Conference</option>
+                            <option value="workshop" {{ (event.type ?? '') == 'workshop' ? 'selected' : '' }}>Workshop</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="requires_registration" 
+                           name="requires_registration" 
+                           type="checkbox" 
+                           {{ event.requiresRegistration ?? false ? 'checked' : '' }}
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="requires_registration" class="ml-2 block text-sm text-gray-900">
+                        Requires Registration
+                    </label>
+                </div>
+
+                <div>
+                    <label for="max_participants" class="block text-sm font-medium text-gray-700">Maximum Participants</label>
+                    <input type="number" 
+                           name="max_participants" 
+                           id="max_participants" 
+                           value="{{ event.maxParticipants ?? '' }}"
+                           min="0"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p class="mt-2 text-sm text-gray-500">Leave empty for unlimited participants</p>
+                </div>
+
+                <div>
+                    <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
+                    <input type="text" 
+                           name="tags" 
+                           id="tags" 
+                           value="{{ event.tags ? event.tags|join(', ') : '' }}"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p class="mt-2 text-sm text-gray-500">Separate multiple tags with commas</p>
+                </div>
+            </div>
+        </div>
+
+        {% if isEdit %}
+        <!-- Custom Attributes -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900">Custom Attributes</h3>
+                <div class="flex space-x-2">
+                    <a href="{{ path('admin_events_attributes', {'id': event.id}) }}" 
+                       class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200">
+                        <svg class="-ml-1 mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Attributes
+                    </a>
+                    <a href="{{ path('admin_events_registrations', {'id': event.id}) }}" 
+                       class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-green-700 bg-green-100 hover:bg-green-200">
+                        <svg class="-ml-1 mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        Registrations ({{ event.registrations|length }})
+                    </a>
+                </div>
+            </div>
+            <div class="px-6 py-4">
+                {% if event.eventAttributes|length > 0 %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for attribute in event.eventAttributes %}
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <span class="text-sm font-medium text-gray-900">{{ attribute.attributeKey }}</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                {{ attribute.attributeType }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="text-sm text-gray-600">
+                                            {% set value = attribute.typedValue %}
+                                            {% if value is same as(true) %}
+                                                <span class="text-green-600">✓ Yes</span>
+                                            {% elseif value is same as(false) %}
+                                                <span class="text-red-600">✗ No</span>
+                                            {% elseif value is null %}
+                                                <span class="text-gray-400 italic">Not set</span>
+                                            {% elseif attribute.attributeType == 'date' and value %}
+                                                {{ value|date('Y-m-d') }}
+                                            {% else %}
+                                                {{ value|slice(0, 50) }}{% if value|length > 50 %}...{% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-6">
+                        <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        <p class="mt-2 text-sm text-gray-500">No custom attributes defined yet.</p>
+                        <p class="text-xs text-gray-400">Click "Manage Attributes" to add custom fields for this event.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="flex justify-end">
+            <a href="{{ path('admin_events_list') }}" 
+               class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Cancel
+            </a>
+            <button type="submit" 
+                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                {% if isEdit %}Update Event{% else %}Create Event{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Auto-generate slug from title
+document.getElementById('title').addEventListener('input', function() {
+    const title = this.value;
+    const slug = title.toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    document.getElementById('slug').value = slug;
+});
+</script>
+{% endblock %}

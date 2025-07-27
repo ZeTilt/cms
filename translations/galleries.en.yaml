@@ -1,0 +1,60 @@
+# Galleries Module - English
+title: "Gallery Management"
+subtitle: "Organize your images and photo galleries"
+
+breadcrumb:
+  galleries: "Galleries"
+  images: "Images"
+  create: "Create gallery"
+  edit: "Edit gallery"
+
+list:
+  title: "My Galleries"
+  no_galleries: "No galleries found"
+  create_first: "Create your first gallery"
+
+create:
+  title: "Create Gallery"
+  success: "Gallery created successfully"
+
+edit:
+  title: "Edit Gallery"
+  success: "Gallery updated successfully"
+
+fields:
+  name: "Gallery name"
+  description: "Description"
+  cover_image: "Cover image"
+  is_public: "Public gallery"
+  is_featured: "Featured gallery"
+  tags: "Tags"
+  client_access: "Client access"
+  password: "Password"
+
+images:
+  title: "Images"
+  upload: "Upload images"
+  select_all: "Select all"
+  delete_selected: "Delete selected"
+  download_selected: "Download selected"
+  set_cover: "Set as cover"
+  alt_text: "Alt text"
+  caption: "Caption"
+
+actions:
+  create_gallery: "Create Gallery"
+  view_gallery: "View gallery"
+  edit_gallery: "Edit"
+  delete_gallery: "Delete"
+  share_gallery: "Share"
+
+view_mode:
+  title: "View mode"
+  grid: "Grid"
+  table: "Table"
+
+client:
+  access_code: "Access code"
+  password_required: "Password required"
+  download_all: "Download all"
+  slideshow: "Slideshow"

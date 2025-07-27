@@ -1,0 +1,20 @@
+# Translations Module - English
+title: "Translation Management"
+
+settings:
+  title: "Translation Settings"
+  help_text: "Select all languages you want to support on your site. You can always add or remove languages later."
+  info:
+    title: "Translation System Information"
+    default_content: "The default language contains the original content of all your pages, articles, events and services."
+    separate_storage: "Translations are stored separately and will fall back to the default language if not available."
+    modify_anytime: "You can modify supported languages at any time without losing existing translations."
+    change_default: "Changing the default language will require updating your content accordingly."
+  success: "Settings saved successfully!"
+  error: "Error saving settings"
+
+messages:
+  no_content: "No content to translate"
+  get_started: "Start by creating pages, articles or other content."
+  saved_success: "Translations saved successfully!"
+  save_error: "Error saving translations"

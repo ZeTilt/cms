@@ -1,0 +1,288 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    {% if isEdit %}
+        Edit Service: {{ service.name }} - ZeTilt CMS
+    {% else %}
+        New Service - ZeTilt CMS
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol role="list" class="flex items-center space-x-4">
+                <li>
+                    <a href="{{ path('admin_services_list') }}" class="text-gray-400 hover:text-gray-500">Services</a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="ml-4 text-sm font-medium text-gray-500">
+                            {% if isEdit %}Edit Service{% else %}New Service{% endif %}
+                        </span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <h1 class="mt-2 text-3xl font-bold text-gray-900">
+            {% if isEdit %}
+                Edit Service: {{ service.name }}
+            {% else %}
+                Create New Service
+            {% endif %}
+        </h1>
+    </div>
+
+    <form method="post" action="{{ path('admin_services_save') }}" class="space-y-8">
+        {% if isEdit %}
+            <input type="hidden" name="id" value="{{ service.id }}">
+        {% endif %}
+
+        <!-- Basic Information -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Basic Information</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Service Name</label>
+                    <input type="text" 
+                           name="name" 
+                           id="name" 
+                           value="{{ service.name ?? '' }}"
+                           required
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+
+                <div>
+                    <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
+                    <input type="text" 
+                           name="slug" 
+                           id="slug" 
+                           value="{{ service.slug ?? '' }}"
+                           required
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p class="mt-2 text-sm text-gray-500">URL-friendly version of the service name</p>
+                </div>
+
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <input type="text" 
+                           name="category" 
+                           id="category" 
+                           value="{{ service.category ?? '' }}"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           placeholder="e.g., Photography, Training, Consultation">
+                    <p class="mt-2 text-sm text-gray-500">Service category for organization and filtering</p>
+                </div>
+
+                <div>
+                    <label for="short_description" class="block text-sm font-medium text-gray-700">Short Description</label>
+                    <textarea name="short_description" 
+                              id="short_description" 
+                              rows="3"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ service.shortDescription ?? '' }}</textarea>
+                    <p class="mt-2 text-sm text-gray-500">Brief summary for service cards and previews</p>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Full Description</label>
+                    <textarea name="description" 
+                              id="description" 
+                              rows="8"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ service.description ?? '' }}</textarea>
+                    <p class="mt-2 text-sm text-gray-500">Detailed description of the service</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Pricing & Duration</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                        <input type="number" 
+                               name="price" 
+                               id="price" 
+                               value="{{ service.price ?? '' }}"
+                               step="0.01"
+                               min="0"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <p class="mt-2 text-sm text-gray-500">Leave empty for "Price on request"</p>
+                    </div>
+
+                    <div>
+                        <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+                        <select name="currency" 
+                                id="currency" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="EUR" {{ (service.currency ?? 'EUR') == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
+                            <option value="USD" {{ (service.currency ?? '') == 'USD' ? 'selected' : '' }}>USD ($)</option>
+                            <option value="GBP" {{ (service.currency ?? '') == 'GBP' ? 'selected' : '' }}>GBP (£)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="pricing_type" class="block text-sm font-medium text-gray-700">Pricing Type</label>
+                        <select name="pricing_type" 
+                                id="pricing_type" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="fixed" {{ (service.pricingType ?? 'fixed') == 'fixed' ? 'selected' : '' }}>Fixed Price</option>
+                            <option value="per_hour" {{ (service.pricingType ?? '') == 'per_hour' ? 'selected' : '' }}>Per Hour</option>
+                            <option value="per_day" {{ (service.pricingType ?? '') == 'per_day' ? 'selected' : '' }}>Per Day</option>
+                            <option value="per_session" {{ (service.pricingType ?? '') == 'per_session' ? 'selected' : '' }}>Per Session</option>
+                            <option value="custom" {{ (service.pricingType ?? '') == 'custom' ? 'selected' : '' }}>Custom</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="duration" class="block text-sm font-medium text-gray-700">Duration (minutes)</label>
+                    <input type="number" 
+                           name="duration" 
+                           id="duration" 
+                           value="{{ service.duration ?? '' }}"
+                           min="0"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p class="mt-2 text-sm text-gray-500">Typical duration of the service in minutes (optional)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Features & Benefits</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div>
+                    <label for="features" class="block text-sm font-medium text-gray-700">Features List</label>
+                    <textarea name="features" 
+                              id="features" 
+                              rows="6"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="One feature per line:
+Professional consultation
+High-quality deliverables
+Follow-up support
+Satisfaction guaranteed">{{ service.features ? service.features|join("\n") : '' }}</textarea>
+                    <p class="mt-2 text-sm text-gray-500">Enter one feature per line. These will be displayed as bullet points.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Service Settings</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <select name="status" 
+                                id="status" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="draft" {{ (service.status ?? 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="active" {{ (service.status ?? '') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ (service.status ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="display_order" class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" 
+                               name="display_order" 
+                               id="display_order" 
+                               value="{{ service.displayOrder ?? 0 }}"
+                               min="0"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <p class="mt-2 text-sm text-gray-500">Lower numbers appear first (0 = first)</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <input id="bookable" 
+                               name="bookable" 
+                               type="checkbox" 
+                               {{ service.bookable ?? false ? 'checked' : '' }}
+                               class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label for="bookable" class="ml-2 block text-sm text-gray-900">
+                            Bookable Online
+                        </label>
+                        <p class="ml-2 text-sm text-gray-500">Allow clients to book this service online</p>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="featured" 
+                               name="featured" 
+                               type="checkbox" 
+                               {{ service.featured ?? false ? 'checked' : '' }}
+                               class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label for="featured" class="ml-2 block text-sm text-gray-900">
+                            Featured Service
+                        </label>
+                        <p class="ml-2 text-sm text-gray-500">Highlight this service on the website</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end">
+            <a href="{{ path('admin_services_list') }}" 
+               class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Cancel
+            </a>
+            <button type="submit" 
+                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                {% if isEdit %}Update Service{% else %}Create Service{% endif %}
+            </button>
+        </div>
+    </form>
+    
+    {% if isEdit %}
+        <div class="bg-white shadow rounded-lg mt-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-red-900">Danger Zone</h3>
+            </div>
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-900">Delete Service</h4>
+                        <p class="text-sm text-gray-500">This action cannot be undone.</p>
+                    </div>
+                    <form method="post" action="{{ path('admin_services_delete', {id: service.id}) }}" 
+                          onsubmit="return confirm('Are you sure you want to delete this service? This action cannot be undone.');">
+                        <button type="submit" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                            Delete Service
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+// Auto-generate slug from name
+document.getElementById('name').addEventListener('input', function() {
+    const name = this.value;
+    const slug = name.toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    document.getElementById('slug').value = slug;
+});
+</script>
+{% endblock %}

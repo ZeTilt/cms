@@ -1,41 +1,317 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Users Management - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'userplus.title'|trans({}, 'userplus') }} - ZeTilt CMS{% endblock %}
 
 {% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol role="list" class="flex items-center space-x-4">
+                        <li>
+                            <a href="{{ path('admin_userplus_dashboard') }}" class="text-gray-400 hover:text-gray-500">
+                                {{ 'userplus.breadcrumb.user_management'|trans({}, 'userplus') }}
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="ml-4 text-sm font-medium text-gray-500">{{ 'userplus.breadcrumb.users'|trans({}, 'userplus') }}</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="mt-2 text-3xl font-bold text-gray-900">{{ 'userplus.users.title'|trans({}, 'userplus') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ 'userplus.users.subtitle'|trans({}, 'userplus') }}</p>
+            </div>
+            <div class="flex space-x-3">
+                <button type="button" onclick="showCreateUserModal()" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    {{ 'userplus.users.add_user'|trans({}, 'userplus') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Users Management</h1>
+    <!-- Filters and Search -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">{{ 'userplus.filters.title'|trans({}, 'userplus') }}</h3>
+        </div>
+        <div class="p-6">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700">{{ 'userplus.filters.search'|trans({}, 'userplus') }}</label>
+                    <input type="text" id="search" name="search" value="{{ app.request.query.get('search') }}"
+                           placeholder="{{ 'userplus.filters.search_placeholder'|trans({}, 'userplus') }}"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <label for="user_type" class="block text-sm font-medium text-gray-700">{{ 'userplus.filters.user_type'|trans({}, 'userplus') }}</label>
+                    <select id="user_type" name="user_type" 
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">{{ 'userplus.filters.all_types'|trans({}, 'userplus') }}</option>
+                        <option value="none" {{ currentUserType == 'none' ? 'selected' : '' }}>{{ 'userplus.filters.no_type_assigned'|trans({}, 'userplus') }}</option>
+                        {% for userType in userTypes %}
+                            <option value="{{ userType.id }}" {{ currentUserType == userType.id ? 'selected' : '' }}>
+                                {{ userType.displayName }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">{{ 'userplus.filters.status'|trans({}, 'userplus') }}</label>
+                    <select id="status" name="status" 
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">{{ 'userplus.filters.all_statuses'|trans({}, 'userplus') }}</option>
+                        <option value="active" {{ app.request.query.get('status') == 'active' ? 'selected' : '' }}>{{ 'userplus.status.active'|trans({}, 'userplus') }}</option>
+                        <option value="inactive" {{ app.request.query.get('status') == 'inactive' ? 'selected' : '' }}>{{ 'userplus.status.inactive'|trans({}, 'userplus') }}</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" 
+                            class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        {{ 'userplus.filters.filter_button'|trans({}, 'userplus') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     
-    <div class="bg-white shadow rounded-lg p-6">
-        <p class="text-gray-600">Users management interface - Template à compléter</p>
+    <!-- Users List -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900">
+                    {{ 'userplus.breadcrumb.users'|trans({}, 'userplus') }} ({{ totalUsers }})
+                    {% if currentUserType %}
+                        - {{ 'userplus.users.filtered'|trans({}, 'userplus') }}
+                    {% endif %}
+                </h3>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    {% if totalPages > 1 %}
+                        <span>{{ 'userplus.users.showing_page'|trans({}, 'userplus') }} {{ currentPage }} {{ 'userplus.users.of'|trans({}, 'userplus') }} {{ totalPages }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
         
-        {% if users is not empty %}
-            <div class="mt-6">
-                <h3 class="text-lg font-medium mb-4">Users ({{ totalUsers }})</h3>
-                <div class="space-y-4">
-                    {% for user in users %}
-                        <div class="border rounded-lg p-4">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="font-medium text-gray-900">{{ user.fullName }}</h4>
-                                    <p class="text-sm text-gray-500">{{ user.email }}</p>
+        {% if users is empty %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'userplus.users.no_users_found'|trans({}, 'userplus') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    {% if app.request.query.get('search') or currentUserType %}
+                        {{ 'userplus.users.try_adjusting_filters'|trans({}, 'userplus') }}
+                    {% else %}
+                        {{ 'userplus.users.get_started'|trans({}, 'userplus') }}
+                    {% endif %}
+                </p>
+                {% if not app.request.query.get('search') and not currentUserType %}
+                    <div class="mt-6">
+                        <button type="button" onclick="showCreateUserModal()" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            {{ 'userplus.users.add_user'|trans({}, 'userplus') }}
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <!-- Table View -->
+            <div>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'users.title'|trans({}, 'userplus') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'filters.user_type'|trans({}, 'userplus') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'roles.super_admin'|trans({}, 'userplus') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'status.active'|trans({}, 'userplus') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'attributes.title'|trans({}, 'userplus') }}</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for user in users %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                <span class="text-sm font-medium text-indigo-700">
+                                                    {{ user.firstName|first|upper }}{{ user.lastName|first|upper }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">{{ user.firstName }} {{ user.lastName }}</div>
+                                            <div class="text-sm text-gray-500">{{ user.email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     {% if user.userType %}
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ user.userType.badgeColor }}">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ user.userType.badgeColor }}">
                                             {{ user.userType.displayName }}
                                         </span>
                                     {% else %}
-                                        <span class="text-xs text-gray-400">No type assigned</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ 'filters.no_type_assigned'|trans({}, 'userplus') }}
+                                        </span>
                                     {% endif %}
-                                </div>
-                                <a href="{{ path('admin_userplus_user_detail', {id: user.id}) }}" class="text-indigo-600 hover:text-indigo-900">View Details</a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if 'ROLE_SUPER_ADMIN' in user.roles %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            {{ 'roles.super_admin'|trans({}, 'userplus') }}
+                                        </span>
+                                    {% elseif 'ROLE_ADMIN' in user.roles %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                            {{ 'roles.admin'|trans({}, 'userplus') }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-sm text-gray-500">{{ 'roles.user'|trans({}, 'userplus') }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    {% if user.active %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ 'status.active'|trans({}, 'userplus') }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            {{ 'status.inactive'|trans({}, 'userplus') }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    {% if user.userType and user.userType.attributes.count > 0 %}
+                                        {% set filledAttrs = 0 %}
+                                        {% for attr in user.userType.attributes %}
+                                            {% if user.getUserAttributeValue(attr.attributeKey) %}
+                                                {% set filledAttrs = filledAttrs + 1 %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="text-sm text-gray-900">{{ filledAttrs }}/{{ user.userType.attributes.count }}</span>
+                                    {% else %}
+                                        <span class="text-sm text-gray-500">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        {% if user.userType %}
+                                            <button type="button" onclick="showTypeChangeModal({{ user.id }}, '{{ user.userType.id }}', '{{ user.firstName }} {{ user.lastName }}')"
+                                                    class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                                {{ 'actions.change_type'|trans({}, 'userplus') }}
+                                            </button>
+                                        {% else %}
+                                            <button type="button" onclick="showTypeAssignModal({{ user.id }}, '{{ user.firstName }} {{ user.lastName }}')"
+                                                    class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                                {{ 'actions.assign_type'|trans({}, 'userplus') }}
+                                            </button>
+                                        {% endif %}
+                                        <a href="{{ path('admin_userplus_user_detail', {id: user.id}) }}" 
+                                           class="text-gray-600 hover:text-gray-900 text-sm">
+                                            {{ 'actions.details'|trans({}, 'userplus') }}
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        {% else %}
-            <p class="text-gray-500 mt-4">No users found.</p>
+            
+            <!-- Pagination -->
+            {% if totalPages > 1 %}
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        {% if currentPage > 1 %}
+                            <a href="{{ path('admin_userplus_users', app.request.query.all|merge({page: currentPage - 1})) }}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                {{ 'userplus.actions.previous'|trans({}, 'userplus') }}
+                            </a>
+                        {% endif %}
+                        {% if currentPage < totalPages %}
+                            <a href="{{ path('admin_userplus_users', app.request.query.all|merge({page: currentPage + 1})) }}" 
+                               class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                {{ 'userplus.actions.next'|trans({}, 'userplus') }}
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                {{ 'userplus.users.showing_page'|trans({}, 'userplus') }} <span class="font-medium">{{ currentPage }}</span> {{ 'userplus.users.of'|trans({}, 'userplus') }} <span class="font-medium">{{ totalPages }}</span>
+                                (<span class="font-medium">{{ totalUsers }}</span> {{ 'userplus.users.total_users'|trans({}, 'userplus') }})
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                {% if currentPage > 1 %}
+                                    <a href="{{ path('admin_userplus_users', app.request.query.all|merge({page: currentPage - 1})) }}" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </a>
+                                {% endif %}
+                                
+                                {% for page in 1..totalPages %}
+                                    {% if page == currentPage %}
+                                        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                            {{ page }}
+                                        </span>
+                                    {% elseif page == 1 or page == totalPages or (page >= currentPage - 2 and page <= currentPage + 2) %}
+                                        <a href="{{ path('admin_userplus_users', app.request.query.all|merge({page: page})) }}" 
+                                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                            {{ page }}
+                                        </a>
+                                    {% elseif page == currentPage - 3 or page == currentPage + 3 %}
+                                        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                            ...
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if currentPage < totalPages %}
+                                    <a href="{{ path('admin_userplus_users', app.request.query.all|merge({page: currentPage + 1})) }}" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 </div>
+
+<!-- Modals -->
+{% include 'admin/userplus/modals/assign_type_modal.html.twig' %}
+{% include 'admin/userplus/modals/create_user_modal.html.twig' %}
 {% endblock %}

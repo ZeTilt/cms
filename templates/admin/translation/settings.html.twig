@@ -1,0 +1,165 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'settings.title'|trans({}, 'translations') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate">{{ 'settings.title'|trans({}, 'translations') }}</h2>
+            <p class="mt-1 text-sm text-gray-500">{{ 'settings.subtitle'|trans({}, 'translations') }}</p>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0">
+            <a href="{{ path('admin_translation_dashboard') }}" class="inline-flex items-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">
+                ← {{ 'actions.back_to_dashboard'|trans({}, 'translations') }}
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <form id="translation-settings-form" class="p-6 space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">{{ 'settings.default_locale'|trans({}, 'translations') }}</label>
+                <select id="default-locale" name="default_locale" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    {% for locale, name in availableLocales %}
+                        <option value="{{ locale }}" {% if locale == defaultLocale %}selected{% endif %}>
+                            {{ name }} ({{ locale }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <p class="mt-1 text-sm text-gray-500">{{ 'settings.default_locale_help'|trans({}, 'translations') }}</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">{{ 'settings.supported_locales'|trans({}, 'translations') }}</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {% for locale, name in availableLocales %}
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                   name="supported_locales[]" 
+                                   value="{{ locale }}" 
+                                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   {% if locale in supportedLocales %}checked{% endif %}>
+                            <span class="ml-2 text-sm text-gray-700">{{ name }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                <p class="mt-1 text-sm text-gray-500">{{ 'settings.supported_locales_help'|trans({}, 'translations') }}</p>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex justify-end">
+                    <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
+                        <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                        {{ 'actions.save'|trans({}, 'admin') }} les Paramètres
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">{{ 'settings.info.title'|trans({}, 'translations') }}</h3>
+                <div class="mt-2 text-sm text-blue-700">
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>{{ 'settings.info.default_content'|trans({}, 'translations') }}</li>
+                        <li>{{ 'settings.info.separate_storage'|trans({}, 'translations') }}</li>
+                        <li>{{ 'settings.info.modify_anytime'|trans({}, 'translations') }}</li>
+                        <li>{{ 'settings.info.change_default'|trans({}, 'translations') }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('translation-settings-form');
+    const defaultLocaleSelect = document.getElementById('default-locale');
+    const supportedLocaleCheckboxes = document.querySelectorAll('input[name="supported_locales[]"]');
+    
+    // Ensure default locale is always checked
+    function ensureDefaultLocaleChecked() {
+        const defaultLocale = defaultLocaleSelect.value;
+        const defaultCheckbox = document.querySelector(`input[value="${defaultLocale}"]`);
+        if (defaultCheckbox) {
+            defaultCheckbox.checked = true;
+            defaultCheckbox.disabled = true;
+        }
+        
+        // Re-enable other checkboxes
+        supportedLocaleCheckboxes.forEach(checkbox => {
+            if (checkbox.value !== defaultLocale) {
+                checkbox.disabled = false;
+            }
+        });
+    }
+    
+    defaultLocaleSelect.addEventListener('change', ensureDefaultLocaleChecked);
+    ensureDefaultLocaleChecked(); // Run on page load
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const supportedLocales = [];
+        
+        formData.getAll('supported_locales[]').forEach(locale => {
+            supportedLocales.push(locale);
+        });
+        
+        // Ensure default locale is included
+        const defaultLocale = formData.get('default_locale');
+        if (!supportedLocales.includes(defaultLocale)) {
+            supportedLocales.push(defaultLocale);
+        }
+        
+        const data = {
+            default_locale: defaultLocale,
+            supported_locales: supportedLocales
+        };
+        
+        fetch('{{ path('admin_translation_settings_save') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage('{{ 'settings.success'|trans({}, 'translations') }}', 'success');
+            } else {
+                showMessage(data.message || '{{ 'settings.error'|trans({}, 'translations') }}', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('{{ 'settings.error'|trans({}, 'translations') }}', 'error');
+        });
+    });
+    
+    function showMessage(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-md text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

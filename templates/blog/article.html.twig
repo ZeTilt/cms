@@ -10,7 +10,7 @@
                 <svg class="-ml-1 mr-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Retour au blog
+                {{ 'actions.back'|trans({}, 'admin') }} au blog
             </a>
         </div>
 
@@ -76,12 +76,12 @@
                             {{ article.author.fullName }}
                         </p>
                         <p class="text-sm text-gray-500">
-                            Auteur
+                            {{ 'fields.author'|trans({}, 'articles') }}
                         </p>
                     </div>
                 </div>
                 <div class="text-sm text-gray-500">
-                    Publié le {{ article.publishedAt|date('F j, Y') }}
+                    {{ 'status.published'|trans({}, 'admin') }} le {{ article.publishedAt|date('F j, Y') }}
                 </div>
             </div>
         </div>
@@ -91,7 +91,7 @@
                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Retour au blog
+                {{ 'actions.back'|trans({}, 'admin') }} au blog
             </a>
         </div>
     </div>

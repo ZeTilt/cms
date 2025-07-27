@@ -1,0 +1,38 @@
+# Module Sécurité/Système - Français
+login:
+  title: "Connexion"
+  email: "Adresse email"
+  password: "Mot de passe"
+  remember_me: "Se souvenir de moi"
+  submit: "Se connecter"
+  forgot_password: "Mot de passe oublié ?"
+  
+logout:
+  title: "Déconnexion"
+  message: "Vous avez été déconnecté avec succès"
+
+forgot_password:
+  title: "Mot de passe oublié"
+  email: "Votre adresse email"
+  submit: "Envoyer le lien de réinitialisation"
+  success: "Un email de réinitialisation a été envoyé"
+
+reset_password:
+  title: "Réinitialiser le mot de passe"
+  password: "Nouveau mot de passe"
+  confirm_password: "Confirmer le mot de passe"
+  submit: "Réinitialiser"
+  success: "Mot de passe réinitialisé avec succès"
+
+errors:
+  invalid_credentials: "Identifiants invalides"
+  account_disabled: "Compte désactivé"
+  access_denied: "Accès refusé"
+  token_expired: "Lien expiré"
+
+profile:
+  title: "Mon Profil"
+  edit_profile: "Modifier le profil"
+  change_password: "Changer le mot de passe"
+  current_password: "Mot de passe actuel"
+  new_password: "Nouveau mot de passe"

@@ -1,0 +1,129 @@
+# Pages Module - English
+title: "Page Management"
+subtitle: "Create and manage your website pages"
+
+breadcrumb:
+  pages: "Pages"
+  create: "Create page"
+  edit: "Edit page"
+
+list:
+  title: "Page List"
+  no_pages: "No pages found"
+  create_first: "Create your first page"
+  
+header:
+  title: "Title"
+  slug: "URL"
+  status: "Status"
+  template: "Template"
+  updated: "Updated"
+  actions: "Actions"
+
+create:
+  title: "Create Page"
+  subtitle: "Add a new page to your website"
+  success: "Page created successfully"
+
+edit:
+  title: "Edit Page"
+  subtitle: "Modify this page content"
+  success: "Page updated successfully"
+
+delete:
+  confirm: "Are you sure you want to delete this page?"
+  success: "Page deleted successfully"
+
+fields:
+  title: "Page title"
+  title_help: "The main title that will be displayed on the page"
+  slug: "URL (slug)"
+  slug_help: "The web address of your page (auto-generated)"
+  content: "Content"
+  content_help: "The main content of your page"
+  excerpt: "Excerpt"
+  excerpt_help: "A short summary of the page for previews"
+  meta_title: "SEO Title"
+  meta_title_help: "The title that will appear in search engines"
+  meta_description: "SEO Description"
+  meta_description_help: "The description that will appear in search engines"
+  featured_image: "Featured image"
+  featured_image_help: "The main image of the page"
+  template: "Page template"
+  template_help: "The template used to display this page"
+  status: "Publication status"
+  published_at: "Publication date"
+  parent_page: "Parent page"
+  parent_page_help: "To create a page hierarchy"
+  menu_order: "Menu order"
+  menu_order_help: "Page position in navigation"
+  show_in_menu: "Show in menu"
+  show_in_menu_help: "Check to include this page in main navigation"
+
+status:
+  draft: "Draft"
+  published: "Published"
+  private: "Private"
+  scheduled: "Scheduled"
+
+templates:
+  default: "Default template"
+  home: "Homepage"
+  about: "About"
+  contact: "Contact"
+  services: "Services"
+  portfolio: "Portfolio"
+  landing: "Landing page"
+  custom: "Custom template"
+
+actions:
+  create_page: "Create Page"
+  edit_page: "Edit"
+  view_page: "View page"
+  duplicate_page: "Duplicate"
+  delete_page: "Delete"
+  publish: "Publish"
+  unpublish: "Unpublish"
+  schedule: "Schedule"
+
+search:
+  placeholder: "Search pages..."
+  by_title: "By title"
+  by_content: "By content"
+  by_status: "By status"
+  
+filters:
+  all: "All pages"
+  published: "Published"
+  draft: "Drafts"
+  private: "Private"
+  scheduled: "Scheduled"
+  
+bulk_actions:
+  select_action: "Select action"
+  publish_selected: "Publish selected"
+  unpublish_selected: "Unpublish selected"
+  delete_selected: "Delete selected"
+  apply: "Apply"
+
+validation:
+  title_required: "Title is required"
+  slug_required: "URL is required"
+  slug_invalid: "URL contains invalid characters"
+  slug_exists: "This URL is already in use"
+  content_required: "Content is required"
+  template_required: "Please select a template"
+  
+hierarchy:
+  parent: "Parent page"
+  children: "Child pages"
+  no_parent: "No parent page"
+  move_up: "Move up"
+  move_down: "Move down"
+  
+seo:
+  title: "SEO Optimization"
+  preview: "Search results preview"
+  characters_left: "characters left"
+  title_length: "SEO title should be between 50 and 60 characters"
+  description_length: "SEO description should be between 150 and 160 characters"

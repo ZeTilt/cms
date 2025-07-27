@@ -10,7 +10,8 @@
         {% endblock %}
 
         {% block javascripts %}
-            {# Add JavaScript here #}
+            <!-- Alpine.js for interactive components -->
+            <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
         {% endblock %}
     </head>
     <body class="bg-gray-50">
@@ -26,16 +27,44 @@
                     </div>
                     <div class="flex items-center space-x-8">
                         <a href="{{ path('app_home') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            Accueil
+                            {{ 'breadcrumb.home'|trans({}, 'admin') }}
                         </a>
                         {% if is_module_active('blog') %}
                             <a href="{{ path('blog_index') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                                Blog
+                                {{ 'breadcrumb.articles'|trans({}, 'articles') }}
                             </a>
                         {% endif %}
-                        <a href="{{ path('admin_dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                            Admin
-                        </a>
+                        {% if is_module_active('events') %}
+                            <a href="{{ path('events_index') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                                {{ 'breadcrumb.events'|trans({}, 'events') }}
+                            </a>
+                        {% endif %}
+                        {% if is_module_active('services') %}
+                            <a href="{{ path('services_index') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                                {{ 'breadcrumb.services'|trans({}, 'services') }}
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Language Selector -->
+                        {% include 'components/language_selector.html.twig' %}
+                        
+                        {% if app.user %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('admin_dashboard') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                                    Admin
+                                </a>
+                            {% endif %}
+                            <span class="text-gray-600 px-3 py-2 text-sm">
+                                Hello, {{ app.user.username }}
+                            </span>
+                            <a href="{{ path('app_logout') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                                Logout
+                            </a>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                Login
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

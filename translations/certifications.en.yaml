@@ -1,0 +1,80 @@
+# Certifications Module - English
+title: "Certifications Management"
+subtitle: "Manage certifications and qualifications"
+
+breadcrumb:
+  certifications: "Certifications"
+  create: "Create certification"
+  edit: "Edit certification"
+
+list:
+  title: "My Certifications"
+  no_certifications: "No certifications found"
+  try_adjusting: "Try adjusting your filters"
+  get_started: "Get started by creating your first certification"
+
+create:
+  title: "Create Certification"
+  success: "Certification created successfully"
+
+edit:
+  title: "Edit Certification"
+  success: "Certification updated successfully"
+
+fields:
+  name: "Certification name"
+  description: "Description"
+  level: "Level"
+  required_skills: "Required skills"
+  duration: "Validity duration"
+  issuing_organization: "Issuing organization"
+  expiry_period: "Expiry period"
+  is_active: "Active certification"
+  requirements: "Requirements"
+
+actions:
+  create_certification: "Create Certification"
+  view_certification: "View certification"
+  edit_certification: "Edit"
+  delete_certification: "Delete"
+  activate: "Activate"
+  deactivate: "Deactivate"
+  assign: "Assign"
+  revoke: "Revoke"
+  previous: "Previous"
+  next: "Next"
+
+filters:
+  title: "Filters and Search"
+  search: "Search"
+  search_placeholder: "Certification name or description..."
+  status: "Status"
+  level: "Level"
+  organization: "Organization"
+  all_statuses: "All statuses"
+  all_levels: "All levels"
+  all_organizations: "All organizations"
+  filtered: "Filtered"
+  apply: "Filter"
+
+status:
+  active: "Active"
+  inactive: "Inactive"
+  expired: "Expired"
+  pending: "Pending"
+
+user_certifications:
+  title: "User Certifications"
+  obtained_date: "Obtained date"
+  expiry_date: "Expiry date"
+  status: "Status"
+  certificate_number: "Certificate number"
+  valid: "Valid"
+  expired: "Expired"
+  expiring_soon: "Expiring soon"
+
+pagination:
+  page: "Page"
+  of: "of"
+  total_certifications: "certifications total"
+  showing_page: "Page"

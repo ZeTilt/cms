@@ -1,0 +1,261 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ isNew ? 'New' : 'Edit' }} Certification{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">
+                    {{ isNew ? 'New Certification' : 'Edit Certification' }}
+                </h1>
+                <p class="mt-1 text-sm text-gray-600">
+                    {{ isNew ? 'Create a new certification type' : 'Update certification information' }}
+                </p>
+            </div>
+            <div>
+                <a href="{{ path('admin_certifications_index') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" class="space-y-8">
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Basic Information</h2>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                            Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="name" id="name" required
+                               value="{{ certification.name }}"
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="e.g., Open Water Diver">
+                    </div>
+                    
+                    <div>
+                        <label for="level" class="block text-sm font-medium text-gray-700 mb-1">
+                            Level <span class="text-red-500">*</span>
+                        </label>
+                        <select name="level" id="level" required
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            {% for i in 1..5 %}
+                                <option value="{{ i }}" {% if certification.level == i %}selected{% endif %}>
+                                    Level {{ i }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">Higher levels indicate more advanced certifications</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                        Description
+                    </label>
+                    <textarea name="description" id="description" rows="4"
+                              class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="Describe what this certification covers and its requirements...">{{ certification.description }}</textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="validity_months" class="block text-sm font-medium text-gray-700 mb-1">
+                            Validity Period (months)
+                        </label>
+                        <input type="number" name="validity_months" id="validity_months" min="1" max="120"
+                               value="{{ certification.validityMonths }}"
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="Leave empty for permanent">
+                        <p class="mt-1 text-xs text-gray-500">Leave empty for certifications that don't expire</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Status
+                        </label>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="is_active" id="is_active" value="1"
+                                   {% if isNew or certification.isActive %}checked{% endif %}
+                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                                Active
+                            </label>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Inactive certifications cannot be assigned to users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prerequisites -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Prerequisites</h2>
+                <p class="text-sm text-gray-600">Select certifications that must be completed before this one</p>
+            </div>
+            <div class="px-6 py-4">
+                <div id="prerequisites-container">
+                    <input type="hidden" name="prerequisites" id="prerequisites-input" 
+                           value="{{ certification.prerequisites|map(p => p.id)|join(',') }}">
+                    
+                    <div class="space-y-2 mb-4" id="selected-prerequisites">
+                        {% for prerequisite in certification.prerequisites %}
+                            <div class="flex items-center justify-between bg-gray-50 rounded-md px-3 py-2" data-id="{{ prerequisite.id }}">
+                                <div>
+                                    <span class="font-medium">{{ prerequisite.name }}</span>
+                                    <span class="text-sm text-gray-500">(Level {{ prerequisite.level }})</span>
+                                </div>
+                                <button type="button" onclick="removePrerequisite({{ prerequisite.id }})" 
+                                        class="text-red-600 hover:text-red-800">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if availablePrerequisites|length > 0 %}
+                        <div class="flex space-x-2">
+                            <select id="prerequisite-select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <option value="">Select a prerequisite...</option>
+                                {% for prereq in availablePrerequisites %}
+                                    <option value="{{ prereq.id }}" data-name="{{ prereq.name }}" data-level="{{ prereq.level }}">
+                                        {{ prereq.name }} (Level {{ prereq.level }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" onclick="addPrerequisite()" 
+                                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                                Add
+                            </button>
+                        </div>
+                    {% else %}
+                        <p class="text-sm text-gray-500 italic">No other active certifications available as prerequisites</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end space-x-3">
+            <a href="{{ path('admin_certifications_index') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                Cancel
+            </a>
+            <button type="submit" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                {{ isNew ? 'Create Certification' : 'Update Certification' }}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+let selectedPrerequisites = new Set();
+
+// Initialize with existing prerequisites
+{% for prerequisite in certification.prerequisites %}
+    selectedPrerequisites.add({{ prerequisite.id }});
+{% endfor %}
+
+function addPrerequisite() {
+    const select = document.getElementById('prerequisite-select');
+    const selectedOption = select.options[select.selectedIndex];
+    
+    if (!selectedOption.value) return;
+    
+    const id = parseInt(selectedOption.value);
+    const name = selectedOption.dataset.name;
+    const level = selectedOption.dataset.level;
+    
+    if (selectedPrerequisites.has(id)) {
+        alert('This prerequisite is already selected');
+        return;
+    }
+    
+    selectedPrerequisites.add(id);
+    
+    // Add to display
+    const container = document.getElementById('selected-prerequisites');
+    const div = document.createElement('div');
+    div.className = 'flex items-center justify-between bg-gray-50 rounded-md px-3 py-2';
+    div.dataset.id = id;
+    div.innerHTML = `
+        <div>
+            <span class="font-medium">${name}</span>
+            <span class="text-sm text-gray-500">(Level ${level})</span>
+        </div>
+        <button type="button" onclick="removePrerequisite(${id})" 
+                class="text-red-600 hover:text-red-800">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    `;
+    container.appendChild(div);
+    
+    // Remove from select
+    selectedOption.remove();
+    
+    // Update hidden input
+    updatePrerequisitesInput();
+}
+
+function removePrerequisite(id) {
+    selectedPrerequisites.delete(id);
+    
+    // Remove from display
+    const element = document.querySelector(`[data-id="${id}"]`);
+    const name = element.querySelector('.font-medium').textContent;
+    const levelText = element.querySelector('.text-gray-500').textContent;
+    const level = levelText.match(/\d+/)[0];
+    
+    element.remove();
+    
+    // Add back to select
+    const select = document.getElementById('prerequisite-select');
+    const option = document.createElement('option');
+    option.value = id;
+    option.dataset.name = name;
+    option.dataset.level = level;
+    option.textContent = `${name} (Level ${level})`;
+    
+    // Insert in correct position (sorted by level then name)
+    let inserted = false;
+    for (let i = 1; i < select.options.length; i++) {
+        const optionLevel = parseInt(select.options[i].dataset.level);
+        const optionName = select.options[i].dataset.name;
+        
+        if (parseInt(level) < optionLevel || (parseInt(level) === optionLevel && name < optionName)) {
+            select.insertBefore(option, select.options[i]);
+            inserted = true;
+            break;
+        }
+    }
+    
+    if (!inserted) {
+        select.appendChild(option);
+    }
+    
+    // Update hidden input
+    updatePrerequisitesInput();
+}
+
+function updatePrerequisitesInput() {
+    document.getElementById('prerequisites-input').value = Array.from(selectedPrerequisites).join(',');
+}
+</script>
+{% endblock %}

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -14,10 +16,10 @@ class Event
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private string $title;
+    private string $title = '';
 
     #[ORM\Column(length: 255, unique: true)]
-    private string $slug;
+    private string $slug = '';
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
@@ -77,9 +79,17 @@ class Event
     #[ORM\JoinColumn(nullable: false)]
     private User $organizer;
 
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventAttribute::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $eventAttributes;
+
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventRegistration::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $registrations;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->eventAttributes = new ArrayCollection();
+        $this->registrations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -404,5 +414,189 @@ class Event
         } else {
             return sprintf('%dm', $mins);
         }
+    }
+
+    /**
+     * @return Collection<int, EventAttribute>
+     */
+    public function getEventAttributes(): Collection
+    {
+        return $this->eventAttributes;
+    }
+
+    public function addEventAttribute(EventAttribute $eventAttribute): static
+    {
+        if (!$this->eventAttributes->contains($eventAttribute)) {
+            $this->eventAttributes->add($eventAttribute);
+            $eventAttribute->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventAttribute(EventAttribute $eventAttribute): static
+    {
+        if ($this->eventAttributes->removeElement($eventAttribute)) {
+            if ($eventAttribute->getEvent() === $this) {
+                $eventAttribute->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get event attribute by key
+     */
+    public function getEventAttributeByKey(string $key): ?EventAttribute
+    {
+        foreach ($this->eventAttributes as $attribute) {
+            if ($attribute->getAttributeKey() === $key) {
+                return $attribute;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get attribute value by key
+     */
+    public function getAttributeValue(string $key): mixed
+    {
+        $attribute = $this->getEventAttributeByKey($key);
+        return $attribute ? $attribute->getTypedValue() : null;
+    }
+
+    /**
+     * Set attribute value by key
+     */
+    public function setAttributeValue(string $key, mixed $value, string $type = 'text'): static
+    {
+        $attribute = $this->getEventAttributeByKey($key);
+        
+        if (!$attribute) {
+            $attribute = new EventAttribute();
+            $attribute->setEvent($this);
+            $attribute->setAttributeKey($key);
+            $attribute->setAttributeType($type);
+            $this->addEventAttribute($attribute);
+        }
+        
+        $attribute->setTypedValue($value);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventRegistration>
+     */
+    public function getRegistrations(): Collection
+    {
+        return $this->registrations;
+    }
+
+    public function addRegistration(EventRegistration $registration): static
+    {
+        if (!$this->registrations->contains($registration)) {
+            $this->registrations->add($registration);
+            $registration->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegistration(EventRegistration $registration): static
+    {
+        if ($this->registrations->removeElement($registration)) {
+            if ($registration->getEvent() === $this) {
+                $registration->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get active registrations (registered + waiting list)
+     */
+    public function getActiveRegistrations(): Collection
+    {
+        return $this->registrations->filter(fn(EventRegistration $reg) => $reg->isActive());
+    }
+
+    /**
+     * Get confirmed registrations (not on waiting list)
+     */
+    public function getConfirmedRegistrations(): Collection
+    {
+        return $this->registrations->filter(fn(EventRegistration $reg) => $reg->getStatus() === 'registered');
+    }
+
+    /**
+     * Get waiting list registrations
+     */
+    public function getWaitingListRegistrations(): Collection
+    {
+        return $this->registrations->filter(fn(EventRegistration $reg) => $reg->getStatus() === 'waiting_list');
+    }
+
+    /**
+     * Check if user is registered for this event
+     */
+    public function isUserRegistered(User $user): bool
+    {
+        foreach ($this->getActiveRegistrations() as $registration) {
+            if ($registration->getUser() === $user) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get user's registration for this event
+     */
+    public function getUserRegistration(User $user): ?EventRegistration
+    {
+        foreach ($this->getActiveRegistrations() as $registration) {
+            if ($registration->getUser() === $user) {
+                return $registration;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get current number of confirmed participants
+     */
+    public function getConfirmedParticipants(): int
+    {
+        return $this->getConfirmedRegistrations()->count();
+    }
+
+    /**
+     * Get current number of waiting list participants
+     */
+    public function getWaitingListCount(): int
+    {
+        return $this->getWaitingListRegistrations()->count();
+    }
+
+    /**
+     * Check if event accepts new registrations
+     */
+    public function acceptsRegistrations(): bool
+    {
+        return $this->requiresRegistration && 
+               $this->status === 'published' && 
+               $this->isUpcoming();
+    }
+
+    /**
+     * Check if event is full and new registrations go to waiting list
+     */
+    public function requiresWaitingList(): bool
+    {
+        return $this->maxParticipants && 
+               $this->getConfirmedParticipants() >= $this->maxParticipants;
     }
 }

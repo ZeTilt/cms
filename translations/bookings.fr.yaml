@@ -1,0 +1,87 @@
+# Module Réservations - Français
+title: "Gestion des Réservations"
+subtitle: "Gérez les réservations en ligne"
+
+breadcrumb:
+  bookings: "Réservations"
+  create: "Créer une réservation"
+  edit: "Modifier la réservation"
+
+list:
+  title: "Mes Réservations"
+  no_bookings: "Aucune réservation trouvée"
+  try_adjusting: "Essayez d'ajuster vos filtres"
+  get_started: "Commencez par créer votre première réservation"
+
+create:
+  title: "Créer une Réservation"
+  success: "Réservation créée avec succès"
+
+edit:
+  title: "Modifier la Réservation"
+  success: "Réservation modifiée avec succès"
+
+fields:
+  customer_name: "Nom du client"
+  customer_email: "Email du client"
+  customer_phone: "Téléphone du client"
+  service: "Service"
+  booking_date: "Date de réservation"
+  booking_time: "Heure de réservation"
+  duration: "Durée"
+  status: "Statut"
+  notes: "Notes"
+  total_price: "Prix total"
+  payment: "Paiement"
+  participants: "participants"
+
+actions:
+  create_booking: "Créer une Réservation"
+  view_booking: "Voir la réservation"
+  edit_booking: "Modifier"
+  delete_booking: "Supprimer"
+  confirm: "Confirmer"
+  cancel_booking: "Annuler"
+  previous: "Précédent"
+  next: "Suivant"
+
+filters:
+  title: "Filtres et Recherche"
+  search: "Recherche"
+  search_placeholder: "Nom du client ou service..."
+  status: "Statut"
+  date_range: "Période"
+  service: "Service"
+  all_statuses: "Tous les statuts"
+  all_services: "Tous les services"
+  filtered: "Filtrés"
+  apply: "Filtrer"
+
+status:
+  pending: "En attente"
+  confirmed: "Confirmé"
+  cancelled: "Annulé"
+  completed: "Terminé"
+  no_show: "Absent"
+
+pagination:
+  page: "Page"
+  of: "sur"
+  total_bookings: "réservations au total"
+  showing_page: "Page"
+
+payment:
+  pending: "En attente"
+  paid: "Payé"
+  refunded: "Remboursé"
+  failed: "Échoué"
+
+types:
+  services: "Services"
+  events: "Événements"
+
+stats:
+  this_month: "Ce mois"
+
+messages:
+  confirm_delete_booking: "Êtes-vous sûr de vouloir supprimer cette réservation ?"

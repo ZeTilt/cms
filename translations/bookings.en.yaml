@@ -1,0 +1,69 @@
+# Bookings Module - English
+title: "Bookings Management"
+subtitle: "Manage online bookings"
+
+breadcrumb:
+  bookings: "Bookings"
+  create: "Create booking"
+  edit: "Edit booking"
+
+list:
+  title: "My Bookings"
+  no_bookings: "No bookings found"
+  try_adjusting: "Try adjusting your filters"
+  get_started: "Get started by creating your first booking"
+
+create:
+  title: "Create Booking"
+  success: "Booking created successfully"
+
+edit:
+  title: "Edit Booking"
+  success: "Booking updated successfully"
+
+fields:
+  customer_name: "Customer name"
+  customer_email: "Customer email"
+  customer_phone: "Customer phone"
+  service: "Service"
+  booking_date: "Booking date"
+  booking_time: "Booking time"
+  duration: "Duration"
+  status: "Status"
+  notes: "Notes"
+  total_price: "Total price"
+
+actions:
+  create_booking: "Create Booking"
+  view_booking: "View booking"
+  edit_booking: "Edit"
+  delete_booking: "Delete"
+  confirm: "Confirm"
+  cancel_booking: "Cancel"
+  previous: "Previous"
+  next: "Next"
+
+filters:
+  title: "Filters and Search"
+  search: "Search"
+  search_placeholder: "Customer name or service..."
+  status: "Status"
+  date_range: "Date range"
+  service: "Service"
+  all_statuses: "All statuses"
+  all_services: "All services"
+  filtered: "Filtered"
+  apply: "Filter"
+
+status:
+  pending: "Pending"
+  confirmed: "Confirmed"
+  cancelled: "Cancelled"
+  completed: "Completed"
+  no_show: "No show"
+
+pagination:
+  page: "Page"
+  of: "of"
+  total_bookings: "bookings total"
+  showing_page: "Page"

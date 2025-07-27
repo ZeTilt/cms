@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Pages - Admin{% endblock %}
+{% block title %}{{ 'pages.title'|trans({}, 'pages') }} - Administration{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -8,7 +8,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">Pages</span>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ 'breadcrumb.pages'|trans({}, 'pages') }}</span>
         </div>
     </li>
 {% endblock %}
@@ -19,11 +19,11 @@
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Pages</h1>
-                <p class="mt-1 text-sm text-gray-500">Manage your pages and blog posts</p>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'list.title'|trans({}, 'pages') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ 'subtitle'|trans({}, 'pages') }}</p>
             </div>
             <a href="{{ path('admin_pages_new') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                Create Page
+                {{ 'create.title'|trans({}, 'pages') }}
             </a>
         </div>
     </div>
@@ -37,14 +37,14 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No pages yet</h3>
-            <p class="mt-1 text-sm text-gray-500">Get started by creating your first page or blog post.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'list.no_pages'|trans({}, 'pages') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ 'list.get_started'|trans({}, 'pages') }}</p>
             <div class="mt-6">
                 <a href="{{ path('admin_pages_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    Create Page
+                    {{ 'actions.create_page'|trans({}, 'pages') }}
                 </a>
             </div>
         </div>
@@ -95,18 +95,18 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <a href="{{ path('admin_pages_edit', {id: page.id}) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                                    Edit
+                                    {{ 'actions.edit'|trans({}, 'admin') }}
                                 </a>
                                 {% if page.status == 'draft' %}
                                     <form method="post" action="{{ path('admin_pages_publish', {id: page.id}) }}" class="inline">
                                         <button type="submit" class="text-green-600 hover:text-green-900 text-sm font-medium">
-                                            Publish
+                                            {{ 'actions.publish'|trans({}, 'admin') }}
                                         </button>
                                     </form>
                                 {% endif %}
-                                <form method="post" action="{{ path('admin_pages_delete', {id: page.id}) }}" class="inline" onsubmit="return confirm('Are you sure?')">
+                                <form method="post" action="{{ path('admin_pages_delete', {id: page.id}) }}" class="inline" onsubmit="return confirm('{{ 'messages.confirm_delete'|trans({}, 'admin') }}')">
                                     <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">
-                                        Delete
+                                        {{ 'actions.delete'|trans({}, 'admin') }}
                                     </button>
                                 </form>
                             </div>

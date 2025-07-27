@@ -1,0 +1,72 @@
+# Module Services - Français
+title: "Gestion des Services"
+subtitle: "Présentez vos services et offres"
+
+view_mode:
+  title: "Mode d'affichage"
+  list: "Liste"
+  table: "Tableau"
+
+breadcrumb:
+  services: "Services"
+  packages: "Forfaits"
+  create: "Créer un service"
+  edit: "Modifier le service"
+
+list:
+  title: "Mes Services"
+  no_services: "Aucun service trouvé"
+  try_adjusting: "Essayez d'ajuster vos filtres"
+  get_started: "Commencez par créer votre premier service"
+
+create:
+  title: "Créer un Service"
+  success: "Service créé avec succès"
+
+edit:
+  title: "Modifier le Service"
+  success: "Service modifié avec succès"
+
+fields:
+  name: "Nom du service"
+  description: "Description"
+  price: "Prix"
+  duration: "Durée"
+  features: "Caractéristiques"
+  is_active: "Service actif"
+  category: "Catégorie"
+  featured: "À la une"
+  bookable: "Réservable"
+
+actions:
+  create_service: "Créer un Service"
+  view_service: "Voir le service"
+  edit_service: "Modifier"
+  delete_service: "Supprimer"
+  activate: "Activer"
+  deactivate: "Désactiver"
+  previous: "Précédent"
+  next: "Suivant"
+
+filters:
+  title: "Filtres et Recherche"
+  search: "Recherche"
+  search_placeholder: "Nom ou description du service..."
+  status: "Statut"
+  category: "Catégorie"
+  all_statuses: "Tous les statuts"
+  all_categories: "Toutes les catégories"
+  filtered: "Filtrés"
+  apply: "Filtrer"
+
+status:
+  active: "Actif"
+  inactive: "Inactif"
+  draft: "Brouillon"
+
+pagination:
+  page: "Page"
+  of: "sur"
+  total_services: "services au total"
+  showing_page: "Page"
+

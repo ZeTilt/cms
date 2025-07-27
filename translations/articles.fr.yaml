@@ -1,0 +1,253 @@
+# Module Articles/Blog - Français
+title: "Gestion des Articles"
+subtitle: "Créez et gérez vos articles de blog"
+
+view_mode:
+  title: "Mode d'affichage"
+  list: "Liste"
+  table: "Tableau"
+
+breadcrumb:
+  articles: "Articles"
+  blog: "Blog"
+  create: "Créer un article"
+  edit: "Modifier l'article"
+  categories: "Catégories"
+  tags: "Étiquettes"
+
+dashboard:
+  title: "Tableau de Bord Articles"
+  total_articles: "Total articles"
+  published_articles: "Articles publiés"
+  draft_articles: "Brouillons"
+  pending_review: "En attente de révision"
+  recent_articles: "Articles récents"
+  popular_articles: "Articles populaires"
+
+list:
+  title: "Liste des Articles"
+  no_articles: "Aucun article trouvé"
+  create_first: "Créer votre premier article"
+  
+header:
+  title: "Titre"
+  author: "Auteur"
+  category: "Catégorie"
+  published_date: "Date de publication"
+  status: "Statut"
+  views: "Vues"
+  comments: "Commentaires"
+  actions: "Actions"
+
+create:
+  title: "Créer un Article"
+  subtitle: "Rédigez un nouvel article pour votre blog"
+  success: "L'article a été créé avec succès"
+
+edit:
+  title: "Modifier l'Article"
+  subtitle: "Modifiez le contenu de cet article"
+  success: "L'article a été modifié avec succès"
+
+delete:
+  confirm: "Êtes-vous sûr de vouloir supprimer cet article ?"
+  success: "L'article a été supprimé avec succès"
+
+fields:
+  title: "Titre de l'article"
+  title_help: "Le titre principal de votre article"
+  slug: "URL (slug)"
+  slug_help: "L'adresse web de votre article (générée automatiquement)"
+  content: "Contenu"
+  content_help: "Le contenu complet de votre article"
+  excerpt: "Extrait"
+  excerpt_help: "Un résumé court de l'article pour les aperçus"
+  featured_image: "Image à la une"
+  featured_image_help: "L'image principale de l'article"
+  category: "Catégorie"
+  category_help: "Classifiez votre article"
+  tags: "Étiquettes"
+  tags_help: "Mots-clés séparés par des virgules"
+  author: "Auteur"
+  status: "Statut de publication"
+  published_at: "Date de publication"
+  meta_title: "Titre SEO"
+  meta_title_help: "Le titre qui apparaîtra dans les moteurs de recherche"
+  meta_description: "Description SEO"
+  meta_description_help: "La description qui apparaîtra dans les moteurs de recherche"
+  allow_comments: "Autoriser les commentaires"
+  is_featured: "Article à la une"
+  reading_time: "Temps de lecture estimé"
+  view_count: "Nombre de vues"
+  tag: "Tag"
+
+messages:
+  no_articles: "Aucun article"
+  no_articles_in_category: "Aucun article publié dans cette catégorie."
+  no_articles_with_tag: "Aucun article publié avec ce tag."
+
+navigation:
+  back_to_blog: "Retour au blog"
+  category_description: "Articles de la catégorie"
+  tag_description: "Articles avec le tag"
+
+status:
+  draft: "Brouillon"
+  published: "Publié"
+  private: "Privé"
+  pending: "En attente"
+  scheduled: "Programmé"
+  archived: "Archivé"
+
+categories:
+  title: "Gestion des Catégories"
+  name: "Nom de la catégorie"
+  slug: "URL"
+  description: "Description"
+  parent: "Catégorie parente"
+  count: "Nombre d'articles"
+  create_category: "Créer une catégorie"
+  edit_category: "Modifier la catégorie"
+  delete_category: "Supprimer la catégorie"
+  no_categories: "Aucune catégorie trouvée"
+
+tags:
+  title: "Gestion des Étiquettes"
+  name: "Nom de l'étiquette"
+  slug: "URL"
+  description: "Description"
+  count: "Nombre d'utilisations"
+  create_tag: "Créer une étiquette"
+  edit_tag: "Modifier l'étiquette"
+  delete_tag: "Supprimer l'étiquette"
+  no_tags: "Aucune étiquette trouvée"
+  popular_tags: "Étiquettes populaires"
+
+comments:
+  title: "Gestion des Commentaires"
+  author: "Auteur"
+  content: "Contenu"
+  date: "Date"
+  status: "Statut"
+  approve: "Approuver"
+  reject: "Rejeter"
+  spam: "Marquer comme spam"
+  reply: "Répondre"
+  edit_comment: "Modifier le commentaire"
+  delete_comment: "Supprimer le commentaire"
+  no_comments: "Aucun commentaire"
+  pending_approval: "En attente d'approbation"
+  approved: "Approuvé"
+  rejected: "Rejeté"
+  spam_comment: "Spam"
+
+actions:
+  create_article: "Créer un Article"
+  edit_article: "Modifier"
+  view_article: "Voir l'article"
+  duplicate_article: "Dupliquer"
+  delete_article: "Supprimer"
+  publish: "Publier"
+  unpublish: "Dépublier"
+  schedule: "Programmer"
+  archive: "Archiver"
+  feature: "Mettre à la une"
+  unfeature: "Retirer de la une"
+  preview: "Aperçu"
+
+search:
+  placeholder: "Rechercher des articles..."
+  by_title: "Par titre"
+  by_content: "Par contenu"
+  by_author: "Par auteur"
+  by_category: "Par catégorie"
+  by_tag: "Par étiquette"
+  
+filters:
+  all: "Tous les articles"
+  published: "Publiés"
+  draft: "Brouillons"
+  private: "Privés"
+  pending: "En attente"
+  scheduled: "Programmés"
+  featured: "À la une"
+  by_author: "Par auteur"
+  by_category: "Par catégorie"
+  by_date: "Par date"
+  
+bulk_actions:
+  select_action: "Sélectionner une action"
+  publish_selected: "Publier la sélection"
+  unpublish_selected: "Dépublier la sélection"
+  delete_selected: "Supprimer la sélection"
+  archive_selected: "Archiver la sélection"
+  feature_selected: "Mettre à la une"
+  export_selected: "Exporter la sélection"
+  apply: "Appliquer"
+
+validation:
+  title_required: "Le titre est obligatoire"
+  slug_required: "L'URL est obligatoire"
+  slug_invalid: "L'URL contient des caractères non autorisés"
+  slug_exists: "Cette URL est déjà utilisée"
+  content_required: "Le contenu est obligatoire"
+  category_required: "Veuillez sélectionner une catégorie"
+  author_required: "L'auteur est obligatoire"
+  published_date_future: "La date de publication ne peut pas être dans le futur pour un article publié"
+
+editor:
+  bold: "Gras"
+  italic: "Italique"
+  underline: "Souligné"
+  strikethrough: "Barré"
+  link: "Lien"
+  image: "Image"
+  quote: "Citation"
+  code: "Code"
+  list_bullet: "Liste à puces"
+  list_number: "Liste numérotée"
+  heading: "Titre"
+  paragraph: "Paragraphe"
+  save_draft: "Sauvegarder le brouillon"
+  preview: "Aperçu"
+  fullscreen: "Plein écran"
+  word_count: "Nombre de mots"
+
+seo:
+  title: "Optimisation SEO"
+  preview: "Aperçu des résultats de recherche"
+  characters_left: "caractères restants"
+  title_length: "Le titre SEO doit faire entre 50 et 60 caractères"
+  description_length: "La description SEO doit faire entre 150 et 160 caractères"
+  focus_keyword: "Mot-clé principal"
+  readability: "Lisibilité"
+  analysis: "Analyse SEO"
+
+media:
+  title: "Médiathèque"
+  upload: "Envoyer des fichiers"
+  select: "Sélectionner"
+  insert: "Insérer"
+  edit: "Modifier"
+  delete: "Supprimer"
+  alt_text: "Texte alternatif"
+  caption: "Légende"
+  alignment: "Alignement"
+  size: "Taille"
+
+export:
+  articles: "Articles"
+  format: "Format"
+  csv: "CSV"
+  excel: "Excel"
+  pdf: "PDF"
+  xml: "XML"
+  
+statistics:
+  total_views: "Total des vues"
+  average_reading_time: "Temps de lecture moyen"
+  most_viewed: "Les plus vus"
+  most_commented: "Les plus commentés"
+  popular_categories: "Catégories populaires"
+  popular_tags: "Étiquettes populaires"
+  monthly_posts: "Articles par mois"

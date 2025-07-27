@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Create your account
+            </h2>
+            {% if config.welcome_message %}
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    {{ config.welcome_message }}
+                </p>
+            {% endif %}
+        </div>
+        
+        {% for message in app.flashes('error') %}
+            <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-800">{{ message }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if errors.general is defined %}
+            <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        {% for error in errors.general %}
+                            <p class="text-sm text-red-800">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <form method="post" class="mt-8 space-y-6">
+            <div class="grid grid-cols-1 gap-6">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700">
+                            First Name
+                        </label>
+                        <input id="first_name" 
+                               name="first_name" 
+                               type="text" 
+                               value="{{ formData.firstName ?? '' }}"
+                               required 
+                               class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.firstName is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        {% if errors.firstName is defined %}
+                            <p class="mt-1 text-sm text-red-600">{{ errors.firstName|first }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700">
+                            Last Name
+                        </label>
+                        <input id="last_name" 
+                               name="last_name" 
+                               type="text" 
+                               value="{{ formData.lastName ?? '' }}"
+                               required 
+                               class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.lastName is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        {% if errors.lastName is defined %}
+                            <p class="mt-1 text-sm text-red-600">{{ errors.lastName|first }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">
+                        Email Address
+                    </label>
+                    <input id="email" 
+                           name="email" 
+                           type="email" 
+                           value="{{ formData.email ?? '' }}"
+                           autocomplete="email" 
+                           required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.email is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                           placeholder="your@email.com">
+                    {% if errors.email is defined %}
+                        <p class="mt-1 text-sm text-red-600">{{ errors.email|first }}</p>
+                    {% endif %}
+                </div>
+
+                {% if userTypes is not empty %}
+                    <div>
+                        <label for="user_type_id" class="block text-sm font-medium text-gray-700">
+                            Account Type
+                        </label>
+                        <select id="user_type_id" 
+                                name="user_type_id" 
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="">Select account type (optional)</option>
+                            {% for userType in userTypes %}
+                                <option value="{{ userType.id }}" {{ (formData.userTypeId ?? '') == userType.id ? 'selected' : '' }}>
+                                    {{ userType.displayName }}
+                                    {% if userType.description %}
+                                        - {{ userType.description }}
+                                    {% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if errors.userTypeId is defined %}
+                            <p class="mt-1 text-sm text-red-600">{{ errors.userTypeId|first }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">
+                        Password
+                    </label>
+                    <input id="password" 
+                           name="password" 
+                           type="password" 
+                           autocomplete="new-password" 
+                           required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.password is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                           placeholder="Minimum 8 characters">
+                    {% if errors.password is defined %}
+                        <p class="mt-1 text-sm text-red-600">{{ errors.password|first }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-gray-700">
+                        Confirm Password
+                    </label>
+                    <input id="confirm_password" 
+                           name="confirm_password" 
+                           type="password" 
+                           autocomplete="new-password" 
+                           required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.confirmPassword is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                           placeholder="Repeat your password">
+                    {% if errors.confirmPassword is defined %}
+                        <p class="mt-1 text-sm text-red-600">{{ errors.confirmPassword|first }}</p>
+                    {% endif %}
+                </div>
+
+                {% if config.terms_required %}
+                    <div>
+                        <div class="flex items-center">
+                            <input id="terms_accepted" 
+                                   name="terms_accepted" 
+                                   type="checkbox" 
+                                   {{ formData.termsAccepted ? 'checked' : '' }}
+                                   required
+                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="terms_accepted" class="ml-2 block text-sm text-gray-900">
+                                I agree to the
+                                {% if config.terms_url %}
+                                    <a href="{{ config.terms_url }}" target="_blank" class="text-indigo-600 hover:text-indigo-500">
+                                        Terms and Conditions
+                                    </a>
+                                {% else %}
+                                    Terms and Conditions
+                                {% endif %}
+                            </label>
+                        </div>
+                        {% if errors.termsAccepted is defined %}
+                            <p class="mt-1 text-sm text-red-600">{{ errors.termsAccepted|first }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <button type="submit" 
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                    </span>
+                    Create Account
+                </button>
+            </div>
+
+            <div class="text-center">
+                <span class="text-sm text-gray-600">
+                    Already have an account?
+                    <a href="{{ path('app_login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                        Sign in here
+                    </a>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

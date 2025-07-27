@@ -13,6 +13,10 @@ class ContentSanitizer
     {
         $config = HTMLPurifier_Config::createDefault();
         
+        // Configure basic settings first
+        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+        $config->set('HTML.TidyLevel', 'medium');
+        
         // Allow safe HTML tags and attributes for blog content
         $config->set('HTML.Allowed', 
             'p,br,strong,b,em,i,u,s,strike,del,ins,sup,sub,small,mark,abbr,cite,code,pre,blockquote,' .
@@ -20,21 +24,28 @@ class ContentSanitizer
             'ul,ol,li,dl,dt,dd,' .
             'a[href|title|target],img[src|alt|title|width|height],' .
             'table,thead,tbody,tfoot,tr,th[scope],td[colspan|rowspan],' .
-            'div[class],span[class]'
+            'div[class],span[class],time[datetime],figure,figcaption'
         );
         
-        // Allow safe CSS properties
-        $config->set('CSS.AllowedProperties', 
-            'font-weight,font-style,text-decoration,text-align,color,background-color,' .
-            'margin,padding,width,height,max-width,max-height'
-        );
-        
-        // Configure links
+        // Configure links - MUST be set BEFORE getHTMLDefinition
         $config->set('HTML.Nofollow', true); // Add rel="nofollow" to external links
         $config->set('HTML.TargetBlank', true); // Add target="_blank" to external links
         
-        // Enable cache for better performance
+        // Enable cache for better performance - MUST be set BEFORE getHTMLDefinition
         $config->set('Cache.SerializerPath', sys_get_temp_dir());
+        
+        // Allow safe CSS properties - MUST be set BEFORE getHTMLDefinition
+        $config->set('CSS.AllowedProperties', 
+            'font-weight,font-style,text-decoration,text-align,color,background-color,' .
+            'margin,padding,width,height,max-width,max-height,border,border-radius'
+        );
+        
+        // Add custom definition for HTML5 elements like <mark> - MUST be LAST
+        $def = $config->getHTMLDefinition(true);
+        $def->addElement('mark', 'Inline', 'Inline', 'Common');
+        $def->addElement('time', 'Inline', 'Inline', 'Common', ['datetime' => 'Text']);
+        $def->addElement('figure', 'Block', 'Flow', 'Common');
+        $def->addElement('figcaption', 'Inline', 'Inline', 'Common');
         
         $this->purifier = new HTMLPurifier($config);
     }

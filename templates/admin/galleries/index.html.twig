@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Galleries - Admin{% endblock %}
+{% block title %}{{ 'title'|trans({}, 'galleries') }} - ZeTilt CMS{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -8,7 +8,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">Galleries</span>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ 'breadcrumb.galleries'|trans({}, 'galleries') }}</span>
         </div>
     </li>
 {% endblock %}
@@ -19,95 +19,235 @@
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Galleries</h1>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'list.title'|trans({}, 'galleries') }}</h1>
                 <p class="mt-1 text-sm text-gray-500">
-                    Manage your photo galleries. Storage used: {{ totalStorageUsed }}
+                    {{ 'subtitle'|trans({}, 'galleries') }}. {{ 'storage.used'|trans({}, 'galleries') }}: {{ totalStorageUsed }}
                 </p>
             </div>
-            <a href="{{ path('admin_galleries_new') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                Create Gallery
-            </a>
+            <div class="flex items-center space-x-4">
+                <!-- View Mode Switch -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500">{{ 'view_mode.title'|trans({}, 'galleries') }}:</span>
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button onclick="toggleViewMode('grid')" 
+                                id="grid-btn"
+                                class="px-3 py-1 text-xs font-medium text-gray-700 rounded-md transition-all duration-150">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                            {{ 'view_mode.grid'|trans({}, 'galleries') }}
+                        </button>
+                        <button onclick="toggleViewMode('table')"
+                                id="table-btn"
+                                class="px-3 py-1 text-xs font-medium text-gray-700 rounded-md transition-all duration-150">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0V4a1 1 0 011-1h12a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1z"></path>
+                            </svg>
+                            {{ 'view_mode.table'|trans({}, 'galleries') }}
+                        </button>
+                    </div>
+                </div>
+                
+                <a href="{{ path('admin_galleries_new') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    {{ 'actions.create_gallery'|trans({}, 'galleries') }}
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Content -->
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        {% if galleries is empty %}
-            <!-- Empty State -->
-            <div class="text-center py-12">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">No galleries yet</h3>
-                <p class="mt-1 text-sm text-gray-500">Get started by creating your first photo gallery.</p>
-                <div class="mt-6">
-                    <a href="{{ path('admin_galleries_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Create Gallery
-                    </a>
-                </div>
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8"
+     
+    {% if galleries is empty %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'list.no_galleries'|trans({}, 'galleries') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ 'list.create_first'|trans({}, 'galleries') }}</p>
+            <div class="mt-6">
+                <a href="{{ path('admin_galleries_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    {{ 'actions.create_gallery'|trans({}, 'galleries') }}
+                </a>
             </div>
-        {% else %}
-            <!-- Gallery Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for gallery in galleries %}
-                    <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
-                        <!-- Gallery Cover -->
-                        <div class="aspect-video bg-gray-100 rounded-t-lg overflow-hidden">
-                            {% set coverUrl = gallery.coverImageUrl %}
-                            {% if coverUrl %}
-                                <img src="{{ coverUrl }}" alt="{{ gallery.title }}" class="w-full h-full object-cover">
-                            {% else %}
-                                <div class="w-full h-full flex items-center justify-center">
-                                    <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                            {% endif %}
+        </div>
+    {% else %}
+        <!-- Grid View -->
+        <div id="grid-view" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for gallery in galleries %}
+                <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+                    <!-- Gallery Cover -->
+                    <div class="aspect-video bg-gray-100 rounded-t-lg overflow-hidden">
+                        {% set coverUrl = gallery.coverImageUrl %}
+                        {% if coverUrl %}
+                            <img src="{{ coverUrl }}" alt="{{ gallery.title }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center">
+                                <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Gallery Info -->
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900 truncate">{{ gallery.title }}</h3>
+                            <div class="flex items-center space-x-1 text-xs">
+                                {% if gallery.visibility == 'private' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                        🔒 {{ 'status.private'|trans({}, 'galleries') }}
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                        🌐 {{ 'status.public'|trans({}, 'galleries') }}
+                                    </span>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <!-- Gallery Info -->
-                        <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-lg font-semibold text-gray-900 truncate">{{ gallery.title }}</h3>
-                                <div class="flex items-center space-x-1 text-xs">
-                                    {% if gallery.visibility == 'private' %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                            🔒 Private
-                                        </span>
-                                    {% else %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                            🌐 Public
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </div>
+                        {% if gallery.description %}
+                            <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ gallery.description|striptags|slice(0, 100) }}{% if gallery.description|striptags|length > 100 %}...{% endif %}</p>
+                        {% endif %}
 
-                            {% if gallery.description %}
-                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ gallery.description|slice(0, 100) }}{% if gallery.description|length > 100 %}...{% endif %}</p>
-                            {% endif %}
+                        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                            <span>{{ gallery.imageCount }} {{ 'images.title'|trans({}, 'galleries') }}</span>
+                            <span>{{ gallery.updatedAt|date('M j, Y') }}</span>
+                        </div>
 
-                            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
-                                <span>{{ gallery.imageCount }} images</span>
-                                <span>{{ gallery.updatedAt|date('M j, Y') }}</span>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="flex space-x-2">
-                                <a href="{{ path('admin_galleries_show', {id: gallery.id}) }}" class="flex-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-2 rounded text-sm font-medium text-center transition-colors">
-                                    View
-                                </a>
-                                <a href="{{ path('admin_galleries_edit', {id: gallery.id}) }}" class="flex-1 bg-gray-50 text-gray-700 hover:bg-gray-100 px-3 py-2 rounded text-sm font-medium text-center transition-colors">
-                                    Edit
-                                </a>
-                            </div>
+                        <!-- Actions -->
+                        <div class="flex space-x-2">
+                            <a href="{{ path('admin_galleries_show', {id: gallery.id}) }}" class="flex-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-2 rounded text-sm font-medium text-center transition-colors">
+                                {{ 'actions.view_gallery'|trans({}, 'galleries') }}
+                            </a>
+                            <a href="{{ path('admin_galleries_edit', {id: gallery.id}) }}" class="flex-1 bg-gray-50 text-gray-700 hover:bg-gray-100 px-3 py-2 rounded text-sm font-medium text-center transition-colors">
+                                {{ 'actions.edit_gallery'|trans({}, 'galleries') }}
+                            </a>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Table View -->
+        <div id="table-view" class="bg-white shadow rounded-lg overflow-hidden hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16"></th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.name'|trans({}, 'galleries') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.description'|trans({}, 'galleries') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'images.title'|trans({}, 'galleries') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'status.private'|trans({}, 'galleries') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'datetime.updated_at'|trans({}, 'admin') }}</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for gallery in galleries %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+                                    {% set coverUrl = gallery.coverImageUrl %}
+                                    {% if coverUrl %}
+                                        <img src="{{ coverUrl }}" alt="{{ gallery.title }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ gallery.title }}</div>
+                                <div class="text-sm text-gray-500">{{ gallery.slug }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900 max-w-xs truncate">
+                                    {{ gallery.description ? gallery.description|striptags|slice(0, 80) ~ (gallery.description|striptags|length > 80 ? '...' : '') : '-' }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="text-sm text-gray-900">{{ gallery.imageCount }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                {% if gallery.visibility == 'private' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        🔒 {{ 'status.private'|trans({}, 'galleries') }}
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        🌐 {{ 'status.public'|trans({}, 'galleries') }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ gallery.updatedAt|date('d/m/Y H:i') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex justify-end space-x-2">
+                                    <a href="{{ path('admin_galleries_show', {id: gallery.id}) }}" class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                        {{ 'actions.view_gallery'|trans({}, 'galleries') }}
+                                    </a>
+                                    <a href="{{ path('admin_galleries_edit', {id: gallery.id}) }}" class="text-gray-600 hover:text-gray-900 text-sm">
+                                        {{ 'actions.edit_gallery'|trans({}, 'galleries') }}
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 </div>
+
+<script>
+function toggleViewMode(mode) {
+    console.log('Toggle to:', mode);
+    
+    // Update localStorage
+    localStorage.setItem('galleries-view-mode', mode);
+    
+    // Get elements
+    const gridView = document.getElementById('grid-view');
+    const tableView = document.getElementById('table-view');
+    const gridBtn = document.getElementById('grid-btn');
+    const tableBtn = document.getElementById('table-btn');
+    
+    if (mode === 'grid') {
+        // Show grid, hide table
+        gridView.classList.remove('hidden');
+        tableView.classList.add('hidden');
+        
+        // Update button styles
+        gridBtn.classList.add('bg-white', 'shadow-sm');
+        tableBtn.classList.remove('bg-white', 'shadow-sm');
+    } else {
+        // Show table, hide grid
+        gridView.classList.add('hidden');
+        tableView.classList.remove('hidden');
+        
+        // Update button styles
+        tableBtn.classList.add('bg-white', 'shadow-sm');
+        gridBtn.classList.remove('bg-white', 'shadow-sm');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedMode = localStorage.getItem('galleries-view-mode') || 'grid';
+    console.log('Page loaded, initializing with mode:', savedMode);
+    toggleViewMode(savedMode);
+});
+</script>
+
 {% endblock %}

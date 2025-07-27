@@ -1,0 +1,28 @@
+# Module Traductions - Français
+title: "Gestion des Traductions"
+
+settings:
+  title: "Paramètres de Traduction"
+  subtitle: "Configurez les langues supportées et la langue par défaut de votre site"
+  default_locale: "Langue par Défaut"
+  default_locale_help: "La langue par défaut de votre contenu. C'est la langue originale sur laquelle les autres traductions seront basées."
+  supported_locales: "Langues Supportées"
+  supported_locales_help: "Sélectionnez toutes les langues que vous voulez supporter sur votre site. Vous pouvez toujours ajouter ou supprimer des langues plus tard."
+  help_text: "Sélectionnez toutes les langues que vous voulez supporter sur votre site. Vous pouvez toujours ajouter ou supprimer des langues plus tard."
+  info:
+    title: "Informations sur le Système de Traduction"
+    default_content: "La langue par défaut contient le contenu original de toutes vos pages, articles, événements et services."
+    separate_storage: "Les traductions sont stockées séparément et reviendront à la langue par défaut si elles ne sont pas disponibles."
+    modify_anytime: "Vous pouvez modifier les langues supportées à tout moment sans perdre les traductions existantes."
+    change_default: "Changer la langue par défaut nécessitera de mettre à jour votre contenu en conséquence."
+  success: "Paramètres enregistrés avec succès !"
+  error: "Erreur lors de l'enregistrement des paramètres"
+
+actions:
+  back_to_dashboard: "Retour au Tableau de Bord"
+
+messages:
+  no_content: "Aucun contenu à traduire"
+  get_started: "Commencez par créer des pages, articles ou autres contenus."
+  saved_success: "Traductions enregistrées avec succès !"
+  save_error: "Erreur lors de l'enregistrement des traductions"

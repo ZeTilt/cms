@@ -1,0 +1,175 @@
+<!-- Create User Modal -->
+<div id="createUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-10 mx-auto p-5 border max-w-2xl shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-medium text-gray-900">{{ 'userplus.create_user.title'|trans({}, 'userplus') }}</h3>
+                <button type="button" onclick="hideCreateUserModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="createUserForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="create_first_name" class="block text-sm font-medium text-gray-700">{{ 'userplus.create_user.first_name'|trans({}, 'userplus') }} *</label>
+                        <input type="text" id="create_first_name" name="first_name" required 
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label for="create_last_name" class="block text-sm font-medium text-gray-700">{{ 'userplus.create_user.last_name'|trans({}, 'userplus') }} *</label>
+                        <input type="text" id="create_last_name" name="last_name" required 
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="create_email" class="block text-sm font-medium text-gray-700">{{ 'userplus.create_user.email'|trans({}, 'userplus') }} *</label>
+                    <input type="email" id="create_email" name="email" required 
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <p class="mt-1 text-xs text-gray-500">{{ 'userplus.create_user.email_help'|trans({}, 'userplus') }}</p>
+                </div>
+                
+                <div>
+                    <label for="create_password" class="block text-sm font-medium text-gray-700">{{ 'userplus.create_user.password'|trans({}, 'userplus') }} *</label>
+                    <input type="password" id="create_password" name="password" required minlength="6"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <p class="mt-1 text-xs text-gray-500">{{ 'userplus.create_user.password_help'|trans({}, 'userplus') }}</p>
+                </div>
+                
+                <div>
+                    <label for="create_user_type" class="block text-sm font-medium text-gray-700">{{ 'userplus.create_user.user_type_optional'|trans({}, 'userplus') }}</label>
+                    <select id="create_user_type" name="user_type_id" 
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">{{ 'userplus.create_user.no_type_option'|trans({}, 'userplus') }}</option>
+                        {% for userType in userTypes %}
+                            <option value="{{ userType.id }}">{{ userType.displayName }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500">{{ 'userplus.create_user.assign_later'|trans({}, 'userplus') }}</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="create_roles" class="block text-sm font-medium text-gray-700">{{ 'userplus.create_user.role'|trans({}, 'userplus') }}</label>
+                        <select id="create_roles" name="roles" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="ROLE_USER">{{ 'userplus.roles.regular_user'|trans({}, 'userplus') }}</option>
+                            <option value="ROLE_ADMIN">{{ 'userplus.roles.admin'|trans({}, 'userplus') }}</option>
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                <option value="ROLE_SUPER_ADMIN">{{ 'userplus.roles.super_admin'|trans({}, 'userplus') }}</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center mt-6">
+                            <input type="checkbox" id="create_active" name="active" value="1" checked
+                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="create_active" class="ml-2 block text-sm text-gray-900">{{ 'userplus.create_user.active_checkbox'|trans({}, 'userplus') }}</label>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">{{ 'userplus.create_user.active_help'|trans({}, 'userplus') }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-6 border-t">
+                    <button type="button" onclick="hideCreateUserModal()" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        {{ 'userplus.actions.cancel'|trans({}, 'userplus') }}
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700">
+                        {{ 'userplus.create_user.create_user_button'|trans({}, 'userplus') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showCreateUserModal() {
+    document.getElementById('createUserModal').classList.remove('hidden');
+    resetCreateUserForm();
+}
+
+function hideCreateUserModal() {
+    document.getElementById('createUserModal').classList.add('hidden');
+    resetCreateUserForm();
+}
+
+function resetCreateUserForm() {
+    document.getElementById('createUserForm').reset();
+    document.getElementById('create_active').checked = true;
+}
+
+// Handle form submission
+document.getElementById('createUserForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {};
+    
+    // Convert FormData to object
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    // Handle active checkbox
+    data.active = document.getElementById('create_active').checked;
+    
+    // Send to server (Note: This requires a create user endpoint in the controller)
+    fetch('/admin/userplus/users/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showCreateNotification('{{ 'userplus.messages.user_created'|trans({}, 'userplus') }}', 'success');
+            hideCreateUserModal();
+            location.reload(); // Reload to show the new user
+        } else {
+            showCreateNotification(data.message || '{{ 'userplus.messages.user_creation_failed'|trans({}, 'userplus') }}', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showCreateNotification('{{ 'userplus.messages.user_creation_error'|trans({}, 'userplus') }}', 'error');
+    });
+});
+
+function showCreateNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg ${
+        type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 
+        'bg-red-100 text-red-800 border border-red-200'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${type === 'success' ? 
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' :
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                }
+            </svg>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+</script>

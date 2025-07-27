@@ -57,7 +57,7 @@
 
                     <!-- Description -->
                     <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <label for="description" class="block text-sm font-medium text-gray-700">{{ 'fields.description'|trans({}, 'admin') }}</label>
                         <div id="description-editor" style="height: 150px;">{{ gallery.description|raw }}</div>
                         <textarea id="description" name="description" class="hidden">{{ gallery.description }}</textarea>
                         <p class="mt-1 text-sm text-gray-500">Optional description for your gallery</p>

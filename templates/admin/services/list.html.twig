@@ -1,0 +1,433 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'title'|trans({}, 'services') }} - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'list.title'|trans({}, 'services') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ 'subtitle'|trans({}, 'services') }}</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- View Mode Switch -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500">{{ 'view_mode.title'|trans({}, 'services') }}:</span>
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button onclick="toggleViewMode('list')" 
+                                id="list-btn"
+                                class="px-3 py-1 text-xs font-medium text-gray-700 rounded-md transition-all duration-150">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            {{ 'view_mode.list'|trans({}, 'services') }}
+                        </button>
+                        <button onclick="toggleViewMode('table')"
+                                id="table-btn"
+                                class="px-3 py-1 text-xs font-medium text-gray-700 rounded-md transition-all duration-150">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0V4a1 1 0 011-1h12a1 1 0 011 1v16a1 1 0 01-1-1z"></path>
+                            </svg>
+                            {{ 'view_mode.table'|trans({}, 'services') }}
+                        </button>
+                    </div>
+                </div>
+                
+                <a href="{{ path('admin_services_new') }}" 
+                   class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    {{ 'actions.create_service'|trans({}, 'services') }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Filters and Search -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">{{ 'filters.title'|trans({}, 'services') }}</h3>
+        </div>
+        <div class="p-6">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700">{{ 'filters.search'|trans({}, 'services') }}</label>
+                    <input type="text" id="search" name="search" value="{{ currentSearch ?? '' }}"
+                           placeholder="{{ 'filters.search_placeholder'|trans({}, 'services') }}"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">{{ 'filters.status'|trans({}, 'services') }}</label>
+                    <select id="status" name="status" 
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">{{ 'filters.all_statuses'|trans({}, 'services') }}</option>
+                        <option value="active" {{ currentStatus == 'active' ? 'selected' : '' }}>{{ 'status.active'|trans({}, 'services') }}</option>
+                        <option value="inactive" {{ currentStatus == 'inactive' ? 'selected' : '' }}>{{ 'status.inactive'|trans({}, 'services') }}</option>
+                        <option value="draft" {{ currentStatus == 'draft' ? 'selected' : '' }}>{{ 'status.draft'|trans({}, 'services') }}</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700">{{ 'filters.category'|trans({}, 'services') }}</label>
+                    <select id="category" name="category" 
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">{{ 'filters.all_categories'|trans({}, 'services') }}</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}" {{ currentCategory == category ? 'selected' : '' }}>
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" 
+                            class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        {{ 'filters.apply'|trans({}, 'services') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Services List -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900">
+                    {{ 'breadcrumb.services'|trans({}, 'services') }} ({{ totalServices }})
+                    {% if currentStatus or currentCategory or currentSearch %}
+                        - {{ 'filters.filtered'|trans({}, 'services') }}
+                    {% endif %}
+                </h3>
+                {% if totalPages > 1 %}
+                    <div class="flex items-center space-x-2 text-sm text-gray-500">
+                        <span>{{ 'pagination.page'|trans({}, 'services') }} {{ currentPage }} {{ 'pagination.of'|trans({}, 'services') }} {{ totalPages }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if services is empty %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'list.no_services'|trans({}, 'services') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    {% if currentSearch or currentStatus or currentCategory %}
+                        {{ 'list.try_adjusting'|trans({}, 'services') }}
+                    {% else %}
+                        {{ 'list.get_started'|trans({}, 'services') }}
+                    {% endif %}
+                </p>
+                {% if not currentSearch and not currentStatus and not currentCategory %}
+                    <div class="mt-6">
+                        <a href="{{ path('admin_services_new') }}" 
+                           class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            {{ 'actions.create_service'|trans({}, 'services') }}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <!-- List View -->
+            <div id="list-view" class="divide-y divide-gray-200">
+                {% for service in services %}
+                    <div class="px-6 py-4 hover:bg-gray-50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3">
+                                    <h4 class="text-lg font-medium text-gray-900">
+                                        {{ service.name }}
+                                    </h4>
+                                    
+                                    <!-- Status Badge -->
+                                    {% if service.status == 'active' %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ 'status.active'|trans({}, 'services') }}
+                                        </span>
+                                    {% elseif service.status == 'inactive' %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            {{ 'status.inactive'|trans({}, 'services') }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            {{ 'status.draft'|trans({}, 'services') }}
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if service.featured %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            {{ 'fields.featured'|trans({}, 'services') }}
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if service.bookable %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ 'fields.bookable'|trans({}, 'services') }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                                    {% if service.category %}
+                                        <span class="flex items-center">
+                                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                            </svg>
+                                            {{ service.category }}
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if service.price %}
+                                        <span class="flex items-center">
+                                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                            </svg>
+                                            {{ service.formattedPrice }}
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if service.formattedDuration %}
+                                        <span class="flex items-center">
+                                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            {{ service.formattedDuration }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if service.shortDescription %}
+                                    <p class="mt-2 text-sm text-gray-600 line-clamp-2">{{ service.shortDescription }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex items-center space-x-2">
+                                <a href="{{ path('admin_services_edit', {id: service.id}) }}" 
+                                   class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                    {{ 'actions.edit_service'|trans({}, 'services') }}
+                                </a>
+                                
+                                <form method="post" action="{{ path('admin_services_toggle_status', {id: service.id}) }}" class="inline">
+                                    <button type="submit" 
+                                            class="text-gray-600 hover:text-gray-900 text-sm">
+                                        {% if service.status == 'active' %}
+                                            {{ 'actions.deactivate'|trans({}, 'services') }}
+                                        {% else %}
+                                            {{ 'actions.activate'|trans({}, 'services') }}
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Table View -->
+            <div id="table-view" class="hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.name'|trans({}, 'services') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.category'|trans({}, 'services') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.price'|trans({}, 'services') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.duration'|trans({}, 'services') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'status.active'|trans({}, 'services') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'fields.featured'|trans({}, 'services') }}</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for service in services %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ service.name }}</div>
+                                    {% if service.shortDescription %}
+                                        <div class="text-sm text-gray-500 max-w-xs truncate">
+                                            {{ service.shortDescription|striptags|slice(0, 60) }}{% if service.shortDescription|striptags|length > 60 %}...{% endif %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-sm text-gray-900">{{ service.category ?: '-' }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-sm text-gray-900">{{ service.formattedPrice ?: '-' }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-sm text-gray-900">{{ service.formattedDuration ?: '-' }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    {% if service.status == 'active' %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ 'status.active'|trans({}, 'services') }}
+                                        </span>
+                                    {% elseif service.status == 'inactive' %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            {{ 'status.inactive'|trans({}, 'services') }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            {{ 'status.draft'|trans({}, 'services') }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    {% if service.featured %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            ⭐
+                                        </span>
+                                    {% else %}
+                                        <span class="text-gray-400">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <a href="{{ path('admin_services_edit', {id: service.id}) }}" 
+                                           class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                            {{ 'actions.edit_service'|trans({}, 'services') }}
+                                        </a>
+                                        <form method="post" action="{{ path('admin_services_toggle_status', {id: service.id}) }}" class="inline">
+                                            <button type="submit" 
+                                                    class="text-gray-600 hover:text-gray-900 text-sm">
+                                                {% if service.status == 'active' %}
+                                                    {{ 'actions.deactivate'|trans({}, 'services') }}
+                                                {% else %}
+                                                    {{ 'actions.activate'|trans({}, 'services') }}
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if totalPages > 1 %}
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        {% if currentPage > 1 %}
+                            <a href="{{ path('admin_services_list', app.request.query.all|merge({page: currentPage - 1})) }}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                {{ 'actions.previous'|trans({}, 'services') }}
+                            </a>
+                        {% endif %}
+                        {% if currentPage < totalPages %}
+                            <a href="{{ path('admin_services_list', app.request.query.all|merge({page: currentPage + 1})) }}" 
+                               class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                {{ 'actions.next'|trans({}, 'services') }}
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing page <span class="font-medium">{{ currentPage }}</span> of <span class="font-medium">{{ totalPages }}</span>
+                                (<span class="font-medium">{{ totalServices }}</span> total services)
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                {% if currentPage > 1 %}
+                                    <a href="{{ path('admin_services_list', app.request.query.all|merge({page: currentPage - 1})) }}" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </a>
+                                {% endif %}
+                                
+                                {% for page in 1..totalPages %}
+                                    {% if page == currentPage %}
+                                        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                            {{ page }}
+                                        </span>
+                                    {% elseif page == 1 or page == totalPages or (page >= currentPage - 2 and page <= currentPage + 2) %}
+                                        <a href="{{ path('admin_services_list', app.request.query.all|merge({page: page})) }}" 
+                                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                            {{ page }}
+                                        </a>
+                                    {% elseif page == currentPage - 3 or page == currentPage + 3 %}
+                                        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                            ...
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if currentPage < totalPages %}
+                                    <a href="{{ path('admin_services_list', app.request.query.all|merge({page: currentPage + 1})) }}" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleViewMode(mode) {
+    // Update localStorage
+    localStorage.setItem('services-view-mode', mode);
+    
+    // Get elements
+    const listView = document.getElementById('list-view');
+    const tableView = document.getElementById('table-view');
+    const listBtn = document.getElementById('list-btn');
+    const tableBtn = document.getElementById('table-btn');
+    
+    // Check if elements exist
+    if (!listView || !tableView || !listBtn || !tableBtn) {
+        console.warn('View mode elements not found');
+        return;
+    }
+    
+    if (mode === 'list') {
+        // Show list, hide table
+        listView.classList.remove('hidden');
+        tableView.classList.add('hidden');
+        
+        // Update button styles
+        listBtn.classList.add('bg-white', 'shadow-sm');
+        tableBtn.classList.remove('bg-white', 'shadow-sm');
+    } else {
+        // Show table, hide list
+        listView.classList.add('hidden');
+        tableView.classList.remove('hidden');
+        
+        // Update button styles
+        tableBtn.classList.add('bg-white', 'shadow-sm');
+        listBtn.classList.remove('bg-white', 'shadow-sm');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedMode = localStorage.getItem('services-view-mode') || 'list';
+    toggleViewMode(savedMode);
+});
+</script>
+
+{% endblock %}

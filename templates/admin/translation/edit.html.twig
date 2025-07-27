@@ -1,0 +1,198 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Traduire {{ entityType|title }} #{{ entity.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate">
+                Traduire {{ entityType|title }}: 
+                {% if entity.title is defined %}
+                    {{ entity.title }}
+                {% elseif entity.name is defined %}
+                    {{ entity.name }}
+                {% else %}
+                    #{{ entity.id }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0">
+            <a href="{{ path('admin_translation_dashboard') }}" class="inline-flex items-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">
+                ← {{ 'actions.back'|trans({}, 'admin') }} au Tableau de Bord
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                {% for locale in supportedLocales %}
+                    <button type="button" 
+                            class="locale-tab border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium 
+                                   {% if loop.first %}active border-blue-500 text-blue-600{% endif %}"
+                            data-locale="{{ locale }}">
+                        {{ locale_name(locale) }}
+                        {% if locale == defaultLocale %}
+                            <span class="ml-1 text-xs">(original)</span>
+                        {% endif %}
+                    </button>
+                {% endfor %}
+            </nav>
+        </div>
+
+        <div class="p-6">
+            {% for locale in supportedLocales %}
+                <div class="locale-content {% if not loop.first %}hidden{% endif %}" data-locale="{{ locale }}">
+                    <form class="translation-form" data-locale="{{ locale }}">
+                        <div class="space-y-6">
+                            {% for fieldName in translatableFields %}
+                                <div>
+                                    <label for="{{ locale }}_{{ fieldName }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                        {% if fieldName == 'title' %}Titre
+                                        {% elseif fieldName == 'content' %}Contenu
+                                        {% elseif fieldName == 'excerpt' %}Extrait
+                                        {% elseif fieldName == 'description' %}Description
+                                        {% elseif fieldName == 'location' %}Lieu
+                                        {% elseif fieldName == 'name' %}Nom
+                                        {% elseif fieldName == 'features' %}Fonctionnalités
+                                        {% elseif fieldName == 'clientName' %}Nom du Client
+                                        {% elseif fieldName == 'clientCompany' %}Entreprise du Client
+                                        {% elseif fieldName == 'metaDescription' %}Méta Description
+                                        {% else %}{{ fieldName|title }}{% endif %}
+                                        {% if locale == defaultLocale %}
+                                            <span class="text-gray-500">(Original)</span>
+                                        {% endif %}
+                                    </label>
+                                    
+                                    {% if locale == defaultLocale %}
+                                        <!-- Show original content for reference -->
+                                        {% set originalValue = attribute(entity, 'get' ~ fieldName|title) %}
+                                        {% if fieldName in ['content', 'description'] %}
+                                            <textarea readonly class="block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm text-sm" rows="10">{{ originalValue }}</textarea>
+                                        {% else %}
+                                            <input type="text" readonly value="{{ originalValue }}" class="block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm text-sm">
+                                        {% endif %}
+                                    {% else %}
+                                        <!-- Editable translation field -->
+                                        {% set translationValue = existingTranslations[locale][fieldName] ?? '' %}
+                                        {% if fieldName in ['content', 'description', 'excerpt'] %}
+                                            <textarea 
+                                                id="{{ locale }}_{{ fieldName }}" 
+                                                name="{{ fieldName }}"
+                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" 
+                                                rows="10"
+                                                placeholder="{{ 'actions.edit'|trans({}, 'admin') }} {{ fieldName description' : 'l\'extrait') }} en {{ locale_name(locale) }}">{{ translationValue }}</textarea>
+                                        {% else %}
+                                            <input 
+                                                type="text" 
+                                                id="{{ locale }}_{{ fieldName }}" 
+                                                name="{{ fieldName }}"
+                                                value="{{ translationValue }}"
+                                                placeholder="Saisissez {% if fieldName == 'title' %}le titre{% elseif fieldName == 'name' %}le nom{% elseif fieldName == 'location' %}le lieu{% elseif fieldName == 'features' %}les fonctionnalités{% elseif fieldName == 'clientName' %}le nom du client{% elseif fieldName == 'clientCompany' %}l'entreprise du client{% elseif fieldName == 'metaDescription' %}la méta description{% else %}{{ fieldName }}{% endif %} en {{ locale_name(locale) }}"
+                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if locale != defaultLocale %}
+                            <div class="mt-6 flex justify-end">
+                                <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
+                                    <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                    </svg>
+                                    {{ 'actions.save'|trans({}, 'admin') }} la traduction {{ locale_name(locale) }}
+                                </button>
+                            </div>
+                        {% endif %}
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabs = document.querySelectorAll('.locale-tab');
+    const contents = document.querySelectorAll('.locale-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const locale = this.dataset.locale;
+            
+            // Update tabs
+            tabs.forEach(t => {
+                t.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                t.classList.add('border-transparent', 'text-gray-500');
+            });
+            this.classList.add('active', 'border-blue-500', 'text-blue-600');
+            this.classList.remove('border-transparent', 'text-gray-500');
+            
+            // Update content
+            contents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.querySelector(`.locale-content[data-locale="${locale}"]`).classList.remove('hidden');
+        });
+    });
+    
+    // Form submission
+    const forms = document.querySelectorAll('.translation-form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const locale = this.dataset.locale;
+            const formData = new FormData(this);
+            const translations = {};
+            
+            for (let [key, value] of formData.entries()) {
+                translations[key] = value;
+            }
+            
+            const data = {
+                locale: locale,
+                translations: translations
+            };
+            
+            fetch('{{ path('admin_translation_save', {entityType: entityType, id: entity.id}) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    showMessage('{{ 'messages.saved_success'|trans({}, 'translations') }}', 'success');
+                } else {
+                    showMessage(data.message || 'Erreur lors de l\'enregistrement des traductions', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Erreur lors de l\'enregistrement des traductions', 'error');
+            });
+        });
+    });
+    
+    function showMessage(message, type) {
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-md text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

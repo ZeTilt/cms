@@ -1,0 +1,130 @@
+# Module Pages - Français
+title: "Gestion des Pages"
+subtitle: "Créez et gérez les pages de votre site"
+
+breadcrumb:
+  pages: "Pages"
+  create: "Créer une page"
+  edit: "Modifier la page"
+
+list:
+  title: "Liste des Pages"
+  no_pages: "Aucune page trouvée"
+  create_first: "Créer votre première page"
+  get_started: "Commencez par créer votre première page ou article de blog."
+  
+header:
+  title: "Titre"
+  slug: "URL"
+  status: "Statut"
+  template: "Modèle"
+  updated: "Modifié"
+  actions: "Actions"
+
+create:
+  title: "Créer une Page"
+  subtitle: "Ajoutez une nouvelle page à votre site"
+  success: "La page a été créée avec succès"
+
+edit:
+  title: "Modifier la Page"
+  subtitle: "Modifiez le contenu de cette page"
+  success: "La page a été modifiée avec succès"
+
+delete:
+  confirm: "Êtes-vous sûr de vouloir supprimer cette page ?"
+  success: "La page a été supprimée avec succès"
+
+fields:
+  title: "Titre de la page"
+  title_help: "Le titre principal qui s'affichera sur la page"
+  slug: "URL (slug)"
+  slug_help: "L'adresse web de votre page (générée automatiquement)"
+  content: "Contenu"
+  content_help: "Le contenu principal de votre page"
+  excerpt: "Extrait"
+  excerpt_help: "Un résumé court de la page pour les aperçus"
+  meta_title: "Titre SEO"
+  meta_title_help: "Le titre qui apparaîtra dans les moteurs de recherche"
+  meta_description: "Description SEO"
+  meta_description_help: "La description qui apparaîtra dans les moteurs de recherche"
+  featured_image: "Image à la une"
+  featured_image_help: "L'image principale de la page"
+  template: "Modèle de page"
+  template_help: "Le modèle utilisé pour afficher cette page"
+  status: "Statut de publication"
+  published_at: "Date de publication"
+  parent_page: "Page parente"
+  parent_page_help: "Pour créer une hiérarchie de pages"
+  menu_order: "Ordre dans le menu"
+  menu_order_help: "Position de la page dans la navigation"
+  show_in_menu: "Afficher dans le menu"
+  show_in_menu_help: "Cochez pour inclure cette page dans la navigation principale"
+
+status:
+  draft: "Brouillon"
+  published: "Publié"
+  private: "Privé"
+  scheduled: "Programmé"
+
+templates:
+  default: "Modèle par défaut"
+  home: "Page d'accueil"
+  about: "À propos"
+  contact: "Contact"
+  services: "Services"
+  portfolio: "Portfolio"
+  landing: "Page de destination"
+  custom: "Modèle personnalisé"
+
+actions:
+  create_page: "Créer une Page"
+  edit_page: "Modifier"
+  view_page: "Voir la page"
+  duplicate_page: "Dupliquer"
+  delete_page: "Supprimer"
+  publish: "Publier"
+  unpublish: "Dépublier"
+  schedule: "Programmer"
+
+search:
+  placeholder: "Rechercher des pages..."
+  by_title: "Par titre"
+  by_content: "Par contenu"
+  by_status: "Par statut"
+  
+filters:
+  all: "Toutes les pages"
+  published: "Publiées"
+  draft: "Brouillons"
+  private: "Privées"
+  scheduled: "Programmées"
+  
+bulk_actions:
+  select_action: "Sélectionner une action"
+  publish_selected: "Publier la sélection"
+  unpublish_selected: "Dépublier la sélection"
+  delete_selected: "Supprimer la sélection"
+  apply: "Appliquer"
+
+validation:
+  title_required: "Le titre est obligatoire"
+  slug_required: "L'URL est obligatoire"
+  slug_invalid: "L'URL contient des caractères non autorisés"
+  slug_exists: "Cette URL est déjà utilisée"
+  content_required: "Le contenu est obligatoire"
+  template_required: "Veuillez sélectionner un modèle"
+  
+hierarchy:
+  parent: "Page parente"
+  children: "Pages enfants"
+  no_parent: "Aucune page parente"
+  move_up: "Monter"
+  move_down: "Descendre"
+  
+seo:
+  title: "Optimisation SEO"
+  preview: "Aperçu des résultats de recherche"
+  characters_left: "caractères restants"
+  title_length: "Le titre SEO doit faire entre 50 et 60 caractères"
+  description_length: "La description SEO doit faire entre 150 et 160 caractères"

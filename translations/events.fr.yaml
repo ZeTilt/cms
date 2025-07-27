@@ -1,0 +1,258 @@
+# Module Events - Français
+title: "Gestion des Événements"
+subtitle: "Organisez et gérez vos événements"
+
+view_mode:
+  title: "Mode d'affichage"
+  list: "Liste"
+  table: "Tableau"
+
+breadcrumb:
+  events: "Événements"
+  calendar: "Calendrier"
+  create: "Créer un événement"
+  edit: "Modifier l'événement"
+  registrations: "Inscriptions"
+
+dashboard:
+  title: "Tableau de Bord Événements"
+  upcoming_events: "Événements à venir"
+  past_events: "Événements passés"
+  total_registrations: "Total des inscriptions"
+  pending_registrations: "Inscriptions en attente"
+
+list:
+  title: "Liste des Événements"
+  no_events: "Aucun événement trouvé"
+  create_first: "Créer votre premier événement"
+  
+header:
+  title: "Titre"
+  date: "Date"
+  location: "Lieu"
+  capacity: "Capacité"
+  registrations: "Inscriptions"
+  status: "Statut"
+  actions: "Actions"
+  organizer: "Organisateur"
+
+create:
+  title: "Créer un Événement"
+  subtitle: "Ajoutez un nouvel événement à votre calendrier"
+  success: "L'événement a été créé avec succès"
+
+edit:
+  title: "Modifier l'Événement"
+  subtitle: "Modifiez les détails de cet événement"
+  success: "L'événement a été modifié avec succès"
+
+delete:
+  confirm: "Êtes-vous sûr de vouloir supprimer cet événement ?"
+  success: "L'événement a été supprimé avec succès"
+  warning: "Attention : cet événement a des participants inscrits"
+
+fields:
+  title: "Titre de l'événement"
+  title_help: "Le nom de votre événement"
+  description: "Description"
+  description_help: "Décrivez votre événement en détail"
+  start_date: "Date de début"
+  end_date: "Date de fin"
+  start_time: "Heure de début"
+  end_time: "Heure de fin"
+  location: "Lieu"
+  location_help: "Où se déroule l'événement"
+  address: "Adresse"
+  address_help: "Adresse complète du lieu"
+  capacity: "Capacité maximale"
+  capacity_help: "Nombre maximum de participants (0 = illimité)"
+  price: "Prix"
+  price_help: "Prix de participation (0 = gratuit)"
+  currency: "Devise"
+  registration_required: "Inscription obligatoire"
+  registration_deadline: "Date limite d'inscription"
+  featured_image: "Image à la une"
+  category: "Catégorie"
+  tags: "Étiquettes"
+  organizer: "Organisateur"
+  contact_email: "Email de contact"
+  contact_phone: "Téléphone de contact"
+  website_url: "Site web"
+  is_public: "Événement public"
+  is_featured: "Événement à la une"
+  status: "Statut"
+
+status:
+  draft: "Brouillon"
+  published: "Publié"
+  cancelled: "Annulé"
+  postponed: "Reporté"
+  full: "Complet"
+  active: "Actif"
+
+categories:
+  conference: "Conférence"
+  workshop: "Atelier"
+  training: "Formation"
+  meeting: "Réunion"
+  seminar: "Séminaire"
+  webinar: "Webinaire"
+  social: "Événement social"
+  sport: "Sport"
+  culture: "Culture"
+  other: "Autre"
+
+messages:
+  no_events_today: "Aucun événement prévu ce jour"
+  confirm_delete_attribute: "Êtes-vous sûr de vouloir supprimer cet attribut ?"
+
+javascript:
+  date: "Date"
+  time: "Heure"
+  location: "Lieu"
+  description: "Description"
+  capacity: "Capacité"
+  status: "Statut"
+  start: "Début"
+  end: "Fin"
+  max_participants: "Participants max"
+
+registration:
+  title: "Gestion des Inscriptions"
+  list_title: "Liste des Participants"
+  register: "S'inscrire"
+  unregister: "Se désinscrire"
+  registered: "Inscrit"
+  unregistered: "Désinscrit"
+  pending: "En attente"
+  confirmed: "Confirmé"
+  cancelled: "Annulé"
+  waitlist: "Liste d'attente"
+  available_spots: "Places disponibles"
+  waiting_list_position: "Position en liste d'attente"
+  registration_closed: "Inscriptions fermées"
+  registration_full: "Événement complet"
+  registration_success: "Inscription réussie"
+  unregistration_success: "Désinscription réussie"
+  
+participant:
+  name: "Nom du participant"
+  email: "Email"
+  phone: "Téléphone"
+  registered_at: "Inscrit le"
+  status: "Statut"
+  notes: "Notes"
+  export_list: "Exporter la liste"
+  send_email: "Envoyer un email"
+
+calendar:
+  title: "Calendrier des Événements"
+  month_view: "Vue mensuelle"
+  week_view: "Vue hebdomadaire"
+  day_view: "Vue quotidienne"
+  list_view: "Vue liste"
+  today: "Aujourd'hui"
+  month: "Mois"
+  week: "Semaine"
+  day: "Jour"
+  events_on: "Événements du"
+  no_events_today: "Aucun événement aujourd'hui"
+  
+actions:
+  create_event: "Créer un Événement"
+  edit_event: "Modifier"
+  view_event: "Voir l'événement"
+  duplicate_event: "Dupliquer"
+  delete_event: "Supprimer"
+  publish: "Publier"
+  unpublish: "Dépublier"
+  cancel: "Annuler"
+  postpone: "Reporter"
+  view_registrations: "Voir les inscriptions"
+  export_registrations: "Exporter les inscriptions"
+  send_reminders: "Envoyer des rappels"
+  clear_filters: "Effacer"
+  previous: "Précédent"
+  next: "Suivant"
+  back_to_event: "Retour à l'Événement"
+
+search:
+  placeholder: "Rechercher des événements..."
+  by_title: "Par titre"
+  by_location: "Par lieu"
+  by_date: "Par date"
+  by_category: "Par catégorie"
+  
+filters:
+  all: "Tous les événements"
+  upcoming: "À venir"
+  past: "Passés"
+  today: "Aujourd'hui"
+  this_week: "Cette semaine"
+  this_month: "Ce mois"
+  published: "Publiés"
+  draft: "Brouillons"
+  cancelled: "Annulés"
+  apply: "Filtrer"
+  
+bulk_actions:
+  select_action: "Sélectionner une action"
+  publish_selected: "Publier la sélection"
+  unpublish_selected: "Dépublier la sélection"
+  cancel_selected: "Annuler la sélection"
+  delete_selected: "Supprimer la sélection"
+  export_selected: "Exporter la sélection"
+  apply: "Appliquer"
+
+validation:
+  title_required: "Le titre est obligatoire"
+  start_date_required: "La date de début est obligatoire"
+  end_date_after_start: "La date de fin doit être après la date de début"
+  capacity_positive: "La capacité doit être un nombre positif"
+  price_positive: "Le prix doit être un nombre positif"
+  email_invalid: "Adresse email invalide"
+  url_invalid: "URL invalide"
+  registration_deadline_before_event: "La date limite d'inscription doit être avant l'événement"
+
+notifications:
+  registration_confirmation: "Confirmation d'inscription"
+  registration_reminder: "Rappel d'événement"
+  event_cancelled: "Événement annulé"
+  event_updated: "Événement modifié"
+  waitlist_promotion: "Place disponible"
+
+export:
+  participants: "Participants"
+  events: "Événements"
+  format: "Format"
+  csv: "CSV"
+  excel: "Excel"
+  pdf: "PDF"
+  
+statistics:
+  total_events: "Total événements"
+  total_participants: "Total participants"
+  average_attendance: "Participation moyenne"
+  popular_categories: "Catégories populaires"
+  monthly_trends: "Tendances mensuelles"
+
+pagination:
+  page: "Page"
+  of: "sur"
+  total_events: "événements au total"
+
+attributes:
+  title: "Attributs d'Événement"
+  subtitle: "Gestion des attributs personnalisés"
+  add_new: "Ajouter un Nouvel Attribut"
+  current: "Attributs Actuels"
+  key: "Clé d'Attribut"
+  key_placeholder: "ex: niveau_difficulte, equipement_requis"
+  initial_value: "Valeur Initiale"
+  initial_value_placeholder: "Valeur initiale (optionnel)"
+  add: "Ajouter un Attribut"
+  current_value: "Valeur Actuelle"
+  no_attributes: "Aucun attribut"
+  no_attributes_help: "Cet événement n'a encore aucun attribut personnalisé. Ajoutez-en un ci-dessus pour commencer."
+
+

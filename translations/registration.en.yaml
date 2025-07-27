@@ -1,0 +1,61 @@
+# Registration Module - English
+title: "User Registration"
+subtitle: "Public registration management"
+
+# Keys for administration
+admin:
+  title: "Registration Management"
+  subtitle: "Manage user registrations and approval workflow"
+  settings: "Settings"
+
+# Dashboard
+dashboard:
+  title: "Registration Dashboard"
+  pending_registrations: "Pending Registrations"
+  approved_today: "Approved Today"
+  total_registrations: "Total Registrations"
+  registration_status: "Registration Status"
+  enabled: "Enabled"
+  disabled: "Disabled"
+  pending_approval: "Pending Approval"
+  recent_registrations_30_days: "Recent Registrations (30 days)"
+  pending_approvals: "Pending Approvals"
+  pending_approvals_desc: "Users waiting for approval to access the system"
+  recent_registrations: "Recent Registrations"
+  recent_registrations_desc: "Latest user registrations in the past 30 days"
+  active: "Active"
+  pending: "Pending"
+
+# Actions and confirmations
+actions:
+  approve: "Approve"
+  reject: "Reject"
+  cancel: "Cancel"
+  confirm_approve: "Are you sure you want to approve this user?"
+  confirm_reject: "Are you sure you want to reject"
+  reject_user_registration: "Reject User Registration"
+  reason_rejection: "Reason for rejection (optional)"
+  reason_rejection_placeholder: "Provide a reason for rejection..."
+  reject_user: "Reject User"
+
+form:
+  title: "Create account"
+  first_name: "First name"
+  last_name: "Last name"
+  email: "Email address"
+  password: "Password"
+  confirm_password: "Confirm password"
+  phone: "Phone"
+  terms: "I accept the terms of service"
+  newsletter: "I want to receive the newsletter"
+  submit: "Register"
+
+messages:
+  success: "Registration successful! Check your email."
+  email_exists: "This email address is already in use"
+  password_mismatch: "Passwords do not match"
+  terms_required: "You must accept the terms"
+
+validation:
+  email_required: "Email is required"
+  password_min_length: "Password must be at least 8 characters"

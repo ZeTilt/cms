@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Articles - Admin{% endblock %}
+{% block title %}{{ 'title'|trans({}, 'articles') }} - ZeTilt CMS{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -8,7 +8,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">Articles</span>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ 'breadcrumb.articles'|trans({}, 'articles') }}</span>
         </div>
     </li>
 {% endblock %}
@@ -20,20 +20,40 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2 sm:space-x-4">
                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                    Articles
+                    {{ 'list.title'|trans({}, 'articles') }}
                 </h1>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="{{ path('admin_articles_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    New Article
+                <!-- View Mode Switch -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500">{{ 'view_mode.title'|trans({}, 'articles') }}:</span>
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button onclick="toggleViewMode('list')" 
+                                id="list-btn"
+                                class="px-3 py-1 text-xs font-medium text-gray-700 rounded-md transition-all duration-150">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            {{ 'view_mode.list'|trans({}, 'articles') }}
+                        </button>
+                        <button onclick="toggleViewMode('table')"
+                                id="table-btn"
+                                class="px-3 py-1 text-xs font-medium text-gray-700 rounded-md transition-all duration-150">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0V4a1 1 0 011-1h12a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1z"></path>
+                            </svg>
+                            {{ 'view_mode.table'|trans({}, 'articles') }}
+                        </button>
+                    </div>
+                </div>
+                
+                <a href="{{ path('admin_articles_new') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    {{ 'actions.create_article'|trans({}, 'articles') }}
                 </a>
             </div>
         </div>
         <p class="mt-2 text-sm text-gray-600">
-            Manage your blog articles with rich text editing, categories and tags.
+            {{ 'subtitle'|trans({}, 'articles') }}
         </p>
     </div>
 </div>
@@ -45,14 +65,14 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No articles</h3>
-            <p class="mt-1 text-sm text-gray-500">Get started by creating your first blog article.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'list.no_articles'|trans({}, 'articles') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ 'list.create_first'|trans({}, 'articles') }}</p>
             <div class="mt-6">
                 <a href="{{ path('admin_articles_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
-                    New Article
+                    {{ 'actions.create_article'|trans({}, 'articles') }}
                 </a>
             </div>
         </div>
@@ -85,11 +105,11 @@
                                         
                                         {% if article.status == 'published' %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Published
+                                                {{ 'status.published'|trans({}, 'articles') }}
                                             </span>
                                         {% else %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                Draft
+                                                {{ 'status.draft'|trans({}, 'articles') }}
                                             </span>
                                         {% endif %}
                                         
@@ -126,7 +146,7 @@
                                                 <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                 </svg>
-                                                Published {{ article.publishedAt|date('M j, Y') }}
+                                                {{ 'status.published'|trans({}, 'articles') }} {{ article.publishedAt|date('M j, Y') }}
                                             </p>
                                         {% endif %}
                                     </div>
@@ -147,4 +167,48 @@
         } %}
     {% endif %}
 </div>
+
+<script>
+function toggleViewMode(mode) {
+    // Update localStorage
+    localStorage.setItem('articles-view-mode', mode);
+    
+    // Get elements
+    const listView = document.getElementById('list-view');
+    const tableView = document.getElementById('table-view');
+    const listBtn = document.getElementById('list-btn');
+    const tableBtn = document.getElementById('table-btn');
+    
+    // Check if elements exist
+    if (!listView || !tableView || !listBtn || !tableBtn) {
+        console.warn('View mode elements not found');
+        return;
+    }
+    
+    if (mode === 'list') {
+        // Show list, hide table
+        listView.classList.remove('hidden');
+        tableView.classList.add('hidden');
+        
+        // Update button styles
+        listBtn.classList.add('bg-white', 'shadow-sm');
+        tableBtn.classList.remove('bg-white', 'shadow-sm');
+    } else {
+        // Show table, hide list
+        listView.classList.add('hidden');
+        tableView.classList.remove('hidden');
+        
+        // Update button styles
+        tableBtn.classList.add('bg-white', 'shadow-sm');
+        listBtn.classList.remove('bg-white', 'shadow-sm');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedMode = localStorage.getItem('articles-view-mode') || 'list';
+    toggleViewMode(savedMode);
+});
+</script>
+
 {% endblock %}

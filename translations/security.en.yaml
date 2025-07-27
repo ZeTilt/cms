@@ -1,0 +1,38 @@
+# Security/System Module - English
+login:
+  title: "Login"
+  email: "Email address"
+  password: "Password"
+  remember_me: "Remember me"
+  submit: "Login"
+  forgot_password: "Forgot password?"
+  
+logout:
+  title: "Logout"
+  message: "You have been logged out successfully"
+
+forgot_password:
+  title: "Forgot Password"
+  email: "Your email address"
+  submit: "Send reset link"
+  success: "A reset email has been sent"
+
+reset_password:
+  title: "Reset Password"
+  password: "New password"
+  confirm_password: "Confirm password"
+  submit: "Reset"
+  success: "Password reset successfully"
+
+errors:
+  invalid_credentials: "Invalid credentials"
+  account_disabled: "Account disabled"
+  access_denied: "Access denied"
+  token_expired: "Link expired"
+
+profile:
+  title: "My Profile"
+  edit_profile: "Edit profile"
+  change_password: "Change password"
+  current_password: "Current password"
+  new_password: "New password"

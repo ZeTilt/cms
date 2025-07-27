@@ -1,0 +1,342 @@
+# Traductions françaises pour le module UserPlus
+# Navigation et titres principaux
+title: "Gestion des Utilisateurs"
+
+view_mode:
+  title: "Mode d'affichage"
+  list: "Liste"
+  table: "Tableau"
+
+# Clés avec préfixe userplus pour compatibilité template
+userplus:
+  title: "Gestion des Utilisateurs"
+  breadcrumb:
+    user_management: "Gestion des Utilisateurs"
+    users: "Utilisateurs"
+    user_types: "Types d'Utilisateurs"
+    user_detail: "Détail Utilisateur"
+    new_user_type: "Nouveau"
+    new: "Nouveau"
+    edit_user_type: "Modifier"
+    edit: "Modifier"
+    attributes: "Attributs"
+  users:
+    title: "Gestion des Utilisateurs"
+    subtitle: "Gérez les utilisateurs et affectez-les à des types d'utilisateurs spécifiques avec des attributs personnalisés"
+    add_user: "Ajouter un Utilisateur"
+    no_users_found: "Aucun utilisateur trouvé"
+    try_adjusting_filters: "Essayez d'ajuster vos filtres ou termes de recherche."
+    get_started: "Commencez par créer votre premier utilisateur."
+    total_users: "utilisateurs au total"
+    showing_page: "Page"
+    of: "sur"
+    filtered: "Filtré"
+  filters:
+    title: "Filtres et Recherche"
+    search: "Recherche"
+    search_placeholder: "Nom ou email..."
+    user_type: "Type d'Utilisateur"
+    all_types: "Tous les Types"
+    no_type_assigned: "Aucun Type Affecté"
+    status: "Statut"
+    all_statuses: "Tous les Statuts"
+    filter_button: "Filtrer"
+dashboard:
+  title: "Tableau de Bord Utilisateurs"
+  subtitle: "Gérez les types d'utilisateurs, les attributs personnalisés et les affectations"
+  manage_user_types: "Gérer les Types d'Utilisateurs"
+  manage_users: "Gérer les Utilisateurs"
+  overview: "Aperçu des Types d'Utilisateurs"
+  overview_subtitle: "Répartition des utilisateurs par type et leurs attributs configurés"
+  no_user_types: "Aucun type d'utilisateur trouvé"
+  get_started: "Commencez par créer votre premier type d'utilisateur."
+  create_user_type: "Créer un Type d'Utilisateur"
+  contact_super_admin: "Contactez un Super Admin pour créer des types d'utilisateurs"
+  readonly_notice: "Lecture seule - Contactez un Super Admin pour modifier les types"
+  total_users: "Total Utilisateurs"
+  active_users: "Utilisateurs Actifs"
+  total_attributes: "Total Attributs"
+  user_types: "Types d'Utilisateurs"
+  user_types_overview: "Aperçu des Types d'Utilisateurs"
+  user_types_description: "Répartition des utilisateurs par type et leurs attributs configurés"
+  attributes: "Attributs"
+  required: "Requis"
+  modify_type: "Modifier le Type"
+breadcrumb:
+  user_management: "Gestion des Utilisateurs"
+  users: "Utilisateurs"
+  user_types: "Types d'Utilisateurs"
+  user_detail: "Détail Utilisateur"
+  new_user_type: "Nouveau"
+  new: "Nouveau"
+  edit_user_type: "Modifier"
+  edit: "Modifier"
+  attributes: "Attributs"
+
+# Page principale des utilisateurs
+users:
+  title: "Gestion des Utilisateurs"
+  subtitle: "Gérez les utilisateurs et affectez-les à des types d'utilisateurs spécifiques avec des attributs personnalisés"
+  add_user: "Ajouter un Utilisateur"
+  no_users_found: "Aucun utilisateur trouvé"
+  try_adjusting_filters: "Essayez d'ajuster vos filtres ou termes de recherche."
+  get_started: "Commencez par créer votre premier utilisateur."
+  total_users: "utilisateurs au total"
+  showing_page: "Page"
+  of: "sur"
+  filtered: "Filtré"
+  
+# Filtres et recherche
+filters:
+  title: "Filtres et Recherche"
+  search: "Recherche"
+  search_placeholder: "Nom ou email..."
+  user_type: "Type d'Utilisateur"
+  all_types: "Tous les Types"
+  no_type_assigned: "Aucun Type Affecté"
+  status: "Statut"
+  all_statuses: "Tous les Statuts"
+  filter_button: "Filtrer"
+  
+# Statut
+status:
+  active: "Actif"
+  inactive: "Inactif"
+  
+# Rôles
+roles:
+  super_admin: "Super Admin"
+  admin: "Admin"
+  user: "Utilisateur"
+  regular_user: "Utilisateur Normal"
+  
+# Actions
+actions:
+  details: "Détails"
+  edit: "Modifier"
+  delete: "Supprimer"
+  change_type: "Changer de Type"
+  assign_type: "Affecter un Type"
+  edit_attributes: "Modifier les Attributs"
+  add_attribute: "Ajouter un Attribut"
+  add_certification: "Ajouter une Certification"
+  view: "Voir"
+  remove: "Supprimer"
+  save: "Enregistrer"
+  save_changes: "Enregistrer les Modifications"
+  cancel: "Annuler"
+  create: "Créer"
+  update: "Mettre à jour"
+  previous: "Précédent"
+  next: "Suivant"
+  
+# Types d'utilisateurs
+user_types:
+  title: "Types d'Utilisateurs"
+  subtitle: "Définissez les types d'utilisateurs et leurs attributs personnalisés"
+  new_user_type: "Nouveau Type d'Utilisateur"
+  no_user_types: "Aucun type d'utilisateur"
+  get_started_types: "Commencez par créer votre premier type d'utilisateur."
+  users_count: "utilisateurs"
+  attributes_count: "attributs"
+  required_count: "requis"
+  view_only: "Lecture seule"
+  readonly: "Lecture seule"
+  
+# Formulaire de type d'utilisateur
+user_type_form:
+  name_label: "Nom (identifiant)"
+  name_help: "Identifiant interne (minuscules, sans espaces)"
+  display_name_label: "Nom d'Affichage"
+  display_name_help: "Nom lisible par l'humain"
+  description_label: "Description"
+  description_help: "Description optionnelle de ce type d'utilisateur"
+  active_label: "Actif"
+  active_help: "Seuls les types d'utilisateurs actifs peuvent être affectés aux utilisateurs"
+  create_title: "Créer un Nouveau Type d'Utilisateur"
+  edit_title: "Modifier le Type d'Utilisateur"
+  
+# Attributs
+attributes:
+  title: "Attributs Personnalisés"
+  no_attributes: "Aucun attribut personnalisé"
+  get_started_attributes: "Commencez par ajouter un attribut personnalisé à ce type d'utilisateur."
+  add_attribute_title: "Ajouter un Attribut Personnalisé"
+  edit_attributes_button: "Modifier les Attributs"
+  user_attributes: "Attributs Utilisateur"
+  no_custom_attributes: "Aucun attribut personnalisé disponible."
+  assign_user_type: "Affecter un Type d'Utilisateur"
+  not_set: "Non défini"
+  required: "Requis"
+  filled_attributes: "attributs"
+  
+# Formulaire d'attribut
+attribute_form:
+  key_label: "Clé d'Attribut"
+  key_help: "Identifiant interne (minuscules, sans espaces)"
+  display_name_label: "Nom d'Affichage"
+  display_name_help: "Nom lisible par l'humain"
+  type_label: "Type d'Attribut"
+  type_placeholder: "Sélectionner le type..."
+  display_order_label: "Ordre d'Affichage"
+  display_order_help: "Ordre dans les formulaires (0 = premier)"
+  description_label: "Description"
+  description_help: "Texte d'aide optionnel pour les utilisateurs"
+  required_label: "Requis"
+  required_help: "Doit être rempli par les utilisateurs"
+  default_value_label: "Valeur par Défaut"
+  default_value_help: "Valeur pré-remplie"
+  
+# Types d'attributs
+attribute_types:
+  text: "Texte"
+  textarea: "Zone de Texte"
+  number: "Nombre"
+  boolean: "Booléen (Oui/Non)"
+  date: "Date"
+  select: "Sélection (Liste déroulante)"
+  file: "Téléchargement de Fichier"
+  json: "Données JSON"
+  
+# Options de sélection
+select_options:
+  title: "Options de Sélection"
+  add_option: "Ajouter une Option"
+  option_value_placeholder: "Valeur de l'option"
+  option_label_placeholder: "Libellé de l'option"
+  
+# Configuration de fichier
+file_config:
+  title: "Configuration de Fichier"
+  allowed_types: "Types de Fichiers Autorisés"
+  max_file_size: "Taille Maximale de Fichier (MB)"
+  max_file_size_help: "Taille maximale de fichier autorisée en mégaoctets"
+  
+# Catégories de fichiers
+file_categories:
+  images: "Images"
+  documents: "Documents"
+  archives: "Archives"
+  
+# Types de fichiers
+file_types:
+  jpeg: "Image JPEG (.jpg, .jpeg)"
+  png: "Image PNG (.png)"
+  gif: "Image GIF (.gif)"
+  webp: "Image WebP (.webp)"
+  svg: "Image SVG (.svg)"
+  pdf: "Document PDF (.pdf)"
+  doc: "Document Word (.doc)"
+  docx: "Document Word (.docx)"
+  txt: "Fichier Texte (.txt)"
+  zip: "Archive ZIP (.zip)"
+  rar: "Archive RAR (.rar)"
+
+# Ajouts pour corriger les textes hardcodés
+create:
+  title: "Créer un Type d'Utilisateur"
+  page_title: "Créer un Nouveau Type d'Utilisateur"
+
+edit:
+  title: "Modifier le Type d'Utilisateur"
+  page_title: "Modifier le Type d'Utilisateur"
+
+fields:
+  name_identifier: "Nom (identifiant)"
+  name_pattern_help: "Seulement lettres minuscules, chiffres et traits de soulignement"
+  name_help: "Identifiant interne (minuscules, sans espaces)"
+  display_name: "Nom d'Affichage"
+  display_name_help: "Nom lisible par l'humain"
+  description_help: "Description optionnelle de ce type d'utilisateur"
+  active_help: "Seuls les types d'utilisateurs actifs peuvent être affectés aux utilisateurs"
+
+entity:
+  user_type: "Type d'Utilisateur"
+
+  
+# Règles de validation
+validation:
+  title: "Règles de Validation (Optionnel)"
+  min_length: "Longueur Minimale"
+  max_length: "Longueur Maximale"
+  min_value: "Valeur Minimale"
+  max_value: "Valeur Maximale"
+  
+# Détail utilisateur
+user_detail:
+  user_information: "Informations Utilisateur"
+  email: "Email"
+  full_name: "Nom Complet"
+  status: "Statut"
+  user_type: "Type d'Utilisateur"
+  created: "Créé"
+  attribute_validation_issues: "Problèmes de Validation d'Attributs"
+  
+# Certifications
+certifications:
+  title: "Certifications"
+  no_certifications: "Aucune certification"
+  no_certifications_assigned: "Cet utilisateur n'a encore aucune certification affectée."
+  add_first_certification: "Ajouter la Première Certification"
+  obtained: "Obtenue"
+  expires: "Expire"
+  days_left: "jours restants"
+  certificate_number: "Certificat n°"
+  issuing_authority: "Autorité de Délivrance"
+  notes: "Notes"
+  
+# Modal d'ajout de certification
+add_certification:
+  title: "Ajouter une Certification"
+  certification_label: "Certification"
+  certification_placeholder: "Sélectionner une certification..."
+  date_obtained: "Date d'Obtention"
+  expiration_date: "Date d'Expiration"
+  expiration_help: "Laisser vide si la certification n'expire pas"
+  certificate_number_label: "Numéro de Certificat"
+  issuing_authority_label: "Autorité de Délivrance"
+  notes_label: "Notes"
+  
+# Formulaire de création d'utilisateur
+create_user:
+  title: "Créer un Nouvel Utilisateur"
+  first_name: "Prénom"
+  last_name: "Nom"
+  email: "Adresse Email"
+  email_help: "Doit être unique et valide"
+  password: "Mot de Passe"
+  password_help: "Minimum 6 caractères"
+  user_type_optional: "Type d'Utilisateur (Optionnel)"
+  no_type_option: "Aucun Type (peut être affecté plus tard)"
+  assign_later: "Vous pouvez affecter un type maintenant ou plus tard"
+  role: "Rôle"
+  active_checkbox: "Actif"
+  active_help: "L'utilisateur peut se connecter et accéder au système"
+  create_user_button: "Créer l'Utilisateur"
+  
+# Messages et notifications
+messages:
+  user_created: "Utilisateur créé avec succès"
+  user_creation_failed: "Échec de la création de l'utilisateur"
+  user_creation_error: "Une erreur s'est produite lors de la création de l'utilisateur"
+  attributes_saved: "Attributs enregistrés avec succès"
+  attributes_save_failed: "Échec de l'enregistrement des attributs"
+  attributes_save_error: "Une erreur s'est produite lors de l'enregistrement des attributs"
+  attribute_added: "Attribut ajouté avec succès"
+  attribute_add_failed: "Échec de l'ajout de l'attribut"
+  attribute_add_error: "Une erreur s'est produite lors de l'ajout de l'attribut"
+  attribute_deleted: "Attribut supprimé avec succès"
+  attribute_delete_failed: "Échec de la suppression de l'attribut"
+  attribute_delete_error: "Une erreur s'est produite lors de la suppression de l'attribut"
+  confirm_delete_attribute: "Êtes-vous sûr de vouloir supprimer cet attribut ?"
+  key_already_exists: "Cette clé d'attribut existe déjà pour ce type d'utilisateur"
+  certification_removed: "Certification supprimée avec succès"
+  certification_remove_error: "Erreur lors de la suppression de la certification"
+  confirm_remove_certification: "Êtes-vous sûr de vouloir supprimer la"
+  edit_functionality_todo: "La fonctionnalité de modification sera implémentée prochainement"
+  
+# Valeurs booléennes
+boolean:
+  yes: "Oui"
+  no: "Non"
+  not_set: "Non défini"

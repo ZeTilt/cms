@@ -1,0 +1,80 @@
+# Module Certifications - Français
+title: "Gestion des Certifications"
+subtitle: "Gérez les certifications et qualifications"
+
+breadcrumb:
+  certifications: "Certifications"
+  create: "Créer une certification"
+  edit: "Modifier la certification"
+
+list:
+  title: "Mes Certifications"
+  no_certifications: "Aucune certification trouvée"
+  try_adjusting: "Essayez d'ajuster vos filtres"
+  get_started: "Commencez par créer votre première certification"
+
+create:
+  title: "Créer une Certification"
+  success: "Certification créée avec succès"
+
+edit:
+  title: "Modifier la Certification"
+  success: "Certification modifiée avec succès"
+
+fields:
+  name: "Nom de la certification"
+  description: "Description"
+  level: "Niveau"
+  required_skills: "Compétences requises"
+  duration: "Durée de validité"
+  issuing_organization: "Organisme délivrant"
+  expiry_period: "Période d'expiration"
+  is_active: "Certification active"
+  requirements: "Prérequis"
+
+actions:
+  create_certification: "Créer une Certification"
+  view_certification: "Voir la certification"
+  edit_certification: "Modifier"
+  delete_certification: "Supprimer"
+  activate: "Activer"
+  deactivate: "Désactiver"
+  assign: "Attribuer"
+  revoke: "Révoquer"
+  previous: "Précédent"
+  next: "Suivant"
+
+filters:
+  title: "Filtres et Recherche"
+  search: "Recherche"
+  search_placeholder: "Nom ou description de la certification..."
+  status: "Statut"
+  level: "Niveau"
+  organization: "Organisme"
+  all_statuses: "Tous les statuts"
+  all_levels: "Tous les niveaux"
+  all_organizations: "Tous les organismes"
+  filtered: "Filtrés"
+  apply: "Filtrer"
+
+status:
+  active: "Active"
+  inactive: "Inactive"
+  expired: "Expirée"
+  pending: "En attente"
+
+user_certifications:
+  title: "Certifications Utilisateur"
+  obtained_date: "Date d'obtention"
+  expiry_date: "Date d'expiration"
+  status: "Statut"
+  certificate_number: "Numéro de certificat"
+  valid: "Valide"
+  expired: "Expirée"
+  expiring_soon: "Expire bientôt"
+
+pagination:
+  page: "Page"
+  of: "sur"
+  total_certifications: "certifications au total"
+  showing_page: "Page"

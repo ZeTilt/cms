@@ -1,0 +1,61 @@
+# Module Registration - Français
+title: "Inscription Utilisateurs"
+subtitle: "Gestion des inscriptions publiques"
+
+# Clés pour l'administration
+admin:
+  title: "Gestion des Inscriptions"
+  subtitle: "Gérez les inscriptions d'utilisateurs et le workflow d'approbation"
+  settings: "Paramètres"
+
+# Dashboard
+dashboard:
+  title: "Tableau de Bord Inscriptions"
+  pending_registrations: "Inscriptions en Attente"
+  approved_today: "Approuvées Aujourd'hui"
+  total_registrations: "Total Inscriptions"
+  registration_status: "Statut des Inscriptions"
+  enabled: "Activé"
+  disabled: "Désactivé"
+  pending_approval: "En Attente d'Approbation"
+  recent_registrations_30_days: "Inscriptions Récentes (30 jours)"
+  pending_approvals: "Approbations en Attente"
+  pending_approvals_desc: "Utilisateurs en attente d'approbation pour accéder au système"
+  recent_registrations: "Inscriptions Récentes"
+  recent_registrations_desc: "Dernières inscriptions d'utilisateurs des 30 derniers jours"
+  active: "Actif"
+  pending: "En Attente"
+
+# Actions and confirmations
+actions:
+  approve: "Approuver"
+  reject: "Rejeter"
+  cancel: "Annuler"
+  confirm_approve: "Êtes-vous sûr de vouloir approuver cet utilisateur ?"
+  confirm_reject: "Êtes-vous sûr de vouloir rejeter l'inscription de"
+  reject_user_registration: "Rejeter l'Inscription Utilisateur"
+  reason_rejection: "Raison du rejet (optionnel)"
+  reason_rejection_placeholder: "Fournissez une raison pour le rejet..."
+  reject_user: "Rejeter l'Utilisateur"
+
+form:
+  title: "Créer un compte"
+  first_name: "Prénom"
+  last_name: "Nom"
+  email: "Adresse email"
+  password: "Mot de passe"
+  confirm_password: "Confirmer le mot de passe"
+  phone: "Téléphone"
+  terms: "J'accepte les conditions d'utilisation"
+  newsletter: "Je souhaite recevoir la newsletter"
+  submit: "S'inscrire"
+
+messages:
+  success: "Inscription réussie ! Vérifiez votre email."
+  email_exists: "Cette adresse email est déjà utilisée"
+  password_mismatch: "Les mots de passe ne correspondent pas"
+  terms_required: "Vous devez accepter les conditions"
+
+validation:
+  email_required: "L'email est obligatoire"
+  password_min_length: "Le mot de passe doit contenir au moins 8 caractères"

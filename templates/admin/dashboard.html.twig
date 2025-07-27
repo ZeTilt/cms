@@ -1,14 +1,14 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Dashboard - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'navigation.dashboard'|trans({}, 'admin') }} - ZeTilt CMS{% endblock %}
 
 {% block content %}
 <!-- Header -->
 <div class="bg-white shadow">
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p class="mt-1 text-sm text-gray-500">Welcome back, {{ app.user.fullName }}!</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ 'navigation.dashboard'|trans({}, 'admin') }}</h1>
+            <p class="mt-1 text-sm text-gray-500">{{ 'dashboard.welcome'|trans({}, 'admin') }}, {{ app.user.fullName }} !</p>
         </div>
     </div>
 </div>
@@ -17,17 +17,17 @@
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <div class="space-y-8">
         <div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Overview</h2>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ 'dashboard.quick_stats'|trans({}, 'admin') }}</h2>
                 
                 <!-- Active Modules -->
                 <div class="mb-8">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Active Modules</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.active_modules'|trans({}, 'admin') }}</h3>
                     {% if modules is empty %}
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
                             <div class="flex">
                                 <div class="ml-3">
                                     <p class="text-sm text-yellow-700">
-                                        No modules are currently active. Contact your super administrator to activate modules.
+                                        {{ 'dashboard.no_modules_message'|trans({}, 'admin') }}
                                     </p>
                                 </div>
                             </div>
@@ -45,8 +45,10 @@
                                             </div>
                                             <div class="ml-5 w-0 flex-1">
                                                 <dl>
-                                                    <dt class="text-sm font-medium text-gray-500 truncate">{{ module.displayName }}</dt>
-                                                    <dd class="text-sm text-gray-900">{{ module.description ?: 'No description' }}</dd>
+                                                    <dt class="text-sm font-medium text-gray-500 truncate">
+                                                        {{ ('dashboard.module_names.' ~ module.name)|trans({}, 'admin') ?: module.displayName }}
+                                                    </dt>
+                                                    <dd class="text-sm text-gray-900">{{ module.description ?: ('dashboard.no_description'|trans({}, 'admin')) }}</dd>
                                                 </dl>
                                             </div>
                                         </div>
@@ -54,7 +56,7 @@
                                     <div class="bg-gray-50 px-5 py-3">
                                         <div class="text-sm">
                                             <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-                                                Manage {{ module.displayName }}
+                                                {{ 'dashboard.manage'|trans({}, 'admin') }} {{ ('dashboard.manage_names.' ~ module.name)|trans({}, 'admin') ?: module.displayName }}
                                             </a>
                                         </div>
                                     </div>
@@ -66,33 +68,33 @@
 
                 <!-- Quick Actions -->
                 <div class="mb-8">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.quick_actions'|trans({}, 'admin') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <!-- Pages (always available) -->
                         <a href="{{ path('admin_pages_new') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
-                            Create Page
+                            {{ 'dashboard.create_page'|trans({}, 'admin') }}
                         </a>
                         <a href="{{ path('admin_pages_list') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
-                            Manage Pages
+                            {{ 'dashboard.manage_pages'|trans({}, 'admin') }}
                         </a>
                         
                         <!-- Blog Actions (if blog module is active) -->
                         {% if is_module_active('blog') %}
                             <a href="{{ path('admin_articles_new') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Create Article
+                                {{ 'dashboard.create_article'|trans({}, 'admin') }}
                             </a>
                             <a href="{{ path('admin_articles_list') }}" class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Manage Articles
+                                {{ 'dashboard.manage_articles'|trans({}, 'admin') }}
                             </a>
                         {% endif %}
                         
                         <!-- Gallery Actions (if gallery module is active) -->
                         {% if is_module_active('gallery') %}
                             <a href="{{ path('admin_galleries_new') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Create Gallery
+                                {{ 'dashboard.create_gallery'|trans({}, 'admin') }}
                             </a>
                             <a href="{{ path('admin_galleries_list') }}" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Manage Galleries
+                                {{ 'dashboard.manage_galleries'|trans({}, 'admin') }}
                             </a>
                         {% endif %}
                     </div>
@@ -100,22 +102,22 @@
 
                 <!-- Recent Activity -->
                 <div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'dashboard.recent_activity'|trans({}, 'admin') }}</h3>
                     <div class="bg-white shadow overflow-hidden sm:rounded-md">
                         <ul role="list" class="divide-y divide-gray-200">
                             <li class="px-4 py-4">
                                 <div class="flex items-center justify-between">
-                                    <p class="text-sm font-medium text-gray-900">System initialized</p>
+                                    <p class="text-sm font-medium text-gray-900">{{ 'dashboard.system_initialized'|trans({}, 'admin') }}</p>
                                     <div class="ml-2 flex-shrink-0 flex">
                                         <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Complete
+                                            {{ 'dashboard.completed'|trans({}, 'admin') }}
                                         </p>
                                     </div>
                                 </div>
                                 <div class="mt-2 sm:flex sm:justify-between">
                                     <div class="sm:flex">
                                         <p class="flex items-center text-sm text-gray-500">
-                                            ZeTilt CMS has been successfully initialized with core modules.
+                                            {{ 'dashboard.system_init_message'|trans({}, 'admin') }}
                                         </p>
                                     </div>
                                 </div>

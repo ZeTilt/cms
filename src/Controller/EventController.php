@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\EventAttribute;
+use App\Entity\EventRegistration;
+use App\Entity\User;
 use App\Service\ModuleManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -121,8 +124,13 @@ class EventController extends AbstractController
         // Basic fields
         $event->setTitle($request->request->get('title'));
         
-        // Generate slug
-        $slug = $this->slugger->slug($request->request->get('title'))->lower();
+        // Set slug (use provided slug or generate from title)
+        $slug = $request->request->get('slug');
+        if (empty($slug)) {
+            $slug = $this->slugger->slug($request->request->get('title'))->lower();
+        } else {
+            $slug = $this->slugger->slug($slug)->lower();
+        }
         $event->setSlug($slug);
 
         $event->setDescription($request->request->get('description'));
@@ -169,6 +177,16 @@ class EventController extends AbstractController
 
         if (!$eventId) {
             $this->entityManager->persist($event);
+        }
+
+        // Handle event attributes
+        $attributes = $request->request->all('attributes') ?? [];
+        foreach ($attributes as $key => $data) {
+            if (!empty($data['value']) || !empty($data['type'])) {
+                $value = $data['value'] ?? '';
+                $type = $data['type'] ?? 'text';
+                $event->setAttributeValue($key, $value, $type);
+            }
         }
 
         $this->entityManager->flush();
@@ -220,5 +238,183 @@ class EventController extends AbstractController
             'month' => $month,
             'currentDate' => $startDate,
         ]);
+    }
+
+    #[Route('/{id}/attributes', name: 'admin_events_attributes', requirements: ['id' => '\d+'])]
+    public function attributes(Event $event): Response
+    {
+        if (!$this->moduleManager->isModuleActive('events')) {
+            throw $this->createNotFoundException('Events module is not active');
+        }
+
+        return $this->render('admin/events/attributes.html.twig', [
+            'event' => $event,
+        ]);
+    }
+
+    #[Route('/{id}/attributes/add', name: 'admin_events_attributes_add', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function addAttribute(Event $event, Request $request): Response
+    {
+        if (!$this->moduleManager->isModuleActive('events')) {
+            throw $this->createNotFoundException('Events module is not active');
+        }
+
+        $key = $request->request->get('attribute_key');
+        $type = $request->request->get('attribute_type', 'text');
+        $value = $request->request->get('attribute_value', '');
+
+        if (empty($key)) {
+            $this->addFlash('error', 'Attribute key is required');
+            return $this->redirectToRoute('admin_events_attributes', ['id' => $event->getId()]);
+        }
+
+        // Check if attribute already exists
+        if ($event->getEventAttributeByKey($key)) {
+            $this->addFlash('error', 'An attribute with this key already exists');
+            return $this->redirectToRoute('admin_events_attributes', ['id' => $event->getId()]);
+        }
+
+        $event->setAttributeValue($key, $value, $type);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Attribute added successfully');
+        return $this->redirectToRoute('admin_events_attributes', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/attributes/{attributeId}/delete', name: 'admin_events_attributes_delete', methods: ['POST'], requirements: ['id' => '\d+', 'attributeId' => '\d+'])]
+    public function deleteAttribute(Event $event, int $attributeId): Response
+    {
+        if (!$this->moduleManager->isModuleActive('events')) {
+            throw $this->createNotFoundException('Events module is not active');
+        }
+
+        $attribute = $this->entityManager->getRepository(EventAttribute::class)->find($attributeId);
+        
+        if (!$attribute || $attribute->getEvent() !== $event) {
+            throw $this->createNotFoundException('Attribute not found');
+        }
+
+        $this->entityManager->remove($attribute);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Attribute deleted successfully');
+        return $this->redirectToRoute('admin_events_attributes', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/registrations', name: 'admin_events_registrations', requirements: ['id' => '\d+'])]
+    public function registrations(Event $event): Response
+    {
+        if (!$this->moduleManager->isModuleActive('events')) {
+            throw $this->createNotFoundException('Events module is not active');
+        }
+
+        // Get all users who are not already registered
+        $allUsers = $this->entityManager->getRepository(User::class)->findAll();
+        $availableUsers = array_filter($allUsers, fn($user) => !$event->isUserRegistered($user));
+
+        return $this->render('admin/events/registrations.html.twig', [
+            'event' => $event,
+            'availableUsers' => $availableUsers,
+        ]);
+    }
+
+    #[Route('/{id}/register', name: 'admin_events_register', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function register(Event $event, Request $request): Response
+    {
+        if (!$this->moduleManager->isModuleActive('events')) {
+            throw $this->createNotFoundException('Events module is not active');
+        }
+
+        $userId = $request->request->getInt('user_id');
+        $user = $this->entityManager->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            $this->addFlash('error', 'User not found');
+            return $this->redirectToRoute('admin_events_registrations', ['id' => $event->getId()]);
+        }
+
+        // Check if user is already registered
+        if ($event->isUserRegistered($user)) {
+            $this->addFlash('error', 'User is already registered for this event');
+            return $this->redirectToRoute('admin_events_registrations', ['id' => $event->getId()]);
+        }
+
+        // Check if event accepts registrations
+        if (!$event->acceptsRegistrations()) {
+            $this->addFlash('error', 'This event does not accept registrations');
+            return $this->redirectToRoute('admin_events_registrations', ['id' => $event->getId()]);
+        }
+
+        $registration = new EventRegistration();
+        $registration->setEvent($event);
+        $registration->setUser($user);
+        $registration->setNotes($request->request->get('notes', ''));
+
+        // Determine registration status
+        if ($event->requiresWaitingList()) {
+            $registration->setStatus('waiting_list');
+            $message = 'User registered on waiting list';
+        } else {
+            $registration->setStatus('registered');
+            $message = 'User registered successfully';
+        }
+
+        $this->entityManager->persist($registration);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', $message);
+        return $this->redirectToRoute('admin_events_registrations', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/registrations/{registrationId}/status', name: 'admin_events_registration_status', methods: ['POST'], requirements: ['id' => '\d+', 'registrationId' => '\d+'])]
+    public function updateRegistrationStatus(Event $event, int $registrationId, Request $request): Response
+    {
+        if (!$this->moduleManager->isModuleActive('events')) {
+            throw $this->createNotFoundException('Events module is not active');
+        }
+
+        $registration = $this->entityManager->getRepository(EventRegistration::class)->find($registrationId);
+        
+        if (!$registration || $registration->getEvent() !== $event) {
+            throw $this->createNotFoundException('Registration not found');
+        }
+
+        $newStatus = $request->request->get('status');
+        $validStatuses = ['registered', 'waiting_list', 'cancelled', 'no_show'];
+
+        if (!in_array($newStatus, $validStatuses)) {
+            $this->addFlash('error', 'Invalid status');
+            return $this->redirectToRoute('admin_events_registrations', ['id' => $event->getId()]);
+        }
+
+        $oldStatus = $registration->getStatus();
+        $registration->setStatus($newStatus);
+        $registration->setNotes($request->request->get('notes', $registration->getNotes()));
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', "Registration status updated from {$oldStatus} to {$newStatus}");
+        return $this->redirectToRoute('admin_events_registrations', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/registrations/{registrationId}/delete', name: 'admin_events_registration_delete', methods: ['POST'], requirements: ['id' => '\d+', 'registrationId' => '\d+'])]
+    public function deleteRegistration(Event $event, int $registrationId): Response
+    {
+        if (!$this->moduleManager->isModuleActive('events')) {
+            throw $this->createNotFoundException('Events module is not active');
+        }
+
+        $registration = $this->entityManager->getRepository(EventRegistration::class)->find($registrationId);
+        
+        if (!$registration || $registration->getEvent() !== $event) {
+            throw $this->createNotFoundException('Registration not found');
+        }
+
+        $userName = $registration->getUser()->getUsername();
+        $this->entityManager->remove($registration);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', "Registration for {$userName} deleted successfully");
+        return $this->redirectToRoute('admin_events_registrations', ['id' => $event->getId()]);
     }
 }

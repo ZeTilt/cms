@@ -1,0 +1,214 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Events - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Events</h1>
+        <p class="text-xl text-gray-600">Discover upcoming events and activities</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4">
+            <div class="flex flex-wrap gap-4 items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-700">Filter:</span>
+                    <a href="{{ path('events_index') }}" 
+                       class="px-3 py-1 text-sm rounded-full {% if not currentFilter %}bg-indigo-100 text-indigo-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        All
+                    </a>
+                    <a href="{{ path('events_index', {'filter': 'upcoming'}) }}" 
+                       class="px-3 py-1 text-sm rounded-full {% if currentFilter == 'upcoming' %}bg-indigo-100 text-indigo-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        Upcoming
+                    </a>
+                    <a href="{{ path('events_index', {'filter': 'past'}) }}" 
+                       class="px-3 py-1 text-sm rounded-full {% if currentFilter == 'past' %}bg-indigo-100 text-indigo-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        Past
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-700">Type:</span>
+                    <a href="{{ path('events_index', {'filter': currentFilter}) }}" 
+                       class="px-3 py-1 text-sm rounded-full {% if not currentType %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        All Types
+                    </a>
+                    <a href="{{ path('events_index', {'type': 'event', 'filter': currentFilter}) }}" 
+                       class="px-3 py-1 text-sm rounded-full {% if currentType == 'event' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        Events
+                    </a>
+                    <a href="{{ path('events_index', {'type': 'meeting', 'filter': currentFilter}) }}" 
+                       class="px-3 py-1 text-sm rounded-full {% if currentType == 'meeting' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        Meetings
+                    </a>
+                    <a href="{{ path('events_index', {'type': 'workshop', 'filter': currentFilter}) }}" 
+                       class="px-3 py-1 text-sm rounded-full {% if currentType == 'workshop' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        Workshops
+                    </a>
+                </div>
+
+                <div class="ml-auto">
+                    <a href="{{ path('events_calendar') }}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Calendar View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Events Grid -->
+    {% if events|length > 0 %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {% for event in events %}
+                <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    {% if event.featuredImage %}
+                        <div class="aspect-w-16 aspect-h-9">
+                            <img src="{{ event.featuredImage }}" alt="{{ event.title }}" class="w-full h-48 object-cover">
+                        </div>
+                    {% endif %}
+                    
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                {{ event.type|title }}
+                            </span>
+                            {% if event.startDate %}
+                                <time class="text-sm text-gray-500">
+                                    {{ event.startDate|date('M d, Y') }}
+                                </time>
+                            {% endif %}
+                        </div>
+                        
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                            <a href="{{ path('events_show', {'slug': event.slug}) }}" class="hover:text-indigo-600">
+                                {{ event.title }}
+                            </a>
+                        </h3>
+                        
+                        {% if event.shortDescription %}
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                {{ event.shortDescription }}
+                            </p>
+                        {% endif %}
+                        
+                        <div class="space-y-2 text-sm text-gray-500">
+                            {% if event.startDate %}
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    {{ event.startDate|date('F j, Y \a\t g:i A') }}
+                                    {% if event.endDate and event.endDate != event.startDate %}
+                                        - {{ event.endDate|date('g:i A') }}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if event.location %}
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    {{ event.location }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if event.isRequiresRegistration and event.maxParticipants %}
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    {{ event.confirmedParticipants }} / {{ event.maxParticipants }} participants
+                                    {% if event.availableSpots == 0 %}
+                                        <span class="ml-2 text-red-600 font-medium">Full</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <a href="{{ path('events_show', {'slug': event.slug}) }}" 
+                               class="inline-flex items-center text-indigo-600 hover:text-indigo-500 font-medium">
+                                Learn more
+                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if totalPages > 1 %}
+            <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg shadow">
+                <div class="flex flex-1 justify-between sm:hidden">
+                    {% if currentPage > 1 %}
+                        <a href="{{ path('events_index', {'page': currentPage - 1, 'type': currentType, 'filter': currentFilter}) }}" 
+                           class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    {% if currentPage < totalPages %}
+                        <a href="{{ path('events_index', {'page': currentPage + 1, 'type': currentType, 'filter': currentFilter}) }}" 
+                           class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing <span class="font-medium">{{ ((currentPage - 1) * 12) + 1 }}</span> to 
+                            <span class="font-medium">{{ min(currentPage * 12, totalEvents) }}</span> of 
+                            <span class="font-medium">{{ totalEvents }}</span> events
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+                            {% for page in 1..totalPages %}
+                                {% if page == currentPage %}
+                                    <span class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">
+                                        {{ page }}
+                                    </span>
+                                {% else %}
+                                    <a href="{{ path('events_index', {'page': page, 'type': currentType, 'filter': currentFilter}) }}" 
+                                       class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                        {{ page }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </nav>
+                    </div>
+                </div>
+            </nav>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No events found</h3>
+            <p class="mt-1 text-sm text-gray-500">
+                {% if currentType or currentFilter %}
+                    Try adjusting your filters to see more events.
+                {% else %}
+                    There are no published events at the moment.
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

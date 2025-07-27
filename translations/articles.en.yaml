@@ -1,0 +1,242 @@
+# Articles/Blog Module - English
+title: "Article Management"
+subtitle: "Create and manage your blog articles"
+
+view_mode:
+  title: "View mode"
+  list: "List"
+  table: "Table"
+
+breadcrumb:
+  articles: "Articles"
+  blog: "Blog"
+  create: "Create article"
+  edit: "Edit article"
+  categories: "Categories"
+  tags: "Tags"
+
+dashboard:
+  title: "Articles Dashboard"
+  total_articles: "Total articles"
+  published_articles: "Published articles"
+  draft_articles: "Drafts"
+  pending_review: "Pending review"
+  recent_articles: "Recent articles"
+  popular_articles: "Popular articles"
+
+list:
+  title: "Article List"
+  no_articles: "No articles found"
+  create_first: "Create your first article"
+  
+header:
+  title: "Title"
+  author: "Author"
+  category: "Category"
+  published_date: "Published date"
+  status: "Status"
+  views: "Views"
+  comments: "Comments"
+  actions: "Actions"
+
+create:
+  title: "Create Article"
+  subtitle: "Write a new article for your blog"
+  success: "Article created successfully"
+
+edit:
+  title: "Edit Article"
+  subtitle: "Modify this article content"
+  success: "Article updated successfully"
+
+delete:
+  confirm: "Are you sure you want to delete this article?"
+  success: "Article deleted successfully"
+
+fields:
+  title: "Article title"
+  title_help: "The main title of your article"
+  slug: "URL (slug)"
+  slug_help: "The web address of your article (auto-generated)"
+  content: "Content"
+  content_help: "The full content of your article"
+  excerpt: "Excerpt"
+  excerpt_help: "A short summary of the article for previews"
+  featured_image: "Featured image"
+  featured_image_help: "The main image of the article"
+  category: "Category"
+  category_help: "Classify your article"
+  tags: "Tags"
+  tags_help: "Keywords separated by commas"
+  author: "Author"
+  status: "Publication status"
+  published_at: "Publication date"
+  meta_title: "SEO Title"
+  meta_title_help: "The title that will appear in search engines"
+  meta_description: "SEO Description"
+  meta_description_help: "The description that will appear in search engines"
+  allow_comments: "Allow comments"
+  is_featured: "Featured article"
+  reading_time: "Estimated reading time"
+  view_count: "View count"
+
+status:
+  draft: "Draft"
+  published: "Published"
+  private: "Private"
+  pending: "Pending"
+  scheduled: "Scheduled"
+  archived: "Archived"
+
+categories:
+  title: "Category Management"
+  name: "Category name"
+  slug: "URL"
+  description: "Description"
+  parent: "Parent category"
+  count: "Article count"
+  create_category: "Create category"
+  edit_category: "Edit category"
+  delete_category: "Delete category"
+  no_categories: "No categories found"
+
+tags:
+  title: "Tag Management"
+  name: "Tag name"
+  slug: "URL"
+  description: "Description"
+  count: "Usage count"
+  create_tag: "Create tag"
+  edit_tag: "Edit tag"
+  delete_tag: "Delete tag"
+  no_tags: "No tags found"
+  popular_tags: "Popular tags"
+
+comments:
+  title: "Comment Management"
+  author: "Author"
+  content: "Content"
+  date: "Date"
+  status: "Status"
+  approve: "Approve"
+  reject: "Reject"
+  spam: "Mark as spam"
+  reply: "Reply"
+  edit_comment: "Edit comment"
+  delete_comment: "Delete comment"
+  no_comments: "No comments"
+  pending_approval: "Pending approval"
+  approved: "Approved"
+  rejected: "Rejected"
+  spam_comment: "Spam"
+
+actions:
+  create_article: "Create Article"
+  edit_article: "Edit"
+  view_article: "View article"
+  duplicate_article: "Duplicate"
+  delete_article: "Delete"
+  publish: "Publish"
+  unpublish: "Unpublish"
+  schedule: "Schedule"
+  archive: "Archive"
+  feature: "Feature"
+  unfeature: "Unfeature"
+  preview: "Preview"
+
+search:
+  placeholder: "Search articles..."
+  by_title: "By title"
+  by_content: "By content"
+  by_author: "By author"
+  by_category: "By category"
+  by_tag: "By tag"
+  
+filters:
+  all: "All articles"
+  published: "Published"
+  draft: "Drafts"
+  private: "Private"
+  pending: "Pending"
+  scheduled: "Scheduled"
+  featured: "Featured"
+  by_author: "By author"
+  by_category: "By category"
+  by_date: "By date"
+  
+bulk_actions:
+  select_action: "Select action"
+  publish_selected: "Publish selected"
+  unpublish_selected: "Unpublish selected"
+  delete_selected: "Delete selected"
+  archive_selected: "Archive selected"
+  feature_selected: "Feature selected"
+  export_selected: "Export selected"
+  apply: "Apply"
+
+validation:
+  title_required: "Title is required"
+  slug_required: "URL is required"
+  slug_invalid: "URL contains invalid characters"
+  slug_exists: "This URL is already in use"
+  content_required: "Content is required"
+  category_required: "Please select a category"
+  author_required: "Author is required"
+  published_date_future: "Publication date cannot be in the future for published articles"
+
+editor:
+  bold: "Bold"
+  italic: "Italic"
+  underline: "Underline"
+  strikethrough: "Strikethrough"
+  link: "Link"
+  image: "Image"
+  quote: "Quote"
+  code: "Code"
+  list_bullet: "Bullet list"
+  list_number: "Numbered list"
+  heading: "Heading"
+  paragraph: "Paragraph"
+  save_draft: "Save draft"
+  preview: "Preview"
+  fullscreen: "Fullscreen"
+  word_count: "Word count"
+
+seo:
+  title: "SEO Optimization"
+  preview: "Search results preview"
+  characters_left: "characters left"
+  title_length: "SEO title should be between 50 and 60 characters"
+  description_length: "SEO description should be between 150 and 160 characters"
+  focus_keyword: "Focus keyword"
+  readability: "Readability"
+  analysis: "SEO Analysis"
+
+media:
+  title: "Media Library"
+  upload: "Upload files"
+  select: "Select"
+  insert: "Insert"
+  edit: "Edit"
+  delete: "Delete"
+  alt_text: "Alt text"
+  caption: "Caption"
+  alignment: "Alignment"
+  size: "Size"
+
+export:
+  articles: "Articles"
+  format: "Format"
+  csv: "CSV"
+  excel: "Excel"
+  pdf: "PDF"
+  xml: "XML"
+  
+statistics:
+  total_views: "Total views"
+  average_reading_time: "Average reading time"
+  most_viewed: "Most viewed"
+  most_commented: "Most commented"
+  popular_categories: "Popular categories"
+  popular_tags: "Popular tags"
+  monthly_posts: "Posts per month"

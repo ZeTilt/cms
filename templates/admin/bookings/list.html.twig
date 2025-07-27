@@ -1,0 +1,335 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Bookings Management - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'bookings.title'|trans({}, 'bookings') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ 'bookings.subtitle'|trans({}, 'bookings') }}</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ path('admin_bookings_new') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    {{ 'actions.create_booking'|trans({}, 'bookings') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5 mb-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'fields.total'|trans({}, 'admin') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.total }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'status.pending'|trans({}, 'bookings') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.pending }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'status.confirmed'|trans({}, 'bookings') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.confirmed }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'status.completed'|trans({}, 'bookings') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.completed }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'status.cancelled'|trans({}, 'bookings') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.cancelled }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'stats.this_month'|trans({}, 'bookings') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.thisMonth }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4">
+            <form method="GET" class="flex flex-wrap gap-4 items-center">
+                <div class="flex items-center space-x-2">
+                    <label for="status" class="text-sm font-medium text-gray-700">{{ 'fields.status'|trans({}, 'admin') }}:</label>
+                    <select name="status" id="status" class="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">{{ 'filters.all'|trans({}, 'admin') }}</option>
+                        <option value="pending" {% if currentStatus == 'pending' %}selected{% endif %}>{{ 'status.pending'|trans({}, 'bookings') }}</option>
+                        <option value="confirmed" {% if currentStatus == 'confirmed' %}selected{% endif %}>{{ 'status.confirmed'|trans({}, 'bookings') }}</option>
+                        <option value="cancelled" {% if currentStatus == 'cancelled' %}selected{% endif %}>{{ 'status.cancelled'|trans({}, 'bookings') }}</option>
+                        <option value="completed" {% if currentStatus == 'completed' %}selected{% endif %}>{{ 'status.completed'|trans({}, 'bookings') }}</option>
+                        <option value="no_show" {% if currentStatus == 'no_show' %}selected{% endif %}>{{ 'status.no_show'|trans({}, 'bookings') }}</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <label for="payment_status" class="text-sm font-medium text-gray-700">{{ 'fields.payment'|trans({}, 'bookings') }}:</label>
+                    <select name="payment_status" id="payment_status" class="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">All</option>
+                        <option value="pending" {% if currentPaymentStatus == 'pending' %}selected{% endif %}>{{ 'payment.pending'|trans({}, 'bookings') }}</option>
+                        <option value="paid" {% if currentPaymentStatus == 'paid' %}selected{% endif %}>{{ 'payment.paid'|trans({}, 'bookings') }}</option>
+                        <option value="refunded" {% if currentPaymentStatus == 'refunded' %}selected{% endif %}>{{ 'payment.refunded'|trans({}, 'bookings') }}</option>
+                        <option value="failed" {% if currentPaymentStatus == 'failed' %}selected{% endif %}>{{ 'payment.failed'|trans({}, 'bookings') }}</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <label for="type" class="text-sm font-medium text-gray-700">{{ 'fields.type'|trans({}, 'admin') }}:</label>
+                    <select name="type" id="type" class="border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">All</option>
+                        <option value="service" {% if currentType == 'service' %}selected{% endif %}>{{ 'types.services'|trans({}, 'bookings') }}</option>
+                        <option value="event" {% if currentType == 'event' %}selected{% endif %}>{{ 'types.events'|trans({}, 'bookings') }}</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                    {{ 'actions.filter'|trans({}, 'admin') }}
+                </button>
+
+                <a href="{{ path('admin_bookings_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    {{ 'actions.clear'|trans({}, 'admin') }}
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bookings List -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        {% if bookings|length > 0 %}
+            <ul class="divide-y divide-gray-200">
+                {% for booking in bookings %}
+                    <li>
+                        <div class="px-4 py-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                        <span class="text-sm font-medium text-gray-700">
+                                            {{ booking.user.username|slice(0, 2)|upper }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ booking.bookableItemName }}
+                                        </div>
+                                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ booking.bookableItemType|title }}
+                                        </span>
+                                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ booking.statusColor }}">
+                                            {{ booking.statusLabel }}
+                                        </span>
+                                        {% if booking.paymentStatus %}
+                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ booking.paymentStatusColor }}">
+                                                {{ booking.paymentStatusLabel }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ booking.user.username }} • {{ booking.user.email }}
+                                        {% if booking.bookingDate %}
+                                            • {{ booking.bookingDate|date('Y-m-d') }}
+                                        {% endif %}
+                                        {% if booking.startTime %}
+                                            • {{ booking.startTime|date('H:i') }}
+                                        {% endif %}
+                                        {% if booking.participants > 1 %}
+                                            • {{ booking.participants }} {{ 'fields.participants'|trans({}, 'bookings') }}
+                                        {% endif %}
+                                        {% if booking.totalPrice %}
+                                            • €{{ booking.totalPrice }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <!-- Quick Status Update -->
+                                <form method="POST" action="{{ path('admin_bookings_status', {'id': booking.id}) }}" class="inline-flex">
+                                    <select name="status" onchange="this.form.submit()" class="text-xs border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500">
+                                        <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>{{ 'status.pending'|trans({}, 'bookings') }}</option>
+                                        <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>{{ 'status.confirmed'|trans({}, 'bookings') }}</option>
+                                        <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>{{ 'status.cancelled'|trans({}, 'bookings') }}</option>
+                                        <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>{{ 'status.completed'|trans({}, 'bookings') }}</option>
+                                        <option value="no_show" {% if booking.status == 'no_show' %}selected{% endif %}>{{ 'status.no_show'|trans({}, 'bookings') }}</option>
+                                    </select>
+                                </form>
+                                
+                                <a href="{{ path('admin_bookings_edit', {'id': booking.id}) }}" 
+                                   class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                                    {{ 'actions.edit'|trans({}, 'admin') }}
+                                </a>
+                                
+                                <form method="POST" action="{{ path('admin_bookings_delete', {'id': booking.id}) }}" 
+                                      onsubmit="return confirm('{{ 'messages.confirm_delete_booking'|trans({}, 'bookings') }}')" class="inline">
+                                    <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">
+                                        {{ 'actions.delete'|trans({}, 'admin') }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'list.no_bookings'|trans({}, 'bookings') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ 'list.get_started'|trans({}, 'bookings') }}</p>
+                <div class="mt-6">
+                    <a href="{{ path('admin_bookings_new') }}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        {{ 'actions.create_booking'|trans({}, 'bookings') }}
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if totalPages > 1 %}
+        <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if currentPage > 1 %}
+                    <a href="{{ path('admin_bookings_list', {'page': currentPage - 1, 'status': currentStatus, 'payment_status': currentPaymentStatus, 'type': currentType}) }}" 
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        {{ 'pagination.previous'|trans({}, 'admin') }}
+                    </a>
+                {% endif %}
+                {% if currentPage < totalPages %}
+                    <a href="{{ path('admin_bookings_list', {'page': currentPage + 1, 'status': currentStatus, 'payment_status': currentPaymentStatus, 'type': currentType}) }}" 
+                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        {{ 'pagination.next'|trans({}, 'admin') }}
+                    </a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        {{ 'pagination.showing_detailed'|trans({from: ((currentPage - 1) * 20) + 1, to: min(currentPage * 20, totalBookings), total: totalBookings, item: 'bookings'|trans({}, 'bookings')}, 'admin') }}
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        {% for page in 1..totalPages %}
+                            {% if page == currentPage %}
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600">
+                                    {{ page }}
+                                </span>
+                            {% else %}
+                                <a href="{{ path('admin_bookings_list', {'page': page, 'status': currentStatus, 'payment_status': currentPaymentStatus, 'type': currentType}) }}" 
+                                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    {{ page }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </nav>
+                </div>
+            </div>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -18,8 +18,8 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    <h3 class="mt-2 text-sm font-semibold text-gray-900">Aucun article</h3>
-                    <p class="mt-1 text-sm text-gray-500">Aucun article n'a encore été publié.</p>
+                    <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ 'messages.no_articles'|trans({}, 'articles') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'messages.no_articles'|trans({}, 'articles') }} n'a encore été publié.</p>
                 </div>
             </div>
         {% else %}
@@ -54,7 +54,7 @@
                                 <p class="font-semibold text-gray-900">
                                     {{ article.author.fullName }}
                                 </p>
-                                <p class="text-gray-600">Auteur</p>
+                                <p class="text-gray-600">{{ 'fields.author'|trans({}, 'articles') }}</p>
                             </div>
                         </div>
                         {% if article.tags and article.tags|length > 0 %}

@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Events Management - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'title'|trans({}, 'events') }} - ZeTilt CMS{% endblock %}
 
 {% block content %}
 <!-- Header -->
@@ -8,21 +8,21 @@
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Events Management</h1>
-                <p class="mt-1 text-sm text-gray-500">Manage events, meetings, and workshops</p>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'list.title'|trans({}, 'events') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ 'subtitle'|trans({}, 'events') }}</p>
             </div>
             <div class="flex space-x-3">
                 <a href="{{ path('admin_events_calendar') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                     <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
-                    Calendar View
+                    {{ 'calendar.title'|trans({}, 'events') }}
                 </a>
                 <a href="{{ path('admin_events_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    New Event
+                    {{ 'actions.create_event'|trans({}, 'events') }}
                 </a>
             </div>
         </div>
@@ -34,144 +34,133 @@
     <div class="bg-white rounded-lg shadow p-4">
         <form method="GET" class="flex flex-wrap gap-4 items-end">
             <div>
-                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <label for="status" class="block text-sm font-medium text-gray-700">{{ 'fields.status'|trans({}, 'events') }}</label>
                 <select name="status" id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="">All Statuses</option>
-                    <option value="draft" {% if currentStatus == 'draft' %}selected{% endif %}>Draft</option>
-                    <option value="published" {% if currentStatus == 'published' %}selected{% endif %}>Published</option>
-                    <option value="cancelled" {% if currentStatus == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    <option value="">{{ 'filters.all'|trans({}, 'events') }}</option>
+                    <option value="draft" {% if currentStatus == 'draft' %}selected{% endif %}>{{ 'status.draft'|trans({}, 'events') }}</option>
+                    <option value="published" {% if currentStatus == 'published' %}selected{% endif %}>{{ 'status.published'|trans({}, 'events') }}</option>
+                    <option value="cancelled" {% if currentStatus == 'cancelled' %}selected{% endif %}>{{ 'status.cancelled'|trans({}, 'events') }}</option>
                 </select>
             </div>
             
             <div>
-                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                <label for="type" class="block text-sm font-medium text-gray-700">{{ 'fields.category'|trans({}, 'events') }}</label>
                 <select name="type" id="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="">All Types</option>
-                    <option value="event" {% if currentType == 'event' %}selected{% endif %}>Event</option>
-                    <option value="meeting" {% if currentType == 'meeting' %}selected{% endif %}>Meeting</option>
-                    <option value="conference" {% if currentType == 'conference' %}selected{% endif %}>Conference</option>
-                    <option value="workshop" {% if currentType == 'workshop' %}selected{% endif %}>Workshop</option>
+                    <option value="">{{ 'filters.all'|trans({}, 'events') }}</option>
+                    <option value="event" {% if currentType == 'event' %}selected{% endif %}>{{ 'categories.other'|trans({}, 'events') }}</option>
+                    <option value="meeting" {% if currentType == 'meeting' %}selected{% endif %}>{{ 'categories.meeting'|trans({}, 'events') }}</option>
+                    <option value="conference" {% if currentType == 'conference' %}selected{% endif %}>{{ 'categories.conference'|trans({}, 'events') }}</option>
+                    <option value="workshop" {% if currentType == 'workshop' %}selected{% endif %}>{{ 'categories.workshop'|trans({}, 'events') }}</option>
                 </select>
             </div>
             
             <div>
                 <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                    Filter
+                    {{ 'filters.apply'|trans({}, 'events') }}
                 </button>
                 <a href="{{ path('admin_events_list') }}" class="ml-2 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    Clear
+                    {{ 'actions.clear_filters'|trans({}, 'events') }}
                 </a>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Events List -->
+<!-- Events Table -->
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     {% if events is empty %}
         <div class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No events</h3>
-            <p class="mt-1 text-sm text-gray-500">Get started by creating a new event.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'list.no_events'|trans({}, 'events') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ 'list.create_first'|trans({}, 'events') }}</p>
             <div class="mt-6">
                 <a href="{{ path('admin_events_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    New Event
+                    {{ 'actions.create_event'|trans({}, 'events') }}
                 </a>
             </div>
         </div>
     {% else %}
-        <div class="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" class="divide-y divide-gray-200">
-                {% for event in events %}
-                    <li>
-                        <a href="{{ path('admin_events_edit', {id: event.id}) }}" class="block hover:bg-gray-50">
-                            <div class="px-4 py-4 sm:px-6">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="w-2 h-2 rounded-full mr-3 
-                                                {% if event.status == 'published' %}bg-green-400
-                                                {% elseif event.status == 'draft' %}bg-yellow-400
-                                                {% else %}bg-red-400{% endif %}">
-                                            </div>
-                                        </div>
-                                        <div class="min-w-0 flex-1">
-                                            <div class="flex items-center">
-                                                <p class="text-sm font-medium text-indigo-600 truncate">{{ event.title }}</p>
-                                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                    {% if event.type == 'event' %}bg-green-100 text-green-800
-                                                    {% elseif event.type == 'meeting' %}bg-blue-100 text-blue-800
-                                                    {% elseif event.type == 'conference' %}bg-purple-100 text-purple-800
-                                                    {% else %}bg-orange-100 text-orange-800{% endif %}">
-                                                    {{ event.type|title }}
-                                                </span>
-                                                {% if event.isUpcoming %}
-                                                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                        Upcoming
-                                                    </span>
-                                                {% elseif event.isActive %}
-                                                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                        Active
-                                                    </span>
-                                                {% elseif event.isPast %}
-                                                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                        Past
-                                                    </span>
-                                                {% endif %}
-                                            </div>
-                                            <div class="mt-2 flex items-center text-sm text-gray-500">
-                                                {% if event.startDate %}
-                                                    <p class="flex items-center">
-                                                        <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                                        </svg>
-                                                        {{ event.startDate|date('M j, Y g:i A') }}
-                                                    </p>
-                                                    {% if event.endDate %}
-                                                        <span class="mx-2">→</span>
-                                                        <p>{{ event.endDate|date('M j, Y g:i A') }}</p>
-                                                    {% endif %}
-                                                {% endif %}
-                                                {% if event.location %}
-                                                    <span class="mx-2">•</span>
-                                                    <p class="flex items-center">
-                                                        <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                        </svg>
-                                                        {{ event.location }}
-                                                    </p>
-                                                {% endif %}
-                                            </div>
-                                            {% if event.requiresRegistration %}
-                                                <div class="mt-2 flex items-center text-sm text-gray-500">
-                                                    <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                                    </svg>
-                                                    {{ event.currentParticipants }}{% if event.maxParticipants %}/{{ event.maxParticipants }}{% endif %} participants
-                                                </div>
-                                            {% endif %}
-                                        </div>
+        <!-- Table View -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.title'|trans({}, 'events') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.start_date'|trans({}, 'events') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.location'|trans({}, 'events') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'header.registrations'|trans({}, 'events') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'fields.status'|trans({}, 'events') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'header.organizer'|trans({}, 'events') }}</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for event in events %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 rounded-full mr-3 
+                                        {% if event.status == 'published' %}bg-green-400
+                                        {% elseif event.status == 'draft' %}bg-yellow-400
+                                        {% else %}bg-red-400{% endif %}">
                                     </div>
-                                    <div class="flex items-center">
-                                        <div class="text-sm text-gray-500">
-                                            <p>{{ event.organizer.fullName }}</p>
-                                        </div>
-                                        <svg class="ml-2 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">{{ event.title }}</div>
+                                        <div class="text-sm text-gray-500">{{ event.type|title }}</div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ event.startDate|date('d/m/Y') }}</div>
+                                <div class="text-sm text-gray-500">{{ event.startDate|date('H:i') }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ event.location ?: '-' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                {% if event.requiresRegistration %}
+                                    <span class="text-sm text-gray-900">{{ event.currentParticipants }}{% if event.maxParticipants %}/{{ event.maxParticipants }}{% endif %}</span>
+                                {% else %}
+                                    <span class="text-sm text-gray-500">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                {% if event.status == 'published' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ 'status.published'|trans({}, 'events') }}
+                                    </span>
+                                {% elseif event.status == 'draft' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        {{ 'status.draft'|trans({}, 'events') }}
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        {{ 'status.cancelled'|trans({}, 'events') }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ event.organizer.fullName }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex justify-end space-x-2">
+                                    <a href="{{ path('admin_events_edit', {id: event.id}) }}" class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                        {{ 'actions.edit_event'|trans({}, 'events') }}
+                                    </a>
+                                    <a href="{{ path('admin_events_registrations', {id: event.id}) }}" class="text-gray-600 hover:text-gray-900 text-sm">
+                                        {{ 'actions.view_registrations'|trans({}, 'events') }}
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
         <!-- Pagination -->
@@ -179,17 +168,17 @@
             <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-6">
                 <div class="flex flex-1 justify-between sm:hidden">
                     {% if currentPage > 1 %}
-                        <a href="{{ path('admin_events_list', {page: currentPage - 1, status: currentStatus, type: currentType}) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                        <a href="{{ path('admin_events_list', {page: currentPage - 1, status: currentStatus, type: currentType}) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">{{ 'actions.previous'|trans({}, 'events') }}</a>
                     {% endif %}
                     {% if currentPage < totalPages %}
-                        <a href="{{ path('admin_events_list', {page: currentPage + 1, status: currentStatus, type: currentType}) }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                        <a href="{{ path('admin_events_list', {page: currentPage + 1, status: currentStatus, type: currentType}) }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">{{ 'actions.next'|trans({}, 'events') }}</a>
                     {% endif %}
                 </div>
                 <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
                         <p class="text-sm text-gray-700">
-                            Showing page <span class="font-medium">{{ currentPage }}</span> of <span class="font-medium">{{ totalPages }}</span>
-                            (<span class="font-medium">{{ totalEvents }}</span> total events)
+                            {{ 'pagination.page'|trans({}, 'events') }} <span class="font-medium">{{ currentPage }}</span> {{ 'pagination.of'|trans({}, 'events') }} <span class="font-medium">{{ totalPages }}</span>
+                            (<span class="font-medium">{{ totalEvents }}</span> {{ 'pagination.total_events'|trans({}, 'events') }})
                         </p>
                     </div>
                     <div>
