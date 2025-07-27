@@ -12,10 +12,10 @@
 - [COMPLETED] Corriger traductions manquantes Business (clés affichées) (high)
 - [COMPLETED] Corriger locale Registration (affiche anglais au lieu français) (high)
 - [COMPLETED] Ajouter switch liste/tableau au module UserPlus (medium)
+- [COMPLETED] Corriger dropdown sélection langue en mode admin (medium)
 
 ## À Faire
 ### Interface & UI
-- [PENDING] Corriger dropdown sélection langue en mode admin (medium)
 - [PENDING] Penser à commit et push régulièrement les changements une fois l'item terminé (medium)
 
 ### Données & Tests
