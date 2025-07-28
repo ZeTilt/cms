@@ -60,10 +60,13 @@
 - [PENDING] Concevoir écrans backoffice e-commerce et reporting (medium)
 
 ## Corrections Récentes
-- ✅ Corrigation template Registration - Remplacement textes hardcodés par traductions
+- ✅ Correction template Registration - Remplacement textes hardcodés par traductions
 - ✅ Ajout clés manquantes registration.fr.yaml et registration.en.yaml
 - ✅ Fix erreurs JavaScript modules Articles et Services
 - ✅ Simplification module Events (vue table seulement)
+- ✅ Correction positionnement dropdown langue (s'affiche vers le haut si nécessaire)
+- ✅ Traductions page d'accueil (home.fr.yaml et home.en.yaml)
+- ✅ Ajout traductions manquantes module Certifications
 
 ## Notes
 - L'élimination des textes hardcodés est une priorité haute

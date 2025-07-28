@@ -22,7 +22,7 @@
                     <label for="user_type_id" class="block text-sm font-medium text-gray-700">User Type</label>
                     <select id="user_type_id" name="user_type_id" required 
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="">Remove Type Assignment</option>
+                        <option value="">{{ 'actions.remove_type_assignment'|trans({}, 'userplus') }}</option>
                         {% for userType in userTypes %}
                             <option value="{{ userType.id }}">{{ userType.displayName }}</option>
                         {% endfor %}

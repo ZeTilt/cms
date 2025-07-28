@@ -129,6 +129,7 @@ actions:
   update: "Mettre à jour"
   previous: "Précédent"
   next: "Suivant"
+  remove_type_assignment: "Supprimer l'affectation de type"
   
 # Types d'utilisateurs
 user_types:

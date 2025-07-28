@@ -47,6 +47,7 @@ actions:
   deactivate: "Désactiver"
   previous: "Précédent"
   next: "Suivant"
+  confirm_delete_service: "Êtes-vous sûr de vouloir supprimer ce service ? Cette action ne peut pas être annulée."
 
 filters:
   title: "Filtres et Recherche"

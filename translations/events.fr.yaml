@@ -105,6 +105,7 @@ categories:
 messages:
   no_events_today: "Aucun événement prévu ce jour"
   confirm_delete_attribute: "Êtes-vous sûr de vouloir supprimer cet attribut ?"
+  confirm_delete_registration: "Êtes-vous sûr de vouloir supprimer cette inscription ?"
 
 javascript:
   date: "Date"

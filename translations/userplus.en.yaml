@@ -106,6 +106,7 @@ actions:
   update: "Update"
   previous: "Previous"
   next: "Next"
+  remove_type_assignment: "Remove Type Assignment"
   
 # User types
 user_types:
