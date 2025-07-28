@@ -29,7 +29,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
                 <select name="user" class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="">All Users</option>
+                    <option value="">{{ 'filters.all_users'|trans({}, 'certifications') }}</option>
                     {% for user in users %}
                         <option value="{{ user.id }}" {% if currentUser == user.id|string %}selected{% endif %}>
                             {{ user.username }} ({{ user.email }})
@@ -41,7 +41,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Certification</label>
                 <select name="certification" class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="">All Certifications</option>
+                    <option value="">{{ 'filters.all_certifications'|trans({}, 'certifications') }}</option>
                     {% for certification in certifications %}
                         <option value="{{ certification.id }}" {% if currentCertification == certification.id|string %}selected{% endif %}>
                             {{ certification.name }} (Level {{ certification.level }})
@@ -53,7 +53,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select name="status" class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="">All Status</option>
+                    <option value="">{{ 'filters.all_statuses'|trans({}, 'certifications') }}</option>
                     <option value="active" {% if currentStatus == 'active' %}selected{% endif %}>Active</option>
                     <option value="expired" {% if currentStatus == 'expired' %}selected{% endif %}>Expired</option>
                     <option value="expiring_soon" {% if currentStatus == 'expiring_soon' %}selected{% endif %}>Expiring Soon</option>

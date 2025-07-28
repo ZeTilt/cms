@@ -99,7 +99,7 @@
                                 name="user_id" 
                                 required
                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">Choose a user...</option>
+                            <option value="">{{ 'filters.choose_user'|trans({}, 'certifications') }}</option>
                             {% for user in availableUsers %}
                                 <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
                             {% endfor %}
@@ -113,7 +113,7 @@
                         <input type="text" 
                                id="notes" 
                                name="notes" 
-                               placeholder="Optional notes"
+                               placeholder="{{ 'messages.optional_notes'|trans({}, 'certifications') }}"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
                 </div>

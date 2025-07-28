@@ -47,15 +47,24 @@ actions:
 filters:
   title: "Filtres et Recherche"
   search: "Recherche"
-  search_placeholder: "Nom ou description de la certification..."
+  search_placeholder: "Rechercher des certifications..."
   status: "Statut"
   level: "Niveau"
   organization: "Organisme"
   all_statuses: "Tous les statuts"
   all_levels: "Tous les niveaux"
   all_organizations: "Tous les organismes"
+  all_users: "Tous les utilisateurs"
+  all_certifications: "Toutes les certifications"
   filtered: "Filtrés"
   apply: "Filtrer"
+  select_prerequisite: "Sélectionner un prérequis..."
+  choose_user: "Choisir un utilisateur..."
+
+# Messages and alerts
+messages:
+  prerequisite_already_selected: "Ce prérequis est déjà sélectionné"
+  optional_notes: "Notes optionnelles"
 
 status:
   active: "Active"

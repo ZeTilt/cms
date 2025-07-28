@@ -47,15 +47,24 @@ actions:
 filters:
   title: "Filters and Search"
   search: "Search"
-  search_placeholder: "Certification name or description..."
+  search_placeholder: "Search certifications..."
   status: "Status"
   level: "Level"
   organization: "Organization"
-  all_statuses: "All statuses"
-  all_levels: "All levels"
-  all_organizations: "All organizations"
+  all_statuses: "All Status"
+  all_levels: "All Levels"
+  all_organizations: "All Organizations"
+  all_users: "All Users"
+  all_certifications: "All Certifications"
   filtered: "Filtered"
   apply: "Filter"
+  select_prerequisite: "Select a prerequisite..."
+  choose_user: "Choose a user..."
+
+# Messages and alerts
+messages:
+  prerequisite_already_selected: "This prerequisite is already selected"
+  optional_notes: "Optional notes"
 
 status:
   active: "Active"

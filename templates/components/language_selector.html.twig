@@ -58,47 +58,39 @@
         function calculatePosition() {
             const buttonRect = button.getBoundingClientRect();
             const menuWidth = 224; // w-56 = 14rem = 224px
-            const menuHeight = menu.offsetHeight || 200; // Estimation si pas encore affiché
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-            const scrollX = window.scrollX;
-            const scrollY = window.scrollY;
+            
+            // Reset all positioning styles and classes
+            menu.style.left = '';
+            menu.style.right = '';
+            menu.style.top = '';
+            menu.style.bottom = '';
+            menu.classList.remove('origin-top-left', 'origin-top-right', 'origin-bottom-left', 'origin-bottom-right');
             
             // Calcul position horizontale
-            let left, right;
             if (buttonRect.right + menuWidth > viewportWidth) {
                 // Le menu dépasse à droite, l'aligner à droite du bouton
-                right = 0;
-                left = 'auto';
-                menu.classList.remove('origin-top-left');
-                menu.classList.add('origin-top-right');
+                menu.style.right = '0';
             } else {
-                // Assez de place à droite, l'aligner normalement
-                left = 0;
-                right = 'auto';
-                menu.classList.remove('origin-top-right');
-                menu.classList.add('origin-top-left');
+                // Assez de place à droite, l'aligner à gauche
+                menu.style.left = '0';
             }
             
-            // Calcul position verticale
-            let top, bottom;
-            if (buttonRect.bottom + menuHeight > viewportHeight) {
-                // Le menu dépasse en bas, l'afficher au-dessus
-                bottom = '100%';
-                top = 'auto';
-                menu.classList.remove('origin-top-right', 'origin-top-left');
-                menu.classList.add(right === 0 ? 'origin-bottom-right' : 'origin-bottom-left');
-            } else {
-                // Assez de place en bas, l'afficher normalement
-                top = '100%';
-                bottom = 'auto';
-            }
+            // Calcul position verticale - priorité à l'affichage vers le haut si on est en bas de page
+            const spaceBelow = viewportHeight - buttonRect.bottom;
+            const spaceAbove = buttonRect.top;
+            const estimatedMenuHeight = 150; // Estimation conservatrice
             
-            // Appliquer les styles
-            menu.style.left = left === 'auto' ? left : left + 'px';
-            menu.style.right = right === 'auto' ? right : right + 'px';
-            menu.style.top = top === 'auto' ? top : (top === '100%' ? 'calc(100% + 0.5rem)' : top);
-            menu.style.bottom = bottom === 'auto' ? bottom : (bottom === '100%' ? 'calc(100% + 0.5rem)' : bottom);
+            if (spaceBelow < estimatedMenuHeight && spaceAbove >= estimatedMenuHeight) {
+                // Afficher au-dessus du bouton
+                menu.style.bottom = 'calc(100% + 0.5rem)';
+                menu.classList.add(menu.style.right ? 'origin-bottom-right' : 'origin-bottom-left');
+            } else {
+                // Afficher en dessous du bouton (comportement par défaut)
+                menu.style.top = 'calc(100% + 0.5rem)';
+                menu.classList.add(menu.style.right ? 'origin-top-right' : 'origin-top-left');
+            }
         }
         
         function openMenu() {
