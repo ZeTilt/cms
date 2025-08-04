@@ -42,7 +42,7 @@ class CartService
         if (isset($cart[$itemKey])) {
             // Mettre à jour la quantité si l'élément existe déjà
             $cart[$itemKey]['quantity'] += $quantity;
-            $cart[$itemKey]['total_price'] = bcmul($cart[$itemKey]['unit_price'], (string)$cart[$itemKey]['quantity'], 2);
+            $cart[$itemKey]['total_price'] = number_format(floatval($cart[$itemKey]['unit_price']) * $cart[$itemKey]['quantity'], 2, '.', '');
         } else {
             // Ajouter un nouvel élément
             $cart[$itemKey] = [
@@ -51,7 +51,7 @@ class CartService
                 'item_name' => $itemName,
                 'unit_price' => $price,
                 'quantity' => $quantity,
-                'total_price' => bcmul($price, (string)$quantity, 2),
+                'total_price' => number_format(floatval($price) * $quantity, 2, '.', ''),
                 'metadata' => $metadata
             ];
         }
@@ -64,6 +64,11 @@ class CartService
      */
     public function removeItem(string $itemType, int $itemId): void
     {
+        $session = $this->getSession();
+        if (!$session) {
+            return;
+        }
+        
         $cart = $this->getCart();
         $itemKey = $itemType . '_' . $itemId;
         
@@ -83,12 +88,17 @@ class CartService
             return;
         }
 
+        $session = $this->getSession();
+        if (!$session) {
+            return;
+        }
+
         $cart = $this->getCart();
         $itemKey = $itemType . '_' . $itemId;
         
         if (isset($cart[$itemKey])) {
             $cart[$itemKey]['quantity'] = $quantity;
-            $cart[$itemKey]['total_price'] = bcmul($cart[$itemKey]['unit_price'], (string)$quantity, 2);
+            $cart[$itemKey]['total_price'] = number_format(floatval($cart[$itemKey]['unit_price']) * $quantity, 2, '.', '');
             $session->set('cart', $cart);
         }
     }
@@ -123,7 +133,7 @@ class CartService
         $total = '0.00';
         
         foreach ($cart as $item) {
-            $total = bcadd($total, $item['total_price'], 2);
+            $total = number_format(floatval($total) + floatval($item['total_price']), 2, '.', '');
         }
         
         return $total;

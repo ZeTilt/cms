@@ -57,20 +57,17 @@
                         <p class="text-sm text-blue-600 mt-2">Sélectionnez vos photos préférées et commandez des tirages professionnels</p>
                         <p class="text-xs text-blue-500 mt-1">Partenariat CEWE - Qualité professionnelle garantie</p>
                         
-                        {% if app.user %}
-                            <div class="mt-4 flex justify-center space-x-3">
-                                <button onclick="togglePrintMode()" id="print-mode-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                                    🖨️ Mode Tirage
-                                </button>
-                                <button onclick="openCartModal()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
-                                    🛒 Voir Panier (<span id="cart-count">0</span>)
-                                </button>
-                            </div>
-                        {% else %}
-                            <a href="{{ path('app_login') }}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                                Connectez-vous pour commander
-                            </a>
-                        {% endif %}
+                        <div class="mt-4 flex justify-center space-x-3">
+                            <button onclick="togglePrintMode()" id="print-mode-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                🖨️ Mode Tirage
+                            </button>
+                            <button onclick="openBulkPrintModal()" id="bulk-print-btn" class="hidden bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors opacity-50 cursor-not-allowed" disabled>
+                                ➕ Ajouter Sélection au Panier (<span id="selected-count">0</span>)
+                            </button>
+                            <button onclick="openCartModal()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                                🛒 Voir Panier (<span id="cart-count">0</span>)
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,6 +262,7 @@ let cartItems = 0;
 function togglePrintMode() {
     printModeActive = !printModeActive;
     const btn = document.getElementById('print-mode-btn');
+    const bulkBtn = document.getElementById('bulk-print-btn');
     const overlays = document.querySelectorAll('.print-mode-overlay');
     const checkboxes = document.querySelectorAll('.print-mode-checkbox');
     
@@ -274,12 +272,21 @@ function togglePrintMode() {
         btn.classList.add('bg-red-600', 'hover:bg-red-700');
         overlays.forEach(overlay => overlay.classList.remove('hidden'));
         checkboxes.forEach(checkbox => checkbox.classList.remove('hidden'));
+        bulkBtn.classList.remove('hidden');
+        updateSelectedCount();
     } else {
         btn.textContent = '🖨️ Mode Tirage';
         btn.classList.remove('bg-red-600', 'hover:bg-red-700');
         btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
         overlays.forEach(overlay => overlay.classList.add('hidden'));
         checkboxes.forEach(checkbox => checkbox.classList.add('hidden'));
+        bulkBtn.classList.add('hidden');
+        // Clear selections when exiting print mode
+        selectedImages.clear();
+        checkboxes.forEach(checkbox => {
+            const input = checkbox.querySelector('input[type="checkbox"]');
+            if (input) input.checked = false;
+        });
     }
 }
 
@@ -302,6 +309,39 @@ function toggleImageSelection(imageId, selected) {
     } else {
         selectedImages.delete(imageId);
     }
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const count = selectedImages.size;
+    document.getElementById('selected-count').textContent = count;
+    const bulkBtn = document.getElementById('bulk-print-btn');
+    
+    if (count > 0) {
+        bulkBtn.disabled = false;
+        bulkBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+        bulkBtn.disabled = true;
+        bulkBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+function openBulkPrintModal() {
+    if (selectedImages.size === 0) {
+        alert('Veuillez sélectionner au moins une image.');
+        return;
+    }
+    
+    const modal = document.getElementById('bulk-print-modal');
+    document.getElementById('bulk-selected-count').textContent = selectedImages.size;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    calculateBulkPrintPrice();
+}
+
+function closeBulkPrintModal() {
+    document.getElementById('bulk-print-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
 }
 
 function addPrintToCart() {
@@ -427,6 +467,82 @@ function calculatePrintPrice() {
     });
 }
 
+function calculateBulkPrintPrice() {
+    const format = document.getElementById('bulk-print-format').value;
+    const paperType = document.getElementById('bulk-paper-type').value;
+    const quantity = document.getElementById('bulk-print-quantity').value;
+    const selectedCount = selectedImages.size;
+    
+    fetch('{{ path('calculate_print_price') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `format=${format}&paper_type=${paperType}&quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const unitPrice = parseFloat(data.price);
+            const totalPrice = unitPrice * selectedCount;
+            const totalQuantity = quantity * selectedCount;
+            document.getElementById('bulk-unit-price').textContent = data.price + ' €';
+            document.getElementById('bulk-total-price').textContent = totalPrice.toFixed(2) + ' €';
+            document.getElementById('bulk-total-quantity').textContent = totalQuantity;
+        }
+    });
+}
+
+function addBulkPrintToCart() {
+    const format = document.getElementById('bulk-print-format').value;
+    const paperType = document.getElementById('bulk-paper-type').value;
+    const quantity = parseInt(document.getElementById('bulk-print-quantity').value);
+    
+    let addedCount = 0;
+    let totalToAdd = selectedImages.size;
+    
+    const promises = Array.from(selectedImages).map(imageId => {
+        return fetch('{{ path('add_print_to_cart') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: `image_id=${imageId}&format=${format}&paper_type=${paperType}&quantity=${quantity}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                addedCount++;
+            }
+            return data;
+        });
+    });
+    
+    Promise.all(promises).then(results => {
+        if (addedCount === totalToAdd) {
+            // Update cart count
+            cartItems += totalToAdd * quantity;
+            document.getElementById('cart-count').textContent = cartItems;
+            
+            // Clear selections
+            selectedImages.clear();
+            document.querySelectorAll('.print-mode-checkbox input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateSelectedCount();
+            
+            closeBulkPrintModal();
+            alert(`${addedCount} tirages ajoutés au panier avec succès !`);
+        } else {
+            alert(`Erreur: ${addedCount}/${totalToAdd} tirages ajoutés. Certains ont échoué.`);
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors de l\'ajout des tirages au panier');
+    });
+}
+
 // Initialize cart count on page load
 document.addEventListener('DOMContentLoaded', function() {
     fetch('{{ path('cart_count') }}')
@@ -527,6 +643,83 @@ document.addEventListener('DOMContentLoaded', function() {
                         Procéder au paiement
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Print Order Modal -->
+<div id="bulk-print-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Commander plusieurs tirages</h3>
+                <button onclick="closeBulkPrintModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-800">
+                    <span class="font-medium"><span id="bulk-selected-count">0</span> images sélectionnées</span>
+                    <br>
+                    <span class="text-xs text-blue-600">Même format et papier appliqués à toutes les images</span>
+                </p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="bulk-print-format" class="block text-sm font-medium text-gray-700">Format</label>
+                    <select id="bulk-print-format" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="calculateBulkPrintPrice()">
+                        <option value="10x15">10x15 cm - 0,19 €</option>
+                        <option value="13x18">13x18 cm - 0,29 €</option>
+                        <option value="15x21">15x21 cm (A5) - 0,49 €</option>
+                        <option value="20x30">20x30 cm - 1,99 €</option>
+                        <option value="30x40">30x40 cm - 4,99 €</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="bulk-paper-type" class="block text-sm font-medium text-gray-700">Type de papier</label>
+                    <select id="bulk-paper-type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="calculateBulkPrintPrice()">
+                        <option value="standard">Standard (x1)</option>
+                        <option value="premium">Premium (x1.5)</option>
+                        <option value="canvas">Canvas (x3)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="bulk-print-quantity" class="block text-sm font-medium text-gray-700">Quantité par image</label>
+                    <input type="number" id="bulk-print-quantity" min="1" max="50" value="1" 
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                           onchange="calculateBulkPrintPrice()">
+                </div>
+                
+                <div class="bg-gray-50 p-3 rounded space-y-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span>Prix unitaire:</span>
+                        <span id="bulk-unit-price" class="font-medium">0,19 €</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span>Quantité totale:</span>
+                        <span id="bulk-total-quantity" class="font-medium">0</span>
+                    </div>
+                    <div class="flex justify-between items-center border-t pt-2">
+                        <span class="font-medium">Prix total:</span>
+                        <span id="bulk-total-price" class="font-bold text-blue-600">0,00 €</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex space-x-3">
+                <button onclick="closeBulkPrintModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors">
+                    Annuler
+                </button>
+                <button onclick="addBulkPrintToCart()" class="flex-1 bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors">
+                    Ajouter tout au panier
+                </button>
             </div>
         </div>
     </div>

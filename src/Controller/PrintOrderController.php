@@ -24,7 +24,6 @@ class PrintOrderController extends AbstractController
     ) {}
 
     #[Route('/print/add-to-cart', name: 'add_print_to_cart', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
     public function addPrintToCart(Request $request): JsonResponse
     {
         try {
@@ -84,7 +83,6 @@ class PrintOrderController extends AbstractController
     }
 
     #[Route('/cart/contents', name: 'cart_contents', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
     public function getCartContents(): JsonResponse
     {
         try {
@@ -122,7 +120,6 @@ class PrintOrderController extends AbstractController
     }
 
     #[Route('/cart/remove', name: 'cart_remove', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
     public function removeFromCart(Request $request): JsonResponse
     {
         try {
@@ -149,7 +146,6 @@ class PrintOrderController extends AbstractController
     }
 
     #[Route('/cart/checkout', name: 'cart_checkout', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
     public function checkout(): Response
     {
         $cart = $this->cartService->getCart();
@@ -162,7 +158,9 @@ class PrintOrderController extends AbstractController
 
         return $this->render('cart/checkout.html.twig', [
             'cart' => $cart,
+            'cart_items' => array_values($cart),
             'total' => $this->cartService->getTotalAmount(),
+            'total_amount' => $this->cartService->getTotalAmount(),
             'item_count' => $this->cartService->getItemCount()
         ]);
     }

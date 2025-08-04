@@ -88,5 +88,10 @@ services:
             $ceweApiKey: '%env(default:cewe_api_key_default:CEWE_API_KEY)%'
             $cewePartnerId: '%env(default:cewe_partner_id_default:CEWE_PARTNER_ID)%'
 
+    # Print Order Service
+    App\Service\PrintOrderService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

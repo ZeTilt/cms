@@ -13,7 +13,8 @@ class PrintOrderService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private CeweApiService $ceweApiService,
-        private CartService $cartService
+        private CartService $cartService,
+        private string $projectDir
     ) {}
 
     /**
@@ -110,13 +111,8 @@ class PrintOrderService
      */
     public function addPrintToCart(Image $image, string $format, string $paperType, int $quantity = 1): void
     {
-        // Calculer le prix
-        $formats = $this->ceweApiService->getAvailableFormats();
-        $paperTypes = $this->ceweApiService->getAvailablePaperTypes();
-        
-        $basePrice = $formats[$format]['base_price'] ?? 0.0;
-        $multiplier = $paperTypes[$paperType]['price_multiplier'] ?? 1.0;
-        $unitPrice = $basePrice * $multiplier;
+        // Calculer le prix avec marge
+        $unitPrice = $this->calculatePrintPriceWithMargin($format, $paperType);
 
         $this->cartService->addItem(
             'print_order',
@@ -187,7 +183,7 @@ class PrintOrderService
     }
 
     /**
-     * Calculer le prix d'un tirage
+     * Calculer le prix d'un tirage (sans marge, prix CEWE)
      */
     public function calculatePrintPrice(string $format, string $paperType, int $quantity = 1): float
     {
@@ -198,5 +194,41 @@ class PrintOrderService
         $multiplier = $paperTypes[$paperType]['price_multiplier'] ?? 1.0;
         
         return $basePrice * $multiplier * $quantity;
+    }
+
+    /**
+     * Calculer le prix d'un tirage avec marge (prix client)
+     */
+    public function calculatePrintPriceWithMargin(string $format, string $paperType, int $quantity = 1): float
+    {
+        $cewePrice = $this->calculatePrintPrice($format, $paperType, 1);
+        $customMargins = $this->getCustomMargins();
+        
+        // Chercher une marge spécifique pour ce format/papier
+        $marginKey = $format . '_' . $paperType;
+        $margin = $customMargins[$marginKey] ?? $customMargins['default'] ?? 50; // 50% par défaut
+        
+        // Appliquer la marge
+        $customerPrice = $cewePrice * (1 + ($margin / 100));
+        
+        return $customerPrice * $quantity;
+    }
+
+    /**
+     * Obtenir les marges personnalisées
+     */
+    private function getCustomMargins(): array
+    {
+        $configFile = $this->projectDir . '/config/print_margins.json';
+        
+        if (file_exists($configFile)) {
+            $content = file_get_contents($configFile);
+            return json_decode($content, true) ?: [];
+        }
+
+        // Marges par défaut
+        return [
+            'default' => 50, // 50% de marge par défaut
+        ];
     }
 }

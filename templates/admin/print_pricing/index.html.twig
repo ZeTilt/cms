@@ -1,0 +1,283 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Configuration des Prix de Tirage{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Configuration des Prix de Tirage</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <button type="button" class="btn btn-primary" onclick="syncWithCewe()">
+                <i class="fas fa-sync-alt"></i> Synchroniser avec CEWE
+            </button>
+        </div>
+    </div>
+
+    <!-- Pricing Calculator -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Calculateur de Prix</h5>
+                </div>
+                <div class="card-body">
+                    <form id="price-calculator">
+                        <div class="mb-3">
+                            <label for="calc-format" class="form-label">Format</label>
+                            <select class="form-select" id="calc-format" name="format" required>
+                                <option value="">Choisir un format</option>
+                                {% for key, format in formats %}
+                                    <option value="{{ key }}" data-base-price="{{ format.base_price }}">
+                                        {{ format.name }} - {{ format.base_price }}€
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="calc-paper-type" class="form-label">Type de Papier</label>
+                            <select class="form-select" id="calc-paper-type" name="paper_type" required>
+                                <option value="">Choisir un type</option>
+                                {% for key, paper in paper_types %}
+                                    <option value="{{ key }}" data-multiplier="{{ paper.price_multiplier }}">
+                                        {{ paper.name }} (×{{ paper.price_multiplier }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="calc-quantity" class="form-label">Quantité</label>
+                            <input type="number" class="form-control" id="calc-quantity" name="quantity" value="1" min="1">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="calculatePrice()">
+                            Calculer le Prix
+                        </button>
+                    </form>
+                    
+                    <div id="price-result" class="mt-3" style="display: none;">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6>Résultats du Calcul:</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>Prix CEWE:</td>
+                                            <td><span id="cewe-price"></span>€</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Marge:</td>
+                                            <td><span id="margin-percent"></span>% (+<span id="margin-amount"></span>€)</td>
+                                        </tr>
+                                        <tr class="fw-bold">
+                                            <td>Prix Client:</td>
+                                            <td><span id="customer-price"></span>€</td>
+                                        </tr>
+                                        <tr class="fw-bold">
+                                            <td>Total (×<span id="result-quantity"></span>):</td>
+                                            <td><span id="total-price"></span>€</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Configuration des Marges</h5>
+                </div>
+                <div class="card-body">
+                    <form id="margins-form">
+                        <div class="mb-3">
+                            <label for="default-margin" class="form-label">Marge par Défaut (%)</label>
+                            <input type="number" class="form-control" id="default-margin" name="margins[default]" 
+                                   value="{{ custom_margins.default ?? 50 }}" min="0" step="0.1">
+                            <div class="form-text">Marge appliquée si aucune marge spécifique n'est définie</div>
+                        </div>
+                        
+                        <h6>Marges Spécifiques par Format/Papier:</h6>
+                        <div id="specific-margins">
+                            {% for format_key, format in formats %}
+                                {% for paper_key, paper in paper_types %}
+                                    {% set margin_key = format_key ~ '_' ~ paper_key %}
+                                    <div class="row mb-2">
+                                        <div class="col-6">
+                                            <small>{{ format.name }} - {{ paper.name }}:</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control form-control-sm" 
+                                                   name="margins[{{ margin_key }}]" 
+                                                   value="{{ custom_margins[margin_key] ?? '' }}" 
+                                                   min="0" step="0.1" placeholder="Défaut">
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Sauvegarder les Marges
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current CEWE Pricing Tables -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Formats Disponibles CEWE</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Format</th>
+                                    <th>Description</th>
+                                    <th>Prix de Base</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, format in formats %}
+                                    <tr>
+                                        <td><code>{{ key }}</code></td>
+                                        <td>{{ format.name }}<br><small class="text-muted">{{ format.description ?? '' }}</small></td>
+                                        <td>{{ format.base_price }}€</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Types de Papier CEWE</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Multiplicateur</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, paper in paper_types %}
+                                    <tr>
+                                        <td><code>{{ key }}</code></td>
+                                        <td>{{ paper.name }}<br><small class="text-muted">{{ paper.description ?? '' }}</small></td>
+                                        <td>×{{ paper.price_multiplier }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculatePrice() {
+    const form = document.getElementById('price-calculator');
+    const formData = new FormData(form);
+    
+    fetch('{{ path('admin_print_pricing_calculate') }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('cewe-price').textContent = data.cewe_price;
+            document.getElementById('margin-percent').textContent = data.margin_percent;
+            document.getElementById('margin-amount').textContent = data.margin_amount;
+            document.getElementById('customer-price').textContent = data.customer_price;
+            document.getElementById('result-quantity').textContent = data.quantity;
+            document.getElementById('total-price').textContent = data.total_price;
+            document.getElementById('price-result').style.display = 'block';
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors du calcul du prix');
+    });
+}
+
+function syncWithCewe() {
+    fetch('{{ path('admin_print_pricing_sync_cewe') }}', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // Reload to show updated pricing
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors de la synchronisation');
+    });
+}
+
+// Handle margins form submission
+document.getElementById('margins-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('{{ path('admin_print_pricing_update_margins') }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors de la sauvegarde');
+    });
+});
+
+// Auto-calculate when form values change
+document.getElementById('calc-format').addEventListener('change', () => {
+    if (document.getElementById('calc-paper-type').value) {
+        calculatePrice();
+    }
+});
+
+document.getElementById('calc-paper-type').addEventListener('change', () => {
+    if (document.getElementById('calc-format').value) {
+        calculatePrice();
+    }
+});
+
+document.getElementById('calc-quantity').addEventListener('input', () => {
+    if (document.getElementById('calc-format').value && document.getElementById('calc-paper-type').value) {
+        calculatePrice();
+    }
+});
+</script>
+{% endblock %}
