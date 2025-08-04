@@ -7,6 +7,8 @@ parameters:
     locale: '%env(LOCALE)%'
     uploads_directory: '%kernel.project_dir%/public/uploads/images'
     thumbnails_directory: '%kernel.project_dir%/public/uploads/thumbnails'
+    cewe_api_key_default: 'demo-key'
+    cewe_partner_id_default: 'demo-partner'
 
 services:
     # default configuration for services in *this* file
@@ -83,8 +85,8 @@ services:
     # CEWE API Service
     App\Service\CeweApiService:
         arguments:
-            $ceweApiKey: '%env(default::CEWE_API_KEY)%'
-            $cewePartnerId: '%env(default::CEWE_PARTNER_ID)%'
+            $ceweApiKey: '%env(default:cewe_api_key_default:CEWE_API_KEY)%'
+            $cewePartnerId: '%env(default:cewe_partner_id_default:CEWE_PARTNER_ID)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
