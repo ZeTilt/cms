@@ -1,0 +1,541 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'gallery_expiration.dashboard.title'|trans({}, 'admin') }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 text-gray-400 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="ml-2 text-sm text-gray-500">{{ 'gallery_expiration.dashboard.title'|trans({}, 'admin') }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'gallery_expiration.dashboard.title'|trans({}, 'admin') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">Gérez les expirations et prolongations des galeries</p>
+            </div>
+            <div>
+                <button onclick="refreshStats()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    {{ 'gallery_expiration.refresh'|trans({}, 'admin') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="stats-grid">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'gallery_expiration.stats.total_with_expiration'|trans({}, 'admin') }}</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.total_with_expiration }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'gallery_expiration.stats.expired'|trans({}, 'admin') }}</dt>
+                            <dd class="text-lg font-medium text-red-600">{{ stats.expired }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'gallery_expiration.stats.expiring_7_days'|trans({}, 'admin') }}</dt>
+                            <dd class="text-lg font-medium text-yellow-600">{{ stats.expiring_7_days }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ 'gallery_expiration.stats.expiring_30_days'|trans({}, 'admin') }}</dt>
+                            <dd class="text-lg font-medium text-blue-600">{{ stats.expiring_30_days }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Actions -->
+    <div class="bg-white shadow rounded-lg mb-8">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ 'gallery_expiration.management.title'|trans({}, 'admin') }}</h3>
+            <div class="flex flex-wrap gap-4">
+                <button onclick="runExpirationCheck()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ 'gallery_expiration.management.run_check'|trans({}, 'admin') }}
+                </button>
+                <button onclick="sendReminders()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700">
+                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ 'gallery_expiration.management.send_reminders'|trans({}, 'admin') }}
+                </button>
+                <button onclick="cleanupOld()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700">
+                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    {{ 'gallery_expiration.management.cleanup_old'|trans({}, 'admin') }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                <button class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="expired">
+                    {{ 'gallery_expiration.tabs.expired'|trans({}, 'admin') }}
+                    <span class="bg-red-100 text-red-600 ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium" id="expired-count">{{ stats.expired }}</span>
+                </button>
+                <button class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="expiring-soon">
+                    {{ 'gallery_expiration.tabs.expiring_soon'|trans({}, 'admin') }}
+                    <span class="bg-yellow-100 text-yellow-600 ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium" id="expiring-count">{{ stats.expiring_7_days }}</span>
+                </button>
+                <button class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="all-with-expiration">
+                    {{ 'gallery_expiration.tabs.all_with_expiration'|trans({}, 'admin') }}
+                    <span class="bg-gray-100 text-gray-600 ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium" id="total-count">{{ stats.total_with_expiration }}</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="p-6">
+            <!-- Bulk Actions -->
+            <div class="mb-4 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <input type="checkbox" id="select-all" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="select-all" class="text-sm text-gray-700">{{ 'actions.select_all'|trans({}, 'admin') }}</label>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="bulkExtend()" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" style="display:none" id="bulk-extend-btn">
+                        <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        {{ 'gallery_expiration.actions.bulk_extend'|trans({}, 'admin') }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gallery Table -->
+            <div class="gallery-table-container" id="gallery-table">
+                <div class="text-center py-8 text-gray-500">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <p class="mt-2">Sélectionnez un onglet pour voir les galeries</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reactivate Modal -->
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" id="reactivate-modal">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'gallery_expiration.modal.reactivate.title'|trans({}, 'admin') }}</h3>
+            <form id="reactivate-form">
+                <input type="hidden" id="reactivate-gallery-id">
+                <div class="mb-4">
+                    <label for="reactivate-duration" class="block text-sm font-medium text-gray-700">{{ 'gallery_expiration.modal.reactivate.duration'|trans({}, 'admin') }}</label>
+                    <select id="reactivate-duration" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="30">30 {{ 'gallery_expiration.days'|trans({}, 'admin') }}</option>
+                        <option value="60">60 {{ 'gallery_expiration.days'|trans({}, 'admin') }}</option>
+                        <option value="90">90 {{ 'gallery_expiration.days'|trans({}, 'admin') }}</option>
+                        <option value="0">{{ 'gallery_expiration.modal.reactivate.permanent'|trans({}, 'admin') }}</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeReactivateModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">{{ 'actions.cancel'|trans({}, 'admin') }}</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">{{ 'actions.confirm'|trans({}, 'admin') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Extend Modal -->
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" id="extend-modal">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'gallery_expiration.modal.extend.title'|trans({}, 'admin') }}</h3>
+            <form id="extend-form">
+                <input type="hidden" id="extend-gallery-id">
+                <div class="mb-4">
+                    <label for="extend-days" class="block text-sm font-medium text-gray-700">{{ 'gallery_expiration.modal.extend.additional_days'|trans({}, 'admin') }}</label>
+                    <input type="number" id="extend-days" min="1" max="365" value="30" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeExtendModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">{{ 'actions.cancel'|trans({}, 'admin') }}</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">{{ 'actions.confirm'|trans({}, 'admin') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentTab = 'expired';
+let selectedGalleries = new Set();
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tabs
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            switchTab(this.dataset.tab);
+        });
+    });
+
+    // Initialize select all checkbox
+    document.getElementById('select-all').addEventListener('change', function() {
+        toggleSelectAll(this.checked);
+    });
+
+    // Initialize forms
+    document.getElementById('reactivate-form').addEventListener('submit', handleReactivate);
+    document.getElementById('extend-form').addEventListener('submit', handleExtend);
+
+    // Load initial tab
+    switchTab('expired');
+});
+
+async function refreshStats() {
+    try {
+        const response = await fetch('{{ path('admin_gallery_expiration_refresh_stats') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to refresh stats');
+        
+        const data = await response.json();
+        
+        // Update stat cards
+        document.querySelector('#stats-grid .bg-white:nth-child(1) dd').textContent = data.total_with_expiration;
+        document.querySelector('#stats-grid .bg-white:nth-child(2) dd').textContent = data.expired;
+        document.querySelector('#stats-grid .bg-white:nth-child(3) dd').textContent = data.expiring_7_days;
+        document.querySelector('#stats-grid .bg-white:nth-child(4) dd').textContent = data.expiring_30_days;
+        
+        // Update tab counts
+        document.getElementById('expired-count').textContent = data.expired;
+        document.getElementById('expiring-count').textContent = data.expiring_7_days;
+        document.getElementById('total-count').textContent = data.total_with_expiration;
+        
+        // Reload current tab
+        loadTabContent(currentTab);
+        
+    } catch (error) {
+        console.error('Error refreshing stats:', error);
+        alert('{{ 'gallery_expiration.error_refreshing_stats'|trans({}, 'admin') }}');
+    }
+}
+
+async function switchTab(tabName) {
+    currentTab = tabName;
+    
+    // Update tab UI
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'text-indigo-600');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+    activeTab.classList.remove('border-transparent', 'text-gray-500');
+    activeTab.classList.add('border-indigo-500', 'text-indigo-600');
+    
+    // Clear selections
+    selectedGalleries.clear();
+    updateBulkActions();
+    
+    // Load content
+    await loadTabContent(tabName);
+}
+
+async function loadTabContent(tabName) {
+    const container = document.getElementById('gallery-table');
+    container.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div></div>';
+    
+    try {
+        const response = await fetch(`{{ path('admin_gallery_expiration_tab_content') }}?tab=${tabName}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load content');
+        
+        const html = await response.text();
+        container.innerHTML = html;
+        
+        // Reinitialize event listeners for new content
+        initializeGalleryActions();
+        
+    } catch (error) {
+        console.error('Error loading tab content:', error);
+        container.innerHTML = '<div class="text-center py-8 text-red-500">Erreur lors du chargement</div>';
+    }
+}
+
+function initializeGalleryActions() {
+    // Gallery checkboxes
+    document.querySelectorAll('.gallery-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                selectedGalleries.add(this.value);
+            } else {
+                selectedGalleries.delete(this.value);
+            }
+            updateBulkActions();
+        });
+    });
+}
+
+function updateBulkActions() {
+    const bulkBtn = document.getElementById('bulk-extend-btn');
+    if (selectedGalleries.size > 0) {
+        bulkBtn.style.display = 'inline-flex';
+    } else {
+        bulkBtn.style.display = 'none';
+    }
+    
+    // Update select all checkbox
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.gallery-checkbox');
+    selectAll.checked = checkboxes.length > 0 && selectedGalleries.size === checkboxes.length;
+}
+
+function toggleSelectAll(checked) {
+    document.querySelectorAll('.gallery-checkbox').forEach(checkbox => {
+        checkbox.checked = checked;
+        if (checked) {
+            selectedGalleries.add(checkbox.value);
+        } else {
+            selectedGalleries.delete(checkbox.value);
+        }
+    });
+    updateBulkActions();
+}
+
+function showReactivateModal(galleryId) {
+    document.getElementById('reactivate-gallery-id').value = galleryId;
+    document.getElementById('reactivate-modal').classList.remove('hidden');
+}
+
+function closeReactivateModal() {
+    document.getElementById('reactivate-modal').classList.add('hidden');
+}
+
+function showExtendModal(galleryId) {
+    document.getElementById('extend-gallery-id').value = galleryId;
+    document.getElementById('extend-modal').classList.remove('hidden');
+}
+
+function closeExtendModal() {
+    document.getElementById('extend-modal').classList.add('hidden');
+}
+
+async function handleReactivate(e) {
+    e.preventDefault();
+    
+    const galleryId = document.getElementById('reactivate-gallery-id').value;
+    const duration = document.getElementById('reactivate-duration').value;
+    
+    try {
+        const response = await fetch('{{ path('admin_gallery_expiration_reactivate') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ galleryId: parseInt(galleryId), duration: parseInt(duration) })
+        });
+        
+        if (!response.ok) throw new Error('Failed to reactivate');
+        
+        closeReactivateModal();
+        refreshStats();
+        
+    } catch (error) {
+        console.error('Error reactivating gallery:', error);
+        alert('{{ 'gallery_expiration.error_reactivating'|trans({}, 'admin') }}');
+    }
+}
+
+async function handleExtend(e) {
+    e.preventDefault();
+    
+    const galleryId = document.getElementById('extend-gallery-id').value;
+    const days = document.getElementById('extend-days').value;
+    
+    try {
+        const response = await fetch('{{ path('admin_gallery_expiration_extend') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ galleryId: parseInt(galleryId), days: parseInt(days) })
+        });
+        
+        if (!response.ok) throw new Error('Failed to extend');
+        
+        closeExtendModal();
+        refreshStats();
+        
+    } catch (error) {
+        console.error('Error extending gallery:', error);
+        alert('{{ 'gallery_expiration.error_extending'|trans({}, 'admin') }}');
+    }
+}
+
+async function bulkExtend() {
+    if (selectedGalleries.size === 0) return;
+    
+    const days = prompt('{{ 'gallery_expiration.prompt_extend_days'|trans({}, 'admin') }}', '30');
+    if (!days || isNaN(days)) return;
+    
+    try {
+        const response = await fetch('{{ path('admin_gallery_expiration_bulk_extend') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ galleryIds: Array.from(selectedGalleries).map(id => parseInt(id)), days: parseInt(days) })
+        });
+        
+        if (!response.ok) throw new Error('Failed to bulk extend');
+        
+        selectedGalleries.clear();
+        refreshStats();
+        
+    } catch (error) {
+        console.error('Error bulk extending galleries:', error);
+        alert('{{ 'gallery_expiration.error_bulk_extend'|trans({}, 'admin') }}');
+    }
+}
+
+async function runExpirationCheck() {
+    if (!confirm('{{ 'gallery_expiration.confirm_run_check'|trans({}, 'admin') }}')) return;
+    
+    try {
+        const response = await fetch('{{ path('admin_gallery_expiration_run_check') }}', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        if (!response.ok) throw new Error('Failed to run check');
+        
+        refreshStats();
+        
+    } catch (error) {
+        console.error('Error running expiration check:', error);
+        alert('{{ 'gallery_expiration.error_running_check'|trans({}, 'admin') }}');
+    }
+}
+
+async function sendReminders() {
+    if (!confirm('{{ 'gallery_expiration.confirm_send_reminders'|trans({}, 'admin') }}')) return;
+    
+    try {
+        const response = await fetch('{{ path('admin_gallery_expiration_send_reminders') }}', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        if (!response.ok) throw new Error('Failed to send reminders');
+        
+        alert('Rappels envoyés avec succès');
+        
+    } catch (error) {
+        console.error('Error sending reminders:', error);
+        alert('{{ 'gallery_expiration.error_sending_reminders'|trans({}, 'admin') }}');
+    }
+}
+
+async function cleanupOld() {
+    const days = prompt('{{ 'gallery_expiration.prompt_cleanup_days'|trans({}, 'admin') }}', '90');
+    if (!days || isNaN(days)) return;
+    
+    if (!confirm('{{ 'gallery_expiration.confirm_cleanup'|trans({'%days%': ''}, 'admin') }}'.replace('%days%', days))) return;
+    
+    try {
+        const response = await fetch('{{ path('admin_gallery_expiration_cleanup') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ days: parseInt(days) })
+        });
+        
+        if (!response.ok) throw new Error('Failed to cleanup');
+        
+        refreshStats();
+        
+    } catch (error) {
+        console.error('Error cleaning up galleries:', error);
+        alert('{{ 'gallery_expiration.error_cleanup'|trans({}, 'admin') }}');
+    }
+}
+</script>
+{% endblock %}

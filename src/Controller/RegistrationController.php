@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\UserType;
+use App\Service\EavService;
 use App\Service\ModuleManager;
 use App\Service\UserTypeManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,7 +25,8 @@ class RegistrationController extends AbstractController
         private ModuleManager $moduleManager,
         private UserTypeManager $userTypeManager,
         private UserPasswordHasherInterface $passwordHasher,
-        private ValidatorInterface $validator
+        private ValidatorInterface $validator,
+        private EavService $eavService
     ) {
     }
 
@@ -36,7 +38,7 @@ class RegistrationController extends AbstractController
         }
 
         $config = $this->moduleManager->getModuleConfig('registration');
-        
+
         // Check if registration is enabled
         if (!($config['enabled'] ?? true)) {
             return $this->render('registration/disabled.html.twig');
@@ -62,7 +64,7 @@ class RegistrationController extends AbstractController
             if (empty($errors)) {
                 try {
                     $user = $this->createUser($formData, $config);
-                    
+
                     if ($config['require_approval'] ?? false) {
                         $this->addFlash('success', 'Your registration has been submitted and is pending approval. You will receive an email notification once approved.');
                     } elseif ($config['email_verification'] ?? false) {
@@ -70,7 +72,7 @@ class RegistrationController extends AbstractController
                     } else {
                         $this->addFlash('success', 'Registration successful! You can now log in.');
                     }
-                    
+
                     return $this->redirectToRoute('app_login');
                 } catch (\Exception $e) {
                     $errors['general'] = ['An error occurred during registration. Please try again.'];
@@ -101,14 +103,35 @@ class RegistrationController extends AbstractController
         $pendingUsers = [];
 
         if ($config['require_approval'] ?? false) {
-            $pendingUsers = $this->entityManager->getRepository(User::class)
-                ->createQueryBuilder('u')
-                ->where('u.active = false')
-                ->andWhere('JSON_EXTRACT(u.metadata, \'$.registration_status\') = :status')
-                ->setParameter('status', 'pending')
-                ->orderBy('u.createdAt', 'DESC')
-                ->getQuery()
-                ->getResult();
+            // Utiliser EAV pour trouver les utilisateurs avec statut pending
+            $pendingUserIds = $this->eavService->findEntitiesByAttribute(
+                'User', 
+                'registration_status', 
+                'pending'
+            );
+            
+            if (!empty($pendingUserIds)) {
+                $pendingUsers = $this->entityManager->getRepository(User::class)
+                    ->createQueryBuilder('u')
+                    ->where('u.id IN (:ids)')
+                    ->andWhere('u.active = false')
+                    ->setParameter('ids', $pendingUserIds)
+                    ->orderBy('u.createdAt', 'DESC')
+                    ->getQuery()
+                    ->getResult();
+            } else {
+                // Fallback vers la recherche JSON pour les données non migrées
+                $pendingUsers = $this->entityManager->getRepository(User::class)
+                    ->createQueryBuilder('u')
+                    ->where('u.active = false')
+                    ->leftJoin('u.userAttributes', 'ua')
+                    ->andWhere('ua.attributeKey = :statusKey AND ua.attributeValue LIKE :status')
+                    ->setParameter('statusKey', 'registration_status')
+                    ->setParameter('status', '%"registration_status":"pending"%')
+                    ->orderBy('u.createdAt', 'DESC')
+                    ->getQuery()
+                    ->getResult();
+            }
         }
 
         $recentRegistrations = $this->entityManager->getRepository(User::class)
@@ -152,7 +175,7 @@ class RegistrationController extends AbstractController
 
             $this->moduleManager->updateModuleConfig('registration', $newConfig);
             $this->addFlash('success', 'Registration settings updated successfully!');
-            
+
             return $this->redirectToRoute('admin_registration_settings');
         }
 
@@ -172,17 +195,16 @@ class RegistrationController extends AbstractController
             throw $this->createNotFoundException('Registration module is not active');
         }
 
-        $metadata = $user->getMetadata() ?? [];
-        if (($metadata['registration_status'] ?? '') !== 'pending') {
+        $registrationStatus = $user->getDynamicAttribute('registration_status');
+        if ($registrationStatus !== 'pending') {
             $this->addFlash('error', 'User is not pending approval.');
             return $this->redirectToRoute('admin_registration_dashboard');
         }
 
         $user->setActive(true);
-        $metadata['registration_status'] = 'approved';
-        $metadata['approved_by'] = $this->getUser()->getId();
-        $metadata['approved_at'] = (new \DateTime())->format('Y-m-d H:i:s');
-        $user->setMetadata($metadata);
+        $user->setDynamicAttribute('registration_status', 'approved');
+        $user->setDynamicAttribute('approved_by', (string)$this->getUser()->getId());
+        $user->setDynamicAttribute('approved_at', (new \DateTime())->format('Y-m-d H:i:s'));
 
         $this->entityManager->flush();
 
@@ -200,19 +222,18 @@ class RegistrationController extends AbstractController
             throw $this->createNotFoundException('Registration module is not active');
         }
 
-        $metadata = $user->getMetadata() ?? [];
-        if (($metadata['registration_status'] ?? '') !== 'pending') {
+        $registrationStatus = $user->getDynamicAttribute('registration_status');
+        if ($registrationStatus !== 'pending') {
             $this->addFlash('error', 'User is not pending approval.');
             return $this->redirectToRoute('admin_registration_dashboard');
         }
 
         $rejectionReason = $request->request->get('rejection_reason', '');
-        
-        $metadata['registration_status'] = 'rejected';
-        $metadata['rejected_by'] = $this->getUser()->getId();
-        $metadata['rejected_at'] = (new \DateTime())->format('Y-m-d H:i:s');
-        $metadata['rejection_reason'] = $rejectionReason;
-        $user->setMetadata($metadata);
+
+        $user->setDynamicAttribute('registration_status', 'rejected');
+        $user->setDynamicAttribute('rejected_by', (string)$this->getUser()->getId());
+        $user->setDynamicAttribute('rejected_at', (new \DateTime())->format('Y-m-d H:i:s'));
+        $user->setDynamicAttribute('rejection_reason', $rejectionReason);
 
         $this->entityManager->flush();
 
@@ -303,25 +324,24 @@ class RegistrationController extends AbstractController
             }
         }
 
-        // Set registration metadata
-        $metadata = [
-            'registration_date' => (new \DateTime())->format('Y-m-d H:i:s'),
-            'registration_ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-        ];
+        // Set registration attributes
+        $user->setDynamicAttribute('registration_date', (new \DateTime())->format('Y-m-d H:i:s'));
+        $user->setDynamicAttribute('registration_ip', $_SERVER['REMOTE_ADDR'] ?? 'unknown');
 
         if ($config['require_approval'] ?? false) {
             $user->setActive(false);
-            $metadata['registration_status'] = 'pending';
+            $user->setStatus('pending_approval');
+            $user->setDynamicAttribute('registration_status', 'pending'); // Garde pour compatibilité
         } elseif ($config['email_verification'] ?? false) {
             $user->setActive(false);
-            $metadata['registration_status'] = 'pending_verification';
-            $metadata['verification_token'] = bin2hex(random_bytes(32));
+            $user->setStatus('pending_approval'); // Email verification sera géré séparément
+            $user->setDynamicAttribute('registration_status', 'pending_verification');
+            $user->setDynamicAttribute('verification_token', bin2hex(random_bytes(32)));
         } else {
             $user->setActive(true);
-            $metadata['registration_status'] = 'active';
+            $user->setStatus('approved');
+            $user->setDynamicAttribute('registration_status', 'active'); // Garde pour compatibilité
         }
-
-        $user->setMetadata($metadata);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -332,7 +352,7 @@ class RegistrationController extends AbstractController
     private function getAvailableUserTypes(array $config): array
     {
         $allowedTypes = $config['allowed_user_types'] ?? [];
-        
+
         if (empty($allowedTypes)) {
             return $this->userTypeManager->getAllUserTypes();
         }

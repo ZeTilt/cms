@@ -110,4 +110,56 @@ class EntityAttribute
     {
         return $this->updatedAt;
     }
+
+    /**
+     * Obtient la valeur typée selon le type d'attribut
+     */
+    public function getTypedValue(): mixed
+    {
+        return match($this->attributeType) {
+            'boolean' => filter_var($this->attributeValue, FILTER_VALIDATE_BOOLEAN),
+            'integer' => (int) $this->attributeValue,
+            'float' => (float) $this->attributeValue,
+            'date' => $this->attributeValue ? new \DateTime($this->attributeValue) : null,
+            'datetime' => $this->attributeValue ? new \DateTime($this->attributeValue) : null,
+            'json' => $this->attributeValue ? json_decode($this->attributeValue, true) : null,
+            'file' => $this->attributeValue, // Chemin vers le fichier
+            'select' => $this->attributeValue,
+            default => $this->attributeValue // text par défaut
+        };
+    }
+
+    /**
+     * Définit la valeur en la convertissant selon le type
+     */
+    public function setTypedValue(mixed $value): static
+    {
+        $this->attributeValue = match($this->attributeType) {
+            'boolean' => $value ? '1' : '0',
+            'integer', 'float' => (string) $value,
+            'date' => $value instanceof \DateTime ? $value->format('Y-m-d') : $value,
+            'datetime' => $value instanceof \DateTime ? $value->format('Y-m-d H:i:s') : $value,
+            'json' => is_array($value) || is_object($value) ? json_encode($value) : $value,
+            default => (string) $value
+        };
+        
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Vérifie si l'attribut est un fichier
+     */
+    public function isFileType(): bool
+    {
+        return $this->attributeType === 'file';
+    }
+
+    /**
+     * Vérifie si l'attribut est une liste de sélection
+     */
+    public function isSelectType(): bool
+    {
+        return $this->attributeType === 'select';
+    }
 }

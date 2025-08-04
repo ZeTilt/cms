@@ -1,0 +1,204 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title'|trans({}, 'profile') }} - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'title'|trans({}, 'profile') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">Manage your account and view your activities</p>
+            </div>
+            <a href="{{ path('profile_edit') }}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                {{ 'buttons.edit_profile'|trans({}, 'profile') }}
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Profile Information -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">{{ 'sections.profile_information'|trans({}, 'profile') }}</h3>
+                </div>
+                <div class="px-6 py-4 space-y-4">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Full Name</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ user.firstName }} {{ user.lastName }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Email</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ user.email }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Member Since</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ user.createdAt|date('F Y') }}</dd>
+                    </div>
+                    {% if userAttributes|length > 0 %}
+                        <div class="border-t border-gray-200 pt-4">
+                            <dt class="text-sm font-medium text-gray-500 mb-2">Informations complémentaires</dt>
+                            {% for definition in attributeDefinitions %}
+                                {% set value = userAttributes[definition.attributeName] ?? null %}
+                                {% if value %}
+                                    <div class="mb-2">
+                                        <dt class="text-xs font-medium text-gray-400">{{ definition.displayName }}</dt>
+                                        <dd class="text-sm text-gray-900">
+                                            {% if definition.attributeType == 'boolean' %}
+                                                {% if value == '1' %}
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        Oui
+                                                    </span>
+                                                {% else %}
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        Non
+                                                    </span>
+                                                {% endif %}
+                                            {% elseif definition.attributeType == 'date' %}
+                                                {{ value|date('d/m/Y') }}
+                                            {% elseif definition.attributeType == 'file' %}
+                                                <div class="flex items-center space-x-2">
+                                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                    </svg>
+                                                    <a href="{{ value }}" target="_blank" class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                                        {{ value|split('/')|last }}
+                                                    </a>
+                                                </div>
+                                            {% else %}
+                                                {{ value }}
+                                            {% endif %}
+                                        </dd>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="lg:col-span-2">
+            <!-- Upcoming Events -->
+            <div class="bg-white shadow rounded-lg mb-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Upcoming Events</h3>
+                </div>
+                <div class="px-6 py-4">
+                    {% if upcomingRegistrations|length > 0 %}
+                        <div class="space-y-4">
+                            {% for registration in upcomingRegistrations %}
+                                {% set event = registration.event %}
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h4 class="text-lg font-semibold text-gray-900">
+                                                <a href="{{ path('events_show', {'slug': event.slug}) }}" class="hover:text-indigo-600">
+                                                    {{ event.title }}
+                                                </a>
+                                            </h4>
+                                            {% if event.shortDescription %}
+                                                <p class="text-sm text-gray-600 mt-1">{{ event.shortDescription }}</p>
+                                            {% endif %}
+                                            <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                                {% if event.startDate %}
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        {{ event.startDate|date('M d, Y - H:i') }}
+                                                    </div>
+                                                {% endif %}
+                                                {% if event.location %}
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                        </svg>
+                                                        {{ event.location }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                {% if registration.status == 'registered' %}bg-green-100 text-green-800
+                                                {% elseif registration.status == 'waiting_list' %}bg-yellow-100 text-yellow-800
+                                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                {% if registration.status == 'registered' %}
+                                                    Registered
+                                                {% elseif registration.status == 'waiting_list' %}
+                                                    Waiting List
+                                                {% else %}
+                                                    {{ registration.status|title }}
+                                                {% endif %}
+                                            </span>
+                                            {% if registration.registeredAt %}
+                                                <span class="text-xs text-gray-400 mt-1">
+                                                    Registered {{ registration.registeredAt|date('M d') }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-6">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No upcoming events</h3>
+                            <p class="mt-1 text-sm text-gray-500">You haven't registered for any upcoming events yet.</p>
+                            <div class="mt-6">
+                                <a href="{{ path('events_index') }}" 
+                                   class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                    Browse Events
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Past Events -->
+            {% if pastRegistrations|length > 0 %}
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Past Events</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="space-y-3">
+                            {% for registration in pastRegistrations|slice(0, 5) %}
+                                {% set event = registration.event %}
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">{{ event.title }}</h4>
+                                        {% if event.startDate %}
+                                            <p class="text-xs text-gray-500">{{ event.startDate|date('M d, Y') }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ registration.status|title }}
+                                    </span>
+                                </div>
+                            {% endfor %}
+                            {% if pastRegistrations|length > 5 %}
+                                <div class="text-center pt-2">
+                                    <p class="text-sm text-gray-500">And {{ pastRegistrations|length - 5 }} more past events...</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

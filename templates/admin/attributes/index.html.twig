@@ -1,0 +1,83 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'eav.title'|trans({}, 'admin') }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-2 text-sm font-medium text-gray-500">{{ 'eav.breadcrumb'|trans({}, 'admin') }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="sm:flex-auto">
+            <h1 class="text-2xl font-semibold text-gray-900">{{ 'eav.title'|trans({}, 'admin') }}</h1>
+            <p class="mt-2 text-sm text-gray-700">
+                {{ 'eav.subtitle'|trans({}, 'admin') }}
+            </p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <a href="{{ path('admin_attributes_search') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                {{ 'eav.search'|trans({}, 'admin') }}
+            </a>
+        </div>
+    </div>
+
+    <!-- Vue d'ensemble par type d'entité -->
+    <div class="mt-8 space-y-8">
+        {% for entityType, entityLabel in supportedEntities %}
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ entityLabel }}</h3>
+                    
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm text-gray-600">
+                            Gérez les attributs dynamiques pour l'entité {{ entityLabel }}
+                        </p>
+                        <a href="{{ path('admin_attributes_entity', {entityType: entityType}) }}" 
+                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Gérer les attributs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Guide d'utilisation -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">{{ 'eav.info_title'|trans({}, 'admin') }}</h3>
+                <div class="mt-2 text-sm text-blue-700">
+                    <p>{{ 'eav.info_description'|trans({}, 'admin') }}</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li>{{ 'eav.info_flexibility'|trans({}, 'admin') }}</li>
+                        <li>{{ 'eav.info_types'|trans({}, 'admin') }}</li>
+                        <li>{{ 'eav.info_files'|trans({}, 'admin') }}</li>
+                        <li>{{ 'eav.info_search'|trans({}, 'admin') }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

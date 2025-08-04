@@ -1,0 +1,258 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'widgets.edit'|trans({}, 'admin') }} - {{ widget.title }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_widgets_list') }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                {{ 'widgets.breadcrumb'|trans({}, 'admin') }}
+            </a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_widgets_show', {id: widget.id}) }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                {{ widget.title }}
+            </a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-2 text-sm font-medium text-gray-500">{{ 'widgets.edit'|trans({}, 'admin') }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="sm:flex-auto">
+            <h1 class="text-2xl font-semibold text-gray-900">{{ 'widgets.edit'|trans({}, 'admin') }}</h1>
+            <p class="mt-2 text-sm text-gray-700">
+                {{ 'widgets.edit_subtitle'|trans({'%title%': widget.title}, 'admin') }}
+            </p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <div class="flex space-x-3">
+                <a href="{{ path('admin_widgets_show', {id: widget.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    {{ 'common.back'|trans({}, 'admin') }}
+                </a>
+                <a href="{{ path('admin_widgets_preview', {id: widget.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                   target="_blank">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    {{ 'widgets.preview'|trans({}, 'admin') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations du widget -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                    <strong>{{ 'widgets.current_shortcodes'|trans({}, 'admin') }}:</strong><br>
+                    <code class="bg-blue-100 px-1 rounded">[widget id="{{ widget.id }}"]</code> ou 
+                    <code class="bg-blue-100 px-1 rounded">[widget name="{{ widget.name }}"]</code>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="mt-8 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.name.vars.id }}" class="block text-sm font-medium text-gray-700">
+                        {{ 'widget.name'|trans({}, 'admin') }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    {{ form_widget(form.name) }}
+                    <p class="mt-1 text-sm text-gray-500">{{ 'widget.name_help'|trans({}, 'admin') }}</p>
+                    {{ form_errors(form.name) }}
+                </div>
+
+                <div>
+                    <label for="{{ form.title.vars.id }}" class="block text-sm font-medium text-gray-700">
+                        {{ 'widget.title'|trans({}, 'admin') }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    {{ form_widget(form.title) }}
+                    <p class="mt-1 text-sm text-gray-500">{{ 'widget.title_help'|trans({}, 'admin') }}</p>
+                    {{ form_errors(form.title) }}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.description.vars.id }}" class="block text-sm font-medium text-gray-700">
+                    {{ 'widget.description'|trans({}, 'admin') }}
+                </label>
+                {{ form_widget(form.description) }}
+                <p class="mt-1 text-sm text-gray-500">{{ 'widget.description_help'|trans({}, 'admin') }}</p>
+                {{ form_errors(form.description) }}
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.type.vars.id }}" class="block text-sm font-medium text-gray-700">
+                        {{ 'widget.type'|trans({}, 'admin') }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    {{ form_widget(form.type) }}
+                    <p class="mt-1 text-sm text-gray-500">{{ 'widget.type_help'|trans({}, 'admin') }}</p>
+                    {{ form_errors(form.type) }}
+                </div>
+
+                <div>
+                    <label for="{{ form.category.vars.id }}" class="block text-sm font-medium text-gray-700">
+                        {{ 'widget.category'|trans({}, 'admin') }}
+                    </label>
+                    {{ form_widget(form.category) }}
+                    <p class="mt-1 text-sm text-gray-500">{{ 'widget.category_help'|trans({}, 'admin') }}</p>
+                    {{ form_errors(form.category) }}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.content.vars.id }}" class="block text-sm font-medium text-gray-700">
+                    {{ 'widget.content'|trans({}, 'admin') }}
+                    <span class="text-red-500">*</span>
+                </label>
+                {{ form_widget(form.content) }}
+                <p class="mt-1 text-sm text-gray-500">{{ 'widget.content_help'|trans({}, 'admin') }}</p>
+                {{ form_errors(form.content) }}
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ 'widget.options'|trans({}, 'admin') }}</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="flex items-center">
+                        {{ form_widget(form.active) }}
+                        <label for="{{ form.active.vars.id }}" class="ml-2 block text-sm text-gray-900">
+                            {{ 'widget.active'|trans({}, 'admin') }}
+                        </label>
+                    </div>
+
+                    <div class="flex items-center">
+                        {{ form_widget(form.cacheable) }}
+                        <label for="{{ form.cacheable.vars.id }}" class="ml-2 block text-sm text-gray-900">
+                            {{ 'widget.cacheable'|trans({}, 'admin') }}
+                        </label>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.cacheTime.vars.id }}" class="block text-sm font-medium text-gray-700">
+                            {{ 'widget.cache_time'|trans({}, 'admin') }}
+                        </label>
+                        {{ form_widget(form.cacheTime) }}
+                        <p class="mt-1 text-sm text-gray-500">{{ 'widget.cache_time_help'|trans({}, 'admin') }}</p>
+                        {{ form_errors(form.cacheTime) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <a href="{{ path('admin_widgets_show', {id: widget.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    {{ 'common.cancel'|trans({}, 'admin') }}
+                </a>
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    {{ 'widgets.save_changes'|trans({}, 'admin') }}
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <!-- Historique des modifications -->
+    <div class="mt-8 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">{{ 'widgets.modification_history'|trans({}, 'admin') }}</h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <dl class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{{ 'widget.created_at'|trans({}, 'admin') }}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ widget.createdAt|date('d/m/Y H:i:s') }}</dd>
+                </div>
+                
+                {% if widget.updatedAt %}
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{{ 'widget.updated_at'|trans({}, 'admin') }}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ widget.updatedAt|date('d/m/Y H:i:s') }}</dd>
+                </div>
+                {% endif %}
+                
+                {% if widget.createdBy %}
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{{ 'widget.created_by'|trans({}, 'admin') }}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ widget.createdBy.email }}</dd>
+                </div>
+                {% endif %}
+            </dl>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mise à jour dynamique du placeholder du contenu selon le type
+document.getElementById('{{ form.type.vars.id }}').addEventListener('change', function(e) {
+    const contentField = document.getElementById('{{ form.content.vars.id }}');
+    const type = e.target.value;
+    
+    const placeholders = {
+        'html': `<div class="mon-widget">
+    <h3>{{title}}</h3>
+    <p>{{ 'common.placeholders.widget_content'|trans({}, 'admin') }}</p>
+</div>`,
+        'iframe': 'https://example.com/iframe-url',
+        'script': `// Code JavaScript
+console.log('Widget script chargé');`,
+        'weather': `<div class="textwidget custom-html-widget">
+    <script src="https://services.data.shom.fr/hdm/vignette/petite/PORT-NAVALO?locale=fr"></script>
+    <iframe width="162" id="vignette_shom_{{unique_id}}" height="350" frameborder="0" scrolling="no"></iframe>
+</div>`,
+        'custom': `<!-- Template Twig personnalisé -->
+<div class="widget-{{ widget.name }}">
+    {{ content }}
+</div>`
+    };
+    
+    if (placeholders[type]) {
+        contentField.placeholder = placeholders[type];
+    }
+});
+</script>
+{% endblock %}

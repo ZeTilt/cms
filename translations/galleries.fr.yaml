@@ -28,6 +28,22 @@ fields:
   is_public: "Galerie publique"
   is_featured: "Galerie à la une"
   tags: "Étiquettes"
+
+access:
+  code_placeholder: "Entrez le code d'accès"
+  lost_code: "Contactez l'organisateur si vous avez perdu le code."
+
+admin:
+  show:
+    no_magic_link: "Aucun lien disponible"
+    share_private_link: "📤 Share Private Link"
+    copied: "✅ Copié !"
+    link_copied_alert: "Lien copié !"
+  confirm:
+    delete_image: "Are you sure you want to delete this image?"
+  errors:
+    delete_failed: "Failed to delete image"
+    unknown_error: "Unknown error"
   client_access: "Accès client"
   password: "Mot de passe"
 

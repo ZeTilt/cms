@@ -52,9 +52,25 @@ class Gallery
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $metadata = null;
 
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $durationDays = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $endDate = null;
+
+    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'galleries')]
+    private Collection $events;
+
+    #[ORM\Column(length: 20, options: ['default' => 'free'])]
+    private string $pricingType = 'free'; // 'free' or 'paid'
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $accessPrice = null;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
+        $this->events = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
@@ -222,11 +238,6 @@ class Gallery
         return $this;
     }
 
-    public function isPublic(): bool
-    {
-        return $this->visibility === 'public';
-    }
-
     public function isPrivate(): bool
     {
         return $this->visibility === 'private';
@@ -261,5 +272,174 @@ class Gallery
     public function onPreUpdate(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function getMagicLinkToken(): ?string
+    {
+        if (!$this->isPrivate() || !$this->requiresAccessCode()) {
+            return null;
+        }
+
+        return hash('sha256', $this->id . ':' . $this->accessCode . ':' . $this->slug);
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): static
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+            $event->addGallery($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): static
+    {
+        if ($this->events->removeElement($event)) {
+            $event->removeGallery($this);
+        }
+
+        return $this;
+    }
+
+    public function hasEvents(): bool
+    {
+        return !$this->events->isEmpty();
+    }
+
+    public function getEventCount(): int
+    {
+        return $this->events->count();
+    }
+
+    public function getDurationDays(): ?int
+    {
+        return $this->durationDays;
+    }
+
+    public function setDurationDays(?int $durationDays): static
+    {
+        $this->durationDays = $durationDays;
+        $this->updatedAt = new \DateTimeImmutable();
+        
+        // Auto-calculate end date if duration is set
+        if ($durationDays !== null) {
+            $this->endDate = $this->createdAt->modify("+{$durationDays} days");
+        }
+        
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeImmutable
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?\DateTimeImmutable $endDate): static
+    {
+        $this->endDate = $endDate;
+        $this->updatedAt = new \DateTimeImmutable();
+        
+        // Auto-calculate duration if end date is set
+        if ($endDate !== null && $this->createdAt !== null) {
+            $interval = $this->createdAt->diff($endDate);
+            $this->durationDays = $interval->days;
+        }
+        
+        return $this;
+    }
+
+    public function isExpired(): bool
+    {
+        if ($this->endDate === null) {
+            return false;
+        }
+        
+        return new \DateTimeImmutable() > $this->endDate;
+    }
+
+    public function getDaysUntilExpiration(): ?int
+    {
+        if ($this->endDate === null) {
+            return null;
+        }
+        
+        $now = new \DateTimeImmutable();
+        if ($now > $this->endDate) {
+            return 0; // Already expired
+        }
+        
+        $interval = $now->diff($this->endDate);
+        return $interval->days;
+    }
+
+    // Security and access methods
+    
+    public function isPublic(): bool
+    {
+        return $this->visibility === 'public';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->visibility !== 'hidden' && !$this->isExpired();
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->author;
+    }
+
+    public function getExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->endDate;
+    }
+
+    public function getPricingType(): string
+    {
+        return $this->pricingType;
+    }
+
+    public function setPricingType(string $pricingType): static
+    {
+        $this->pricingType = $pricingType;
+        return $this;
+    }
+
+    public function getAccessPrice(): ?string
+    {
+        return $this->accessPrice;
+    }
+
+    public function setAccessPrice(?string $accessPrice): static
+    {
+        $this->accessPrice = $accessPrice;
+        return $this;
+    }
+
+    public function isFree(): bool
+    {
+        return $this->pricingType === 'free' || empty($this->accessPrice) || $this->accessPrice === '0.00';
+    }
+
+    public function isPaid(): bool
+    {
+        return !$this->isFree();
+    }
+
+    public function getFormattedPrice(): string
+    {
+        if ($this->isFree()) {
+            return 'Gratuit';
+        }
+        return number_format(floatval($this->accessPrice), 2, ',', ' ') . ' €';
     }
 }

@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accès privé - {{ gallery.title }} - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900">
+                🔒 Galerie privée
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Vous avez été invité à consulter
+            </p>
+            <h3 class="mt-1 text-lg font-medium text-gray-900">
+                {{ gallery.title }}
+            </h3>
+            <p class="mt-4 text-xs text-gray-500">
+                ✅ Lien d'invitation valide
+            </p>
+        </div>
+
+        <div class="bg-white py-8 px-6 shadow rounded-lg">
+            {% if error is defined and error %}
+                <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label for="access_code" class="block text-sm font-medium text-gray-700">
+                        Code d'accès
+                    </label>
+                    <div class="mt-1">
+                        <input type="password" 
+                               name="access_code" 
+                               id="access_code" 
+                               required 
+                               placeholder="{{ 'access.code_placeholder'|trans({}, 'galleries') }}"
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500">
+                        Demandez le code d'accès à la personne qui vous a envoyé ce lien
+                    </p>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            🔑
+                        </span>
+                        Accéder à la galerie
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-xs text-gray-500">
+                    Cette galerie est protégée par un code d'accès.<br>
+                    {{ 'access.lost_code'|trans({}, 'galleries') }}
+                </p>
+            </div>
+        </div>
+
+        {% if gallery.description %}
+            <div class="bg-white py-4 px-6 shadow rounded-lg">
+                <h4 class="text-sm font-medium text-gray-900 mb-2">À propos de cette galerie</h4>
+                <p class="text-sm text-gray-600">{{ gallery.description }}</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

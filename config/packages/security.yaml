@@ -1,4 +1,17 @@
 security:
+    # Define role hierarchy - hiérarchie complète du club de plongée
+    role_hierarchy:
+        # Rôles de base
+        ROLE_PLONGEUR: ROLE_USER
+        
+        # Hiérarchie des encadrants
+        ROLE_PILOTE: ROLE_PLONGEUR
+        ROLE_DIRECTEUR_PLONGEE: ROLE_PILOTE
+        
+        # Niveaux administratifs
+        ROLE_ADMIN: [ROLE_DIRECTEUR_PLONGEE, ROLE_USER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_DIRECTEUR_PLONGEE, ROLE_PILOTE, ROLE_PLONGEUR, ROLE_USER]
+
     password_hashers:
         App\Entity\User:
             algorithm: auto
@@ -26,6 +39,17 @@ security:
                 target: app_login
 
     access_control:
+        # Pages publiques (pas de restrictions)
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/gallery/public, roles: PUBLIC_ACCESS }
+        
+        # Espaces membres selon hiérarchie
+        - { path: ^/member, roles: ROLE_PLONGEUR }
+        - { path: ^/pilote, roles: ROLE_PILOTE }
+        - { path: ^/directeur, roles: ROLE_DIRECTEUR_PLONGEE }
+        
+        # Administration
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/superadmin, roles: ROLE_SUPER_ADMIN }
 

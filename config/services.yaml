@@ -38,5 +38,53 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # MangoPay Service
+    App\Service\MangoPayService:
+        arguments:
+            $mangoPayClientId: '%env(MANGOPAY_CLIENT_ID)%'
+            $mangoPayClientPassword: '%env(MANGOPAY_CLIENT_PASSWORD)%'
+            $mangoPayEnvironment: '%env(MANGOPAY_ENVIRONMENT)%'
+
+    # Webhook Configuration Service
+    App\Service\WebhookConfigurationService:
+        arguments:
+            $webhookUrl: '%env(WEBHOOK_BASE_URL)%'
+
+    # Secure Image Controller
+    App\Controller\SecureImageController:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $watermarkEnabled: '%image.watermark.enabled%'
+            $antiScrappingEnabled: '%image.anti_scrapping.enabled%'
+            $suspiciousAgents: '%image.anti_scrapping.suspicious_agents%'
+            $allowedAgents: '%image.anti_scrapping.allowed_agents%'
+            $privateCacheMaxAge: '%image.cache.private_max_age%'
+            $thumbnailCacheMaxAge: '%image.cache.thumbnail_max_age%'
+            $watermarkTemplate: '%image.watermark.template%'
+            $watermarkType: '%image.watermark.type%'
+            $watermarkImagePath: '%image.watermark.image_path%'
+            $watermarkOpacity: '%image.watermark.opacity%'
+            $watermarkPosition: '%image.watermark.position%'
+            $watermarkMargin: '%image.watermark.margin%'
+            $watermarkScale: '%image.watermark.scale%'
+
+    # Image Processing Service
+    App\Service\ImageProcessingService:
+        arguments:
+            $uploadsPath: 'public/uploads'
+            $watermarkPath: 'public/assets/watermark.png'
+
+    # Image Security Controller  
+    App\Controller\Admin\ImageSecurityController:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $moduleManager: '@App\Service\ModuleManager'
+
+    # CEWE API Service
+    App\Service\CeweApiService:
+        arguments:
+            $ceweApiKey: '%env(default::CEWE_API_KEY)%'
+            $cewePartnerId: '%env(default::CEWE_PARTNER_ID)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

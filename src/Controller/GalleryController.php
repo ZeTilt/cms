@@ -34,7 +34,8 @@ class GalleryController extends AbstractController
             throw $this->createNotFoundException('Gallery module is not active');
         }
 
-        $galleries = $this->galleryRepository->findByAuthor($this->getUser());
+        // Show all galleries for admins, not just their own
+        $galleries = $this->galleryRepository->findAllForAdmin();
 
         return $this->render('admin/galleries/index.html.twig', [
             'galleries' => $galleries,
@@ -189,13 +190,24 @@ class GalleryController extends AbstractController
     }
 
     #[Route('/{galleryId}/images/{imageId}/delete', name: 'admin_galleries_delete_image', methods: ['POST'])]
-    public function deleteImage(int $galleryId, Image $image, Request $request): JsonResponse
+    public function deleteImage(int $galleryId, int $imageId, Request $request): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('gallery')) {
             return new JsonResponse(['error' => 'Gallery module is not active'], 404);
         }
         if (!$this->isCsrfTokenValid('delete_image', $request->request->get('_token'))) {
             return new JsonResponse(['error' => 'Invalid security token'], 403);
+        }
+
+        // Manually fetch the image to ensure it exists and has proper data
+        $image = $this->entityManager->getRepository(Image::class)->find($imageId);
+        if (!$image) {
+            return new JsonResponse(['error' => 'Image not found'], 404);
+        }
+
+        // Verify the image belongs to the specified gallery
+        if ($image->getGallery()->getId() !== $galleryId) {
+            return new JsonResponse(['error' => 'Image does not belong to this gallery'], 403);
         }
 
         try {
@@ -207,11 +219,23 @@ class GalleryController extends AbstractController
     }
 
     #[Route('/{galleryId}/images/{imageId}/update', name: 'admin_galleries_update_image', methods: ['POST'])]
-    public function updateImage(int $galleryId, Image $image, Request $request): JsonResponse
+    public function updateImage(int $galleryId, int $imageId, Request $request): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('gallery')) {
             return new JsonResponse(['error' => 'Gallery module is not active'], 404);
         }
+        
+        // Manually fetch the image to ensure it exists and has proper data
+        $image = $this->entityManager->getRepository(Image::class)->find($imageId);
+        if (!$image) {
+            return new JsonResponse(['error' => 'Image not found'], 404);
+        }
+
+        // Verify the image belongs to the specified gallery
+        if ($image->getGallery()->getId() !== $galleryId) {
+            return new JsonResponse(['error' => 'Image does not belong to this gallery'], 403);
+        }
+        
         try {
             $data = json_decode($request->getContent(), true);
             
@@ -276,8 +300,51 @@ class GalleryController extends AbstractController
             $gallery->setAccessCode(null);
         }
 
+        // Handle pricing settings
+        $pricingType = $request->request->get('pricing_type', 'free');
+        if (!in_array($pricingType, ['free', 'paid'])) {
+            $errors[] = 'Invalid pricing type.';
+        }
+        
+        $gallery->setPricingType($pricingType);
+        
+        if ($pricingType === 'paid') {
+            $accessPrice = $request->request->get('access_price');
+            if ($accessPrice !== null && $accessPrice !== '') {
+                if (!is_numeric($accessPrice) || floatval($accessPrice) < 0) {
+                    $errors[] = 'Access price must be a valid positive number.';
+                } else {
+                    $gallery->setAccessPrice(number_format(floatval($accessPrice), 2, '.', ''));
+                }
+            }
+        } else {
+            $gallery->setAccessPrice(null);
+        }
+
+        // Handle expiration settings - validate before error check
+        $durationDays = $request->request->get('duration_days');
+        $endDate = $request->request->get('end_date');
+        
+        if (!empty($endDate)) {
+            try {
+                new \DateTimeImmutable($endDate); // Just validate format
+            } catch (\Exception $e) {
+                $errors[] = 'Invalid end date format.';
+            }
+        }
+
         if (!$isEdit) {
             $gallery->setAuthor($this->getUser());
+        }
+
+        // Set expiration fields after validation
+        if (!empty($durationDays) && is_numeric($durationDays)) {
+            $gallery->setDurationDays((int)$durationDays);
+        } elseif (!empty($endDate)) {
+            $gallery->setEndDate(new \DateTimeImmutable($endDate));
+        } else {
+            $gallery->setDurationDays(null);
+            $gallery->setEndDate(null);
         }
 
         // Save gallery first to get ID

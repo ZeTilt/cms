@@ -1,0 +1,164 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Créer un Rôle{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_roles_list') }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">Gestion des Rôles</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-2 text-sm font-medium text-gray-500">Créer un Rôle</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="sm:flex-auto">
+            <h1 class="text-2xl font-semibold text-gray-900">Créer un Nouveau Rôle</h1>
+            <p class="mt-2 text-sm text-gray-700">
+                Définissez un nouveau rôle avec ses permissions et son niveau hiérarchique.
+            </p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <a href="{{ path('admin_roles_list') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-8">
+        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+        
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">Informations générales</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        {{ form_label(form.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.name) }}
+                        {% if form.name.vars.help %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.name.vars.help }}</p>
+                        {% endif %}
+                        {{ form_errors(form.name) }}
+                    </div>
+                    
+                    <div>
+                        {{ form_label(form.displayName, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.displayName) }}
+                        {% if form.displayName.vars.help %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.displayName.vars.help }}</p>
+                        {% endif %}
+                        {{ form_errors(form.displayName) }}
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_widget(form.description) }}
+                    {% if form.description.vars.help %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.description.vars.help }}</p>
+                    {% endif %}
+                    {{ form_errors(form.description) }}
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                        {{ form_label(form.hierarchy, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.hierarchy) }}
+                        {% if form.hierarchy.vars.help %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.hierarchy.vars.help }}</p>
+                        {% endif %}
+                        {{ form_errors(form.hierarchy) }}
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <div>
+                            {{ form_widget(form.active) }}
+                            {{ form_label(form.active, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900'}}) }}
+                            {% if form.active.vars.help %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.active.vars.help }}</p>
+                            {% endif %}
+                            {{ form_errors(form.active) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">
+                    {{ form_label(form.permissions, null, {'label_attr': {'class': ''}}) }}
+                </h3>
+                {% if form.permissions.vars.help %}
+                    <p class="mb-4 text-sm text-gray-500">{{ form.permissions.vars.help }}</p>
+                {% endif %}
+                
+                <!-- Permissions groupées utilisant la structure Symfony -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for group_label, group in form.permissions.vars.choices %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h4 class="text-md font-semibold text-gray-900 mb-3 pb-2 border-b border-gray-100">
+                                {{ group_label }}
+                            </h4>
+                            <div class="space-y-2">
+                                {% for choice in group.choices %}
+                                    {% set perm_data = choice.data %}
+                                    <div class="flex items-start">
+                                        <input type="checkbox" 
+                                               id="role_permissions_{{ perm_data.id }}" 
+                                               name="role[permissions][]" 
+                                               value="{{ perm_data.id }}"
+                                               class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mt-0.5"
+                                               {% if perm_data in form.permissions.vars.data %}checked{% endif %}>
+                                        <label for="role_permissions_{{ perm_data.id }}" 
+                                               class="ml-3 block text-sm text-gray-700 leading-5">
+                                            {{ perm_data.displayName }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                {{ form_errors(form.permissions) }}
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+            <a href="{{ path('admin_roles_list') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Annuler
+            </a>
+            <button type="submit" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Créer le Rôle
+            </button>
+        </div>
+
+        {# Rendre le reste du formulaire sans le champ permissions #}
+        {% do form.permissions.setRendered %}
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
 {% block title %}{{ userType.displayName }} Attributes - ZeTilt CMS{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <div class="mb-6">
         <nav class="flex" aria-label="Breadcrumb">
             <ol role="list" class="flex items-center space-x-4">
@@ -141,15 +141,15 @@
                         <label for="attribute_type" class="block text-sm font-medium text-gray-700">Attribute Type *</label>
                         <select id="attribute_type" name="type" required onchange="handleAttributeTypeChange()"
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="">Select type...</option>
-                            <option value="text">Text</option>
-                            <option value="textarea">Textarea</option>
-                            <option value="number">Number</option>
-                            <option value="boolean">Boolean (Yes/No)</option>
+                            <option value="">{{ 'attribute_form.type_placeholder'|trans({}, 'userplus') }}</option>
+                            <option value="text">{{ 'attribute_types.text'|trans({}, 'userplus') }}</option>
+                            <option value="textarea">{{ 'attribute_types.textarea'|trans({}, 'userplus') }}</option>
+                            <option value="number">{{ 'attribute_types.number'|trans({}, 'userplus') }}</option>
+                            <option value="boolean">{{ 'attribute_types.boolean'|trans({}, 'userplus') }}</option>
                             <option value="date">{{ 'fields.date'|trans({}, 'admin') }}</option>
-                            <option value="select">Select (Dropdown)</option>
-                            <option value="file">File Upload</option>
-                            <option value="json">JSON Data</option>
+                            <option value="select">{{ 'attribute_types.select'|trans({}, 'userplus') }}</option>
+                            <option value="file">{{ 'attribute_types.file'|trans({}, 'userplus') }}</option>
+                            <option value="json">{{ 'attribute_types.json'|trans({}, 'userplus') }}</option>
                         </select>
                     </div>
                     
@@ -382,7 +382,7 @@ function removeSelectOption(button) {
 }
 
 function deleteAttribute(attributeId) {
-    if (!confirm('Are you sure you want to delete this attribute?')) {
+    if (!confirm('{{ 'eav.confirm_delete_attribute'|trans({}, 'admin') }}')) {
         return;
     }
     

@@ -112,7 +112,9 @@ actions:
 user_types:
   title: "User Types"
   subtitle: "Define user types and their custom attributes"
+  new_type: "New Type"
   new_user_type: "New User Type"
+  no_types: "No user types"
   no_user_types: "No user types"
   get_started_types: "Get started by creating your first user type."
   users_count: "users"
@@ -290,6 +292,38 @@ messages:
   certification_remove_error: "Error removing certification"
   confirm_remove_certification: "Are you sure you want to remove the"
   edit_functionality_todo: "Edit functionality will be implemented next"
+  
+  # UserPlusController messages
+  user_type_saved: "User type saved successfully!"
+  user_type_delete_has_users: "Cannot delete user type that has users assigned to it."
+  user_type_deleted: "User type deleted successfully!"
+  missing_required_fields: "Missing required fields"
+  attribute_key_already_exists: "Attribute key already exists"
+  attribute_added_successfully: "Attribute added successfully"
+  attribute_deleted_successfully: "Attribute deleted successfully"
+  user_type_removed: "User type removed"
+  user_type_not_found: "User type not found"
+  user_type_assigned: "User type assigned successfully"
+  user_has_no_type: "User has no type assigned"
+  user_attributes_saved: "User attributes saved successfully"
+  user_attributes_sync: "User attributes synchronized with type"
+  email_already_exists: "Email already exists"
+  user_created_successfully: "User created successfully"
+  
+  # Error messages
+  module_not_active: "UserPlus module is not active"
+  user_type_not_found_error: "User type not found"
+  validation_errors: "Validation errors"
+  file_upload_failed: "File upload failed: {error}"
+  file_does_not_exist: "{attribute} file does not exist"
+  field_is_required: "{field} is required"
+  
+  # Detailed error messages
+  error_initial_checks: "Error in initial checks: {error}"
+  error_processing_request: "Error processing request data: {error}"
+  error_processing_attributes: "Error processing attributes: {error}"
+  file_size_exceeded: "{attribute} file size must be less than {size} MB"
+  file_type_not_allowed: "{attribute} file type is not allowed"
   
 # Boolean values
 boolean:

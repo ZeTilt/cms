@@ -1,0 +1,169 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gérer les Utilisateurs - {{ role.displayName }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_roles_list') }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">Gestion des Rôles</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_roles_show', {id: role.id}) }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">{{ role.displayName }}</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-2 text-sm font-medium text-gray-500">Gérer les Utilisateurs</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="sm:flex-auto">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-2xl font-semibold text-gray-900">Gérer les Utilisateurs</h1>
+                <span class="px-4 py-2 text-lg font-medium rounded-full {{ role.badgeColor }}">
+                    {{ role.displayName }}
+                </span>
+            </div>
+            <p class="mt-2 text-sm text-gray-700">
+                Sélectionnez les utilisateurs qui doivent avoir le rôle <strong>{{ role.displayName }}</strong>.
+            </p>
+        </div>
+    </div>
+
+    <form method="post" class="mt-8">
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Sélectionner les Utilisateurs
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="selectAll()" 
+                                class="text-sm text-indigo-600 hover:text-indigo-900">
+                            Tout sélectionner
+                        </button>
+                        <span class="text-gray-300">•</span>
+                        <button type="button" onclick="selectNone()" 
+                                class="text-sm text-indigo-600 hover:text-indigo-900">
+                            Tout déselectionner
+                        </button>
+                    </div>
+                </div>
+                
+                {% if allUsers is empty %}
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun utilisateur</h3>
+                        <p class="mt-1 text-sm text-gray-500">Il n'y a aucun utilisateur actif dans le système.</p>
+                    </div>
+                {% else %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for user in allUsers %}
+                            <div class="relative">
+                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 {{ user.id in currentUserIds ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200' }}">
+                                    <input type="checkbox" 
+                                           name="selected_users[]" 
+                                           value="{{ user.id }}" 
+                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                           {{ user.id in currentUserIds ? 'checked' : '' }}>
+                                    <div class="ml-3 flex items-center space-x-3">
+                                        <img class="h-8 w-8 rounded-full" 
+                                             src="https://ui-avatars.com/api/?name={{ user.fullName|url_encode }}&background=6366f1&color=ffffff" 
+                                             alt="{{ user.fullName }}">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ user.fullName }}
+                                            </div>
+                                            <div class="text-xs text-gray-500">
+                                                {{ user.email }}
+                                            </div>
+                                            {% if user.userType %}
+                                                <div class="text-xs text-gray-400 mt-1">
+                                                    {{ user.userType.displayName }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if allUsers is not empty %}
+                <div class="px-4 py-4 sm:px-6 bg-gray-50 rounded-b-lg">
+                    <div class="flex justify-between">
+                        <a href="{{ path('admin_roles_show', {id: role.id}) }}" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Annuler
+                        </a>
+                        
+                        <button type="submit" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Mettre à jour les attributions
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+function selectAll() {
+    const checkboxes = document.querySelectorAll('input[name="selected_users[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.closest('label').classList.add('border-indigo-500', 'bg-indigo-50');
+        checkbox.closest('label').classList.remove('border-gray-200');
+    });
+}
+
+function selectNone() {
+    const checkboxes = document.querySelectorAll('input[name="selected_users[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        checkbox.closest('label').classList.remove('border-indigo-500', 'bg-indigo-50');
+        checkbox.closest('label').classList.add('border-gray-200');
+    });
+}
+
+// Update styling when checkbox changes
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[name="selected_users[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const label = this.closest('label');
+            if (this.checked) {
+                label.classList.add('border-indigo-500', 'bg-indigo-50');
+                label.classList.remove('border-gray-200');
+            } else {
+                label.classList.remove('border-indigo-500', 'bg-indigo-50');
+                label.classList.add('border-gray-200');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -79,8 +79,28 @@ class Event
     #[ORM\JoinColumn(nullable: false)]
     private User $organizer;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $clubDepartureTime = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $dockDepartureTime = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $pilot = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $divingComments = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $registrationConditions = null; // Conditions d'inscription basées sur les attributs EAV
+
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventAttribute::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $eventAttributes;
+
+    #[ORM\ManyToMany(targetEntity: Gallery::class, inversedBy: 'events')]
+    #[ORM\JoinTable(name: 'event_galleries')]
+    private Collection $galleries;
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventRegistration::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $registrations;
@@ -90,6 +110,7 @@ class Event
         $this->createdAt = new \DateTimeImmutable();
         $this->eventAttributes = new ArrayCollection();
         $this->registrations = new ArrayCollection();
+        $this->galleries = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -258,7 +279,11 @@ class Event
 
     public function getCurrentParticipants(): int
     {
-        return $this->currentParticipants;
+        $totalSpots = 0;
+        foreach ($this->getActiveRegistrations() as $registration) {
+            $totalSpots += $registration->getNumberOfSpots();
+        }
+        return $totalSpots;
     }
 
     public function setCurrentParticipants(int $currentParticipants): static
@@ -379,7 +404,7 @@ class Event
             return null;
         }
 
-        return max(0, $this->maxParticipants - $this->currentParticipants);
+        return max(0, $this->maxParticipants - $this->getConfirmedParticipants());
     }
 
     /**
@@ -570,7 +595,11 @@ class Event
      */
     public function getConfirmedParticipants(): int
     {
-        return $this->getConfirmedRegistrations()->count();
+        $totalSpots = 0;
+        foreach ($this->getConfirmedRegistrations() as $registration) {
+            $totalSpots += $registration->getNumberOfSpots();
+        }
+        return $totalSpots;
     }
 
     /**
@@ -598,5 +627,283 @@ class Event
     {
         return $this->maxParticipants && 
                $this->getConfirmedParticipants() >= $this->maxParticipants;
+    }
+
+    public function getClubDepartureTime(): ?\DateTimeImmutable
+    {
+        return $this->clubDepartureTime;
+    }
+
+    public function setClubDepartureTime(?\DateTimeImmutable $clubDepartureTime): static
+    {
+        $this->clubDepartureTime = $clubDepartureTime;
+        return $this;
+    }
+
+    public function getDockDepartureTime(): ?\DateTimeImmutable
+    {
+        return $this->dockDepartureTime;
+    }
+
+    public function setDockDepartureTime(?\DateTimeImmutable $dockDepartureTime): static
+    {
+        $this->dockDepartureTime = $dockDepartureTime;
+        return $this;
+    }
+
+    public function getPilot(): ?User
+    {
+        return $this->pilot;
+    }
+
+    public function setPilot(?User $pilot): static
+    {
+        $this->pilot = $pilot;
+        return $this;
+    }
+
+    public function getDivingComments(): ?string
+    {
+        return $this->divingComments;
+    }
+
+    public function setDivingComments(?string $divingComments): static
+    {
+        $this->divingComments = $divingComments;
+        return $this;
+    }
+
+    public function getRegistrationConditions(): ?array
+    {
+        return $this->registrationConditions;
+    }
+
+    public function setRegistrationConditions(?array $registrationConditions): static
+    {
+        $this->registrationConditions = $registrationConditions;
+        return $this;
+    }
+
+    /**
+     * Ajouter une condition d'inscription
+     */
+    public function addRegistrationCondition(string $attributeKey, string $operator, mixed $value, string $message = ''): static
+    {
+        if (!$this->registrationConditions) {
+            $this->registrationConditions = [];
+        }
+
+        $this->registrationConditions[] = [
+            'attribute_key' => $attributeKey,
+            'operator' => $operator, // equals, not_equals, greater_than, less_than, contains, exists, not_exists
+            'value' => $value,
+            'message' => $message ?: "Condition non respectée pour l'attribut {$attributeKey}"
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Supprimer toutes les conditions d'inscription
+     */
+    public function clearRegistrationConditions(): static
+    {
+        $this->registrationConditions = [];
+        return $this;
+    }
+
+    /**
+     * Vérifier si un utilisateur peut s'inscrire à cet événement
+     */
+    public function canUserRegister(User $user): array
+    {
+        $errors = [];
+
+        if (!$this->registrationConditions) {
+            return $errors;
+        }
+
+        foreach ($this->registrationConditions as $condition) {
+            $attributeKey = $condition['attribute_key'];
+            $operator = $condition['operator'];
+            $expectedValue = $condition['value'];
+            $message = $condition['message'];
+
+            $userValue = $user->getDynamicAttribute($attributeKey);
+
+            $conditionMet = $this->evaluateCondition($userValue, $operator, $expectedValue, $attributeKey);
+
+            if (!$conditionMet) {
+                $errors[] = $message;
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Évaluer une condition spécifique
+     */
+    private function evaluateCondition(mixed $userValue, string $operator, mixed $expectedValue, string $attributeKey = null): bool
+    {
+        return match($operator) {
+            'equals' => $userValue == $expectedValue,
+            'not_equals' => $userValue != $expectedValue,
+            'greater_than' => is_numeric($userValue) && is_numeric($expectedValue) && $userValue > $expectedValue,
+            'less_than' => is_numeric($userValue) && is_numeric($expectedValue) && $userValue < $expectedValue,
+            'greater_or_equal' => is_numeric($userValue) && is_numeric($expectedValue) && $userValue >= $expectedValue,
+            'less_or_equal' => is_numeric($userValue) && is_numeric($expectedValue) && $userValue <= $expectedValue,
+            'select_option_gte' => $this->compareSelectOptions($userValue, $expectedValue, $attributeKey) >= 0,
+            'select_option_equals' => $this->compareSelectOptions($userValue, $expectedValue, $attributeKey) === 0,
+            'contains' => is_string($userValue) && is_string($expectedValue) && str_contains($userValue, $expectedValue),
+            'exists' => $userValue !== null && $userValue !== '',
+            'not_exists' => $userValue === null || $userValue === '',
+            'in_list' => is_array($expectedValue) && in_array($userValue, $expectedValue),
+            'not_in_list' => is_array($expectedValue) && !in_array($userValue, $expectedValue),
+            default => false
+        };
+    }
+
+    /**
+     * Comparer les options d'un attribut select basé sur leur ordre dans la définition EAV
+     * Retourne : > 0 si userValue > requiredValue, 0 si égaux, < 0 si userValue < requiredValue
+     */
+    private function compareSelectOptions(?string $userValue, ?string $requiredValue, ?string $attributeKey): int
+    {
+        if (!$userValue || !$requiredValue || !$attributeKey) {
+            return -1;
+        }
+        
+        // Récupérer les options de l'attribut depuis la définition EAV
+        $options = $this->getAttributeOptions($attributeKey);
+        
+        if (!$options) {
+            return -1;
+        }
+        
+        $userValueIndex = array_search($userValue, $options);
+        $requiredValueIndex = array_search($requiredValue, $options);
+        
+        // Si l'une des valeurs n'est pas trouvée dans les options, on refuse
+        if ($userValueIndex === false || $requiredValueIndex === false) {
+            return -1;
+        }
+        
+        // Plus l'index est élevé dans la liste, plus la valeur est élevée hiérarchiquement
+        return $userValueIndex - $requiredValueIndex;
+    }
+    
+    /**
+     * Récupérer les options d'un attribut depuis la définition EAV
+     */
+    private function getAttributeOptions(string $attributeName): ?array
+    {
+        // Cache statique pour éviter les requêtes multiples dans une même requête
+        static $optionsCache = [];
+        
+        if (!isset($optionsCache[$attributeName])) {
+            // Simuler l'injection de dépendance pour accéder à l'EntityManager
+            // En pratique, il faudrait injecter l'EntityManager ou un service
+            
+            // Pour l'instant, récupérer directement depuis la base
+            // Note: Cette approche n'est pas idéale car l'entité fait un appel DB
+            
+            try {
+                // Récupérer depuis la table attribute_definitions
+                // Chemin direct vers la base SQLite du projet
+                $dbPath = __DIR__ . '/../../var/data_dev.db';
+                $pdo = new \PDO('sqlite:' . $dbPath);
+                $stmt = $pdo->prepare('SELECT options FROM attribute_definitions WHERE attribute_name = ?');
+                $stmt->execute([$attributeName]);
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+                
+                if ($result && $result['options']) {
+                    $optionsCache[$attributeName] = json_decode($result['options'], true);
+                } else {
+                    $optionsCache[$attributeName] = null;
+                }
+            } catch (\Exception $e) {
+                $optionsCache[$attributeName] = null;
+            }
+        }
+        
+        return $optionsCache[$attributeName];
+    }
+
+    /**
+     * Obtenir la liste des exigences pour cet événement
+     */
+    public function getRequirements(): array
+    {
+        $requirements = [];
+
+        if (!$this->registrationConditions) {
+            return $requirements;
+        }
+
+        foreach ($this->registrationConditions as $condition) {
+            $requirements[] = $this->formatConditionAsRequirement($condition);
+        }
+
+        return $requirements;
+    }
+
+    /**
+     * Formater une condition en exigence lisible
+     */
+    private function formatConditionAsRequirement(array $condition): string
+    {
+        $attributeKey = $condition['attribute_key'];
+        $operator = $condition['operator'];
+        $value = $condition['value'];
+
+        return match($operator) {
+            'equals' => "{$attributeKey}: {$value}",
+            'not_equals' => "{$attributeKey}: différent de {$value}",
+            'greater_than' => "{$attributeKey}: supérieur à {$value}",
+            'less_than' => "{$attributeKey}: inférieur à {$value}",
+            'greater_or_equal' => "{$attributeKey}: {$value} minimum",
+            'less_or_equal' => "{$attributeKey}: {$value} maximum",
+            'contains' => "{$attributeKey}: doit contenir '{$value}'",
+            'exists' => "{$attributeKey}: requis",
+            'not_exists' => "{$attributeKey}: non autorisé",
+            'in_list' => "{$attributeKey}: " . (is_array($value) ? implode(', ', $value) : $value),
+            'not_in_list' => "{$attributeKey}: interdit: " . (is_array($value) ? implode(', ', $value) : $value),
+            default => $condition['message'] ?? "Condition sur {$attributeKey}"
+        };
+    }
+
+    /**
+     * @return Collection<int, Gallery>
+     */
+    public function getGalleries(): Collection
+    {
+        return $this->galleries;
+    }
+
+    public function addGallery(Gallery $gallery): static
+    {
+        if (!$this->galleries->contains($gallery)) {
+            $this->galleries->add($gallery);
+        }
+
+        return $this;
+    }
+
+    public function removeGallery(Gallery $gallery): static
+    {
+        $this->galleries->removeElement($gallery);
+
+        return $this;
+    }
+
+    public function hasGalleries(): bool
+    {
+        return !$this->galleries->isEmpty();
+    }
+
+    public function getGalleryCount(): int
+    {
+        return $this->galleries->count();
     }
 }

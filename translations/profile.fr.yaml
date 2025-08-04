@@ -1,0 +1,48 @@
+title: Mon Profil
+edit_title: Modifier le Profil
+back_to_profile: Retour au Profil
+
+fields:
+  username: Nom d'utilisateur
+  email: Adresse email
+  first_name: Prénom
+  last_name: Nom de famille
+  phone: Téléphone
+  current_password: Mot de passe actuel
+  new_password: Nouveau mot de passe
+  confirm_password: Confirmer le mot de passe
+
+sections:
+  profile_information: Informations du profil
+  basic_info: Informations de base
+  account_info: Informations du compte
+  additional_info: Informations supplémentaires
+
+messages:
+  email_already_used: Cette adresse email est déjà utilisée.
+  profile_updated: Profil mis à jour avec succès !
+  invalid_password: Mot de passe incorrect
+  password_too_short: Le mot de passe doit contenir au moins 6 caractères
+
+buttons:
+  edit_profile: Modifier le Profil
+  save_changes: Enregistrer les modifications
+  cancel: Annuler
+
+form:
+  select_option: "Sélectionner..."
+  diving_level_info: "Important : Votre niveau de plongée détermine les événements auxquels vous pouvez participer."
+  update_info_subtitle: "Mettez à jour vos informations personnelles."
+  personal_info_title: "Informations personnelles"
+  personal_info_subtitle: "Mettez à jour vos informations de profil de base."
+  first_name_label: "Prénom"
+  last_name_label: "Nom de famille"
+  email_label: "Adresse email"
+  email_notice: "Assurez-vous que cette adresse email est correcte car elle est utilisée pour les notifications importantes."
+  additional_info_title: "Informations complémentaires"
+  current_file_label: "Fichier actuel"
+  view_file_link: "Voir le fichier"
+  keep_current_file_notice: "Laissez vide pour conserver le fichier actuel"
+  allowed_types_label: "Types autorisés"
+  max_size_label: "Taille max"
+  file_validation_error: "Veuillez corriger les erreurs de fichiers avant de continuer."

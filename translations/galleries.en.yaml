@@ -58,3 +58,19 @@ client:
   password_required: "Password required"
   download_all: "Download all"
   slideshow: "Slideshow"
+
+access:
+  code_placeholder: "Enter access code"
+  lost_code: "Contact the organizer if you lost the code."
+
+admin:
+  show:
+    no_magic_link: "No link available"
+    share_private_link: "📤 Share Private Link"
+    copied: "✅ Copied!"
+    link_copied_alert: "Link copied!"
+  confirm:
+    delete_image: "Are you sure you want to delete this image?"
+  errors:
+    delete_failed: "Failed to delete image"
+    unknown_error: "Unknown error"

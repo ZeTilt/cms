@@ -36,18 +36,12 @@
                        class="px-3 py-1 text-sm rounded-full {% if not currentType %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
                         All Types
                     </a>
-                    <a href="{{ path('events_index', {'type': 'event', 'filter': currentFilter}) }}" 
-                       class="px-3 py-1 text-sm rounded-full {% if currentType == 'event' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-                        Events
-                    </a>
-                    <a href="{{ path('events_index', {'type': 'meeting', 'filter': currentFilter}) }}" 
-                       class="px-3 py-1 text-sm rounded-full {% if currentType == 'meeting' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-                        Meetings
-                    </a>
-                    <a href="{{ path('events_index', {'type': 'workshop', 'filter': currentFilter}) }}" 
-                       class="px-3 py-1 text-sm rounded-full {% if currentType == 'workshop' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-                        Workshops
-                    </a>
+                    {% for eventType in eventTypes %}
+                        <a href="{{ path('events_index', {'type': eventType.slug, 'filter': currentFilter}) }}" 
+                           class="px-3 py-1 text-sm rounded-full {% if currentType == eventType.slug %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                            {{ eventType.name }}
+                        </a>
+                    {% endfor %}
                 </div>
 
                 <div class="ml-auto">

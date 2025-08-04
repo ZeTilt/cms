@@ -133,22 +133,92 @@ class ImageUploadService
     {
         $filename = $image->getFilename();
         
-        // Delete original file
-        $originalPath = $this->uploadDirectory . '/' . $filename;
-        if (file_exists($originalPath)) {
-            unlink($originalPath);
+        // Validate filename
+        if (empty($filename) || trim($filename) === '') {
+            throw new \InvalidArgumentException(sprintf(
+                'Image filename is empty or invalid. Image ID: %d', 
+                $image->getId() ?? 'unknown'
+            ));
         }
+        
+        // Validate filename doesn't contain directory separators only
+        if (preg_match('/^[\/\\\\]+$/', $filename)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Image filename contains only directory separators: "%s". Image ID: %d', 
+                $filename, 
+                $image->getId() ?? 'unknown'
+            ));
+        }
+        
+        try {
+            // Delete original file
+            $originalPath = $this->uploadDirectory . '/' . $filename;
+            if (file_exists($originalPath)) {
+                if (is_file($originalPath)) {
+                    if (!unlink($originalPath)) {
+                        throw new \Exception("Failed to delete original file: $originalPath");
+                    }
+                } else {
+                    throw new \Exception("Original path is not a file: $originalPath");
+                }
+            }
 
-        // Delete thumbnail
+            // Delete thumbnail
+            $info = pathinfo($filename);
+            if (isset($info['filename']) && isset($info['extension'])) {
+                $thumbnailName = $info['filename'] . '_thumb.' . $info['extension'];
+                $thumbnailPath = $this->thumbnailDirectory . '/' . $thumbnailName;
+                if (file_exists($thumbnailPath)) {
+                    if (is_file($thumbnailPath)) {
+                        if (!unlink($thumbnailPath)) {
+                            throw new \Exception("Failed to delete thumbnail file: $thumbnailPath");
+                        }
+                    } else {
+                        throw new \Exception("Thumbnail path is not a file: $thumbnailPath");
+                    }
+                }
+            }
+
+            // Delete watermarked versions and other derivatives
+            $this->deleteImageDerivatives($filename);
+
+            $this->entityManager->remove($image);
+            $this->entityManager->flush();
+            
+        } catch (\Exception $e) {
+            throw new \Exception(sprintf(
+                'Failed to delete image "%s" (ID: %d): %s', 
+                $filename, 
+                $image->getId() ?? 'unknown',
+                $e->getMessage()
+            ));
+        }
+    }
+    
+    private function deleteImageDerivatives(string $filename): void
+    {
         $info = pathinfo($filename);
-        $thumbnailName = $info['filename'] . '_thumb.' . $info['extension'];
-        $thumbnailPath = $this->thumbnailDirectory . '/' . $thumbnailName;
-        if (file_exists($thumbnailPath)) {
-            unlink($thumbnailPath);
+        $basePattern = $info['filename'];
+        
+        // Delete watermarked versions
+        $watermarkedPatterns = [
+            $basePattern . '_watermarked.' . $info['extension'],
+            $basePattern . '_compressed_watermarked.' . $info['extension'],
+            $basePattern . '_compressed.' . $info['extension']
+        ];
+        
+        foreach ($watermarkedPatterns as $pattern) {
+            $filePath = $this->uploadDirectory . '/' . $pattern;
+            if (file_exists($filePath) && is_file($filePath)) {
+                unlink($filePath);
+            }
+            
+            // Also delete metadata files
+            $metaPath = $filePath . '.meta';
+            if (file_exists($metaPath) && is_file($metaPath)) {
+                unlink($metaPath);
+            }
         }
-
-        $this->entityManager->remove($image);
-        $this->entityManager->flush();
     }
 
     private function validateFile(UploadedFile $file): void

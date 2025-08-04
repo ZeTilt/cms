@@ -51,18 +51,21 @@
                         {% if app.user %}
                             {% if is_granted('ROLE_ADMIN') %}
                                 <a href="{{ path('admin_dashboard') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                                    Admin
+                                    {{ 'navigation.admin'|trans({}, 'base') }}
                                 </a>
                             {% endif %}
+                            <a href="{{ path('profile_show') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                                {{ 'navigation.my_profile'|trans({}, 'base') }}
+                            </a>
                             <span class="text-gray-600 px-3 py-2 text-sm">
-                                Hello, {{ app.user.username }}
+                                {{ 'navigation.hello'|trans({'%username%': app.user.username}, 'base') }}
                             </span>
                             <a href="{{ path('app_logout') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
-                                Logout
+                                {{ 'navigation.logout'|trans({}, 'base') }}
                             </a>
                         {% else %}
                             <a href="{{ path('app_login') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                Login
+                                {{ 'navigation.login'|trans({}, 'base') }}
                             </a>
                         {% endif %}
                     </div>

@@ -1,0 +1,87 @@
+# Email notifications translations - French
+email:
+  greeting: "Bonjour %name%,"
+  
+  # Gallery expiration
+  gallery_expiration:
+    subject: "Galerie expiration dans %days% jours : %title%"
+    title: "Notification d'expiration de galerie"
+    warning_1_day: "Votre galerie \"%title%\" expire demain !"
+    warning_few_days: "Votre galerie \"%title%\" expire dans %days% jours."
+    warning_general: "Votre galerie \"%title%\" expire dans %days% jours."
+    countdown_1_day: "1 JOUR RESTANT"
+    countdown_days: "%days% JOURS RESTANTS"
+    gallery_details: "Détails de la galerie"
+    extend_button: "Prolonger la galerie"
+    what_happens_title: "Que se passe-t-il à l'expiration ?"
+    what_happens_desc: "Lorsque votre galerie expire, les actions suivantes sont automatiquement effectuées :"
+    access_disabled: "L'accès public à la galerie est désactivé"
+    codes_revoked: "Tous les codes d'accès sont révoqués"
+    admin_access: "Vous gardez l'accès depuis l'administration"
+    reactivation_possible: "La réactivation reste possible à tout moment"
+    actions_title: "Actions possibles"
+    action_extend: "Prolonger la durée de vie de la galerie"
+    action_remove_expiration: "Supprimer complètement l'expiration"
+    action_let_expire: "Laisser expirer si plus nécessaire"
+
+  # Gallery expired
+  gallery_expired:
+    subject: "Galerie expirée : %title%"
+    title: "Votre galerie a expiré"
+    message: "Votre galerie \"%title%\" a expiré et a été automatiquement désactivée."
+    status: "GALERIE EXPIRÉE"
+    gallery_details: "Détails de la galerie expirée"
+    what_happened_title: "Que s'est-il passé ?"
+    what_happened_desc: "Votre galerie a atteint sa date d'expiration et les actions suivantes ont été automatiquement effectuées :"
+    access_disabled: "L'accès public a été désactivé"
+    codes_revoked: "Les codes d'accès ont été révoqués"
+    visibility_changed: "La visibilité a été changée à 'expirée'"
+    data_preserved: "Toutes vos images sont conservées"
+    reactivation_title: "Réactivation possible"
+    reactivation_desc: "Vous pouvez réactiver votre galerie à tout moment depuis l'administration."
+    reactivate_button: "Réactiver la galerie"
+    reactivation_options_title: "Options de réactivation"
+    option_extend: "Définir une nouvelle durée d'expiration"
+    option_remove_expiration: "Supprimer l'expiration (galerie permanente)"
+    option_new_access_code: "Définir de nouveaux codes d'accès"
+    cleanup_warning_title: "Attention :"
+    cleanup_warning_desc: "Les galeries expirées depuis plus de 90 jours sont automatiquement archivées. Réactivez votre galerie si vous souhaitez la conserver."
+
+  # Welcome email
+  welcome:
+    subject: "Bienvenue sur ZeTilt CMS"
+    title: "Bienvenue !"
+    message: "Votre compte a été créé avec succès."
+    intro: "Nous sommes ravis de vous accueillir sur ZeTilt CMS, votre plateforme de gestion de contenu."
+    features_title: "Fonctionnalités disponibles :"
+    feature_galleries: "Créer et gérer des galeries photos"
+    feature_events: "Organiser des événements et gérer les inscriptions"
+    feature_articles: "Publier des articles et actualités"
+    feature_profile: "Gérer votre profil et vos informations"
+    get_started_button: "Commencer"
+    support_title: "Besoin d'aide ?"
+    support_message: "N'hésitez pas à contacter l'administrateur si vous avez des questions."
+
+  # Password reset
+  password_reset:
+    subject: "Réinitialisation de votre mot de passe"
+    title: "Réinitialisation du mot de passe"
+
+  # Payment success
+  payment_success:
+    subject: "Paiement confirmé - %amount%"
+    title: "Paiement réussi"
+    confirmation: "Votre paiement a été traité avec succès"
+    details_title: "Détails de la transaction"
+    next_steps: "Vous recevrez prochainement confirmation de votre commande ou inscription."
+    receipt_note: "Conservez cet email comme reçu de votre transaction."
+
+  # Event registration
+  event_registration:
+    subject: "Inscription confirmée - %event_title%"
+    title: "Inscription à l'événement confirmée"
+
+  # Footer
+  footer:
+    automated: "Ceci est un message automatique, merci de ne pas y répondre."
+    contact: "Pour toute question, contactez l'administrateur du site."

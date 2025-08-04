@@ -1,0 +1,31 @@
+# Image Security Configuration
+parameters:
+    image.watermark.enabled: true
+    image.watermark.type: 'image'
+    image.watermark.template: '{gallery_title} - {owner_name}'
+    image.watermark.image_path: 'public/assets/watermark_688e4c7e3f12c.png'
+    image.watermark.opacity: 100
+    image.watermark.position: 'center'
+    image.watermark.margin: 20
+    image.watermark.scale: 200
+    image.anti_scrapping.enabled: true
+    image.rate_limit.requests_per_minute: 60
+    image.anti_scrapping.suspicious_agents:
+        - 'wget'
+        - 'curl'
+        - 'python'
+        - 'scrapy'
+        - 'bot'
+        - 'crawler'
+        - 'spider'
+        - 'scraper'
+        - 'harvest'
+        - 'extract'
+        - 'collect'
+    image.anti_scrapping.allowed_agents:
+        - 'googlebot'
+        - 'facebook'
+        - 'twitter'
+        - 'linkedin'
+    image.cache.private_max_age: 3600
+    image.cache.thumbnail_max_age: 7200

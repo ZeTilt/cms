@@ -1,0 +1,261 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ widget.title }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_widgets_list') }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                {{ 'widgets.breadcrumb'|trans({}, 'admin') }}
+            </a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-2 text-sm font-medium text-gray-500">{{ widget.title }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="sm:flex-auto">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-2xl font-semibold text-gray-900">{{ widget.title }}</h1>
+                {% if widget.active %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {{ 'widgets.active'|trans({}, 'admin') }}
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        {{ 'widgets.inactive'|trans({}, 'admin') }}
+                    </span>
+                {% endif %}
+            </div>
+            <p class="mt-2 text-sm text-gray-700">
+                {{ widget.description ?: 'widgets.no_description'|trans({}, 'admin') }}
+            </p>
+        </div>
+        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <div class="flex space-x-3">
+                <a href="{{ path('admin_widgets_edit', {id: widget.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    {{ 'widgets.edit'|trans({}, 'admin') }}
+                </a>
+                <a href="{{ path('admin_widgets_preview', {id: widget.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                   target="_blank">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    {{ 'widgets.preview'|trans({}, 'admin') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Informations du widget -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow rounded-lg divide-y divide-gray-200">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ 'widgets.details'|trans({}, 'admin') }}</h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6 space-y-4">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">{{ 'widget.name'|trans({}, 'admin') }}</dt>
+                        <dd class="mt-1 text-sm text-gray-900 font-mono">{{ widget.name }}</dd>
+                    </div>
+                    
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">{{ 'widget.type'|trans({}, 'admin') }}</dt>
+                        <dd class="mt-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ widget.type }}
+                            </span>
+                        </dd>
+                    </div>
+                    
+                    {% if widget.category %}
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">{{ 'widget.category'|trans({}, 'admin') }}</dt>
+                        <dd class="mt-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                {{ widget.category }}
+                            </span>
+                        </dd>
+                    </div>
+                    {% endif %}
+                    
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">{{ 'widget.cacheable'|trans({}, 'admin') }}</dt>
+                        <dd class="mt-1 text-sm text-gray-900">
+                            {% if widget.cacheable %}
+                                <span class="text-green-600">{{ 'common.yes'|trans({}, 'admin') }}</span>
+                                ({{ widget.cacheTime }} {{ 'common.seconds'|trans({}, 'admin') }})
+                            {% else %}
+                                <span class="text-red-600">{{ 'common.no'|trans({}, 'admin') }}</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">{{ 'widget.created_at'|trans({}, 'admin') }}</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ widget.createdAt|date('d/m/Y H:i') }}</dd>
+                    </div>
+                    
+                    {% if widget.updatedAt %}
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">{{ 'widget.updated_at'|trans({}, 'admin') }}</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ widget.updatedAt|date('d/m/Y H:i') }}</dd>
+                    </div>
+                    {% endif %}
+                    
+                    {% if widget.createdBy %}
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">{{ 'widget.created_by'|trans({}, 'admin') }}</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ widget.createdBy.email }}</dd>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Shortcodes -->
+            <div class="mt-6 bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ 'widgets.shortcodes'|trans({}, 'admin') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'widgets.shortcodes_help'|trans({}, 'admin') }}</p>
+                </div>
+                <div class="px-4 py-5 sm:p-6 space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'widgets.shortcode_id'|trans({}, 'admin') }}</label>
+                        <div class="flex">
+                            <input type="text" value="[widget id=&quot;{{ widget.id }}&quot;]" readonly
+                                   class="flex-1 text-sm font-mono bg-gray-50 border border-gray-300 rounded-l-md px-3 py-2">
+                            <button onclick="copyToClipboard(this.previousElementSibling.value)"
+                                    class="px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 text-gray-500 rounded-r-md hover:bg-gray-100">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ 'widgets.shortcode_name'|trans({}, 'admin') }}</label>
+                        <div class="flex">
+                            <input type="text" value="[widget name=&quot;{{ widget.name }}&quot;]" readonly
+                                   class="flex-1 text-sm font-mono bg-gray-50 border border-gray-300 rounded-l-md px-3 py-2">
+                            <button onclick="copyToClipboard(this.previousElementSibling.value)"
+                                    class="px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 text-gray-500 rounded-r-md hover:bg-gray-100">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ 'widgets.actions'|trans({}, 'admin') }}</h3>
+                    <div class="space-y-3">
+                        <form method="post" action="{{ path('admin_widgets_toggle', {id: widget.id}) }}" class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('toggle_widget_' ~ widget.id) }}">
+                            <button type="submit" 
+                                    class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white {{ widget.active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }}">
+                                {% if widget.active %}
+                                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L18.364 5.636"></path>
+                                    </svg>
+                                    {{ 'widgets.deactivate'|trans({}, 'admin') }}
+                                {% else %}
+                                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    {{ 'widgets.activate'|trans({}, 'admin') }}
+                                {% endif %}
+                            </button>
+                        </form>
+
+                        {% if widget.cacheable %}
+                        <form method="post" action="{{ path('admin_widgets_clear_cache', {id: widget.id}) }}" class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('clear_cache_' ~ widget.id) }}">
+                            <button type="submit" 
+                                    class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                {{ 'widgets.clear_cache'|trans({}, 'admin') }}
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <form method="post" action="{{ path('admin_widgets_delete', {id: widget.id}) }}" 
+                              onsubmit="return confirm('{{ 'widgets.confirm_delete'|trans({}, 'admin') }}')" class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_widget_' ~ widget.id) }}">
+                            <button type="submit" 
+                                    class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                {{ 'widgets.delete'|trans({}, 'admin') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu et aperçu -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Code source -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ 'widgets.source_code'|trans({}, 'admin') }}</h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                    <pre class="bg-gray-50 rounded-md p-4 text-sm font-mono overflow-x-auto"><code>{{ widget.content }}</code></pre>
+                </div>
+            </div>
+
+            <!-- Aperçu rendu -->
+            {% if widget.active %}
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ 'widgets.rendered_preview'|trans({}, 'admin') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'widgets.preview_help'|trans({}, 'admin') }}</p>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="border border-gray-200 rounded-md p-4 bg-gray-50">
+                        {{ renderedContent|raw }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Optionnel: afficher une notification de succès
+        console.log('Shortcode copié dans le presse-papiers');
+    });
+}
+</script>
+{% endblock %}

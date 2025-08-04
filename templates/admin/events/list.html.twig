@@ -5,7 +5,7 @@
 {% block content %}
 <!-- Header -->
 <div class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">{{ 'list.title'|trans({}, 'events') }}</h1>
@@ -30,7 +30,7 @@
 </div>
 
 <!-- Filters -->
-<div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+<div class="w-[95%] mx-auto py-4 px-4 sm:px-6 lg:px-8">
     <div class="bg-white rounded-lg shadow p-4">
         <form method="GET" class="flex flex-wrap gap-4 items-end">
             <div>
@@ -47,10 +47,9 @@
                 <label for="type" class="block text-sm font-medium text-gray-700">{{ 'fields.category'|trans({}, 'events') }}</label>
                 <select name="type" id="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="">{{ 'filters.all'|trans({}, 'events') }}</option>
-                    <option value="event" {% if currentType == 'event' %}selected{% endif %}>{{ 'categories.other'|trans({}, 'events') }}</option>
-                    <option value="meeting" {% if currentType == 'meeting' %}selected{% endif %}>{{ 'categories.meeting'|trans({}, 'events') }}</option>
-                    <option value="conference" {% if currentType == 'conference' %}selected{% endif %}>{{ 'categories.conference'|trans({}, 'events') }}</option>
-                    <option value="workshop" {% if currentType == 'workshop' %}selected{% endif %}>{{ 'categories.workshop'|trans({}, 'events') }}</option>
+                    {% for eventType in eventTypes %}
+                        <option value="{{ eventType.slug }}" {% if currentType == eventType.slug %}selected{% endif %}>{{ eventType.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
             
@@ -67,7 +66,7 @@
 </div>
 
 <!-- Events Table -->
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
     {% if events is empty %}
         <div class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,19 +89,19 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.title'|trans({}, 'events') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.start_date'|trans({}, 'events') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.location'|trans({}, 'events') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'header.registrations'|trans({}, 'events') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'fields.status'|trans({}, 'events') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'header.organizer'|trans({}, 'events') }}</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.title'|trans({}, 'events') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.start_date'|trans({}, 'events') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.location'|trans({}, 'events') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'header.registrations'|trans({}, 'events') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'fields.status'|trans({}, 'events') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'header.organizer'|trans({}, 'events') }}</th>
+                        <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for event in events %}
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-3 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="w-2 h-2 rounded-full mr-3 
                                         {% if event.status == 'published' %}bg-green-400
@@ -115,21 +114,21 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-3 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{ event.startDate|date('d/m/Y') }}</div>
                                 <div class="text-sm text-gray-500">{{ event.startDate|date('H:i') }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-3 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{ event.location ?: '-' }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <td class="px-3 py-4 whitespace-nowrap text-center">
                                 {% if event.requiresRegistration %}
                                     <span class="text-sm text-gray-900">{{ event.currentParticipants }}{% if event.maxParticipants %}/{{ event.maxParticipants }}{% endif %}</span>
                                 {% else %}
                                     <span class="text-sm text-gray-500">-</span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <td class="px-3 py-4 whitespace-nowrap text-center">
                                 {% if event.status == 'published' %}
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         {{ 'status.published'|trans({}, 'events') }}
@@ -144,16 +143,20 @@
                                     </span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ event.organizer.fullName }}
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ event.organizer.firstName }} {{ event.organizer.lastName }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
-                                    <a href="{{ path('admin_events_edit', {id: event.id}) }}" class="text-indigo-600 hover:text-indigo-900 text-sm">
-                                        {{ 'actions.edit_event'|trans({}, 'events') }}
+                                    <a href="{{ path('admin_events_edit', {id: event.id}) }}" class="text-indigo-600 hover:text-indigo-900" title="Modifier l'événement">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
                                     </a>
-                                    <a href="{{ path('admin_events_registrations', {id: event.id}) }}" class="text-gray-600 hover:text-gray-900 text-sm">
-                                        {{ 'actions.view_registrations'|trans({}, 'events') }}
+                                    <a href="{{ path('admin_events_registrations', {id: event.id}) }}" class="text-gray-600 hover:text-gray-900" title="Voir les inscriptions">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
                                     </a>
                                 </div>
                             </td>

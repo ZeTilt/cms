@@ -92,7 +92,7 @@ class PageTemplateService
      */
     private function generateTemplatePath(string $slug): string
     {
-        return $slug . '.html.twig';
+        return 'pages/' . $slug . '.html.twig';
     }
 
     /**

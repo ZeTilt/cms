@@ -1,0 +1,65 @@
+navigation:
+  admin: Admin
+  my_profile: My Profile
+  login: Login
+  logout: Logout
+  hello: Hello, %username%
+
+common:
+  back: Back
+  edit: Edit
+  save: Save
+  cancel: Cancel
+  delete: Delete
+  create: Create
+  update: Update
+  actions: Actions
+  yes: Yes
+  no: No
+  confirm: Confirm
+  close: Close
+  loading: Loading...
+  search: Search
+  filter: Filter
+  clear: Clear
+  all: All
+  none: None
+  or: or
+  and: and
+  of: of
+  in: in
+  at: at
+  on: on
+  by: by
+  for: for
+  with: with
+  from: from
+  to: to
+
+buttons:
+  save_changes: Save Changes
+  create_new: Create New
+  go_back: Go Back
+  view_details: View Details
+  edit_item: Edit Item
+  delete_item: Delete Item
+  confirm_delete: Confirm Delete
+  
+messages:
+  success: Operation successful
+  error: An error occurred
+  warning: Warning
+  info: Information
+  not_found: Not found
+  access_denied: Access denied
+  invalid_data: Invalid data
+  required_field: This field is required
+  
+forms:
+  required: Required
+  optional: Optional
+  choose: Choose
+  select: Select
+  enter: Enter
+  upload: Upload
+  browse: Browse

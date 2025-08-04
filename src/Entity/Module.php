@@ -91,6 +91,7 @@ class Module
 
     public function getConfig(): array
     {
+
         return $this->config;
     }
 

@@ -16,7 +16,7 @@
 {% block content %}
 <!-- Header -->
 <div class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">{{ 'list.title'|trans({}, 'galleries') }}</h1>
@@ -57,7 +57,7 @@
 </div>
 
 <!-- Content -->
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8"
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8"
      
     {% if galleries is empty %}
         <!-- Empty State -->
@@ -109,6 +109,29 @@
                                         🌐 {{ 'status.public'|trans({}, 'galleries') }}
                                     </span>
                                 {% endif %}
+                                
+                                {# Pricing Badge #}
+                                {% if gallery.isPaid %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                                        💳 {{ gallery.formattedPrice }}
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                        ✅ Gratuit
+                                    </span>
+                                {% endif %}
+                                
+                                {% if gallery.endDate %}
+                                    {% if gallery.isExpired %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                            ⏰ Expired
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            ⏰ Expires in {{ gallery.daysUntilExpiration }} day(s)
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
                             </div>
                         </div>
 
@@ -140,19 +163,19 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16"></th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.name'|trans({}, 'galleries') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.description'|trans({}, 'galleries') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'images.title'|trans({}, 'galleries') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'status.private'|trans({}, 'galleries') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'datetime.updated_at'|trans({}, 'admin') }}</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16"></th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.name'|trans({}, 'galleries') }}</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'fields.description'|trans({}, 'galleries') }}</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'images.title'|trans({}, 'galleries') }}</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">{{ 'status.private'|trans({}, 'galleries') }}</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'datetime.updated_at'|trans({}, 'admin') }}</th>
+                        <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{{ 'actions.actions'|trans({}, 'admin') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for gallery in galleries %}
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-3 py-4 whitespace-nowrap">
                                 <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
                                     {% set coverUrl = gallery.coverImageUrl %}
                                     {% if coverUrl %}
@@ -166,19 +189,19 @@
                                     {% endif %}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-3 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ gallery.title }}</div>
                                 <div class="text-sm text-gray-500">{{ gallery.slug }}</div>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-3 py-4">
                                 <div class="text-sm text-gray-900 max-w-xs truncate">
                                     {{ gallery.description ? gallery.description|striptags|slice(0, 80) ~ (gallery.description|striptags|length > 80 ? '...' : '') : '-' }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <td class="px-3 py-4 whitespace-nowrap text-center">
                                 <span class="text-sm text-gray-900">{{ gallery.imageCount }}</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <td class="px-3 py-4 whitespace-nowrap text-center">
                                 {% if gallery.visibility == 'private' %}
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                         🔒 {{ 'status.private'|trans({}, 'galleries') }}
@@ -189,16 +212,21 @@
                                     </span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ gallery.updatedAt|date('d/m/Y H:i') }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
-                                    <a href="{{ path('admin_galleries_show', {id: gallery.id}) }}" class="text-indigo-600 hover:text-indigo-900 text-sm">
-                                        {{ 'actions.view_gallery'|trans({}, 'galleries') }}
+                                    <a href="{{ path('admin_galleries_show', {id: gallery.id}) }}" class="text-indigo-600 hover:text-indigo-900" title="Voir la galerie">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
                                     </a>
-                                    <a href="{{ path('admin_galleries_edit', {id: gallery.id}) }}" class="text-gray-600 hover:text-gray-900 text-sm">
-                                        {{ 'actions.edit_gallery'|trans({}, 'galleries') }}
+                                    <a href="{{ path('admin_galleries_edit', {id: gallery.id}) }}" class="text-gray-600 hover:text-gray-900" title="Modifier la galerie">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
                                     </a>
                                 </div>
                             </td>

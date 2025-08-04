@@ -30,8 +30,26 @@ class AdminController extends AbstractController
     {
         $allModules = $moduleManager->getAllModules();
         
+        // Enrichir les modules avec les informations de dépendances
+        $modulesWithDeps = [];
+        foreach ($allModules as $module) {
+            $moduleName = $module->getName();
+            $dependencies = $moduleManager->getModuleDependencies($moduleName);
+            $dependentModules = $moduleManager->getModulesDependingOn($moduleName);
+            $canActivate = $moduleManager->canActivateModule($moduleName);
+            
+            $modulesWithDeps[] = [
+                'module' => $module,
+                'dependencies' => $dependencies,
+                'dependent_modules' => $dependentModules,
+                'can_activate' => empty($canActivate),
+                'activation_errors' => $canActivate
+            ];
+        }
+        
         return $this->render('admin/modules.html.twig', [
             'modules' => $allModules,
+            'modules_with_dependencies' => $modulesWithDeps,
         ]);
     }
 
@@ -42,22 +60,41 @@ class AdminController extends AbstractController
         $action = $request->request->get('action'); // 'activate' or 'deactivate'
         
         if (!in_array($action, ['activate', 'deactivate'])) {
-            return new JsonResponse(['success' => false, 'message' => 'Invalid action'], 400);
+            return new JsonResponse(['success' => false, 'message' => 'Action invalide'], 400);
         }
 
-        $success = $action === 'activate' 
-            ? $moduleManager->activateModule($moduleName)
-            : $moduleManager->deactivateModule($moduleName);
+        try {
+            // Vérifier les dépendances avant activation
+            if ($action === 'activate') {
+                $errors = $moduleManager->canActivateModule($moduleName);
+                if (!empty($errors)) {
+                    return new JsonResponse([
+                        'success' => false, 
+                        'message' => 'Dépendances manquantes : ' . implode(' ', $errors)
+                    ], 400);
+                }
+            }
 
-        if ($success) {
-            $module = $moduleManager->getModule($moduleName);
-            return new JsonResponse([
-                'success' => true,
-                'message' => sprintf('Module %s %s successfully', $moduleName, $action === 'activate' ? 'activated' : 'deactivated'),
-                'active' => $module->isActive()
-            ]);
+            $success = $action === 'activate' 
+                ? $moduleManager->activateModule($moduleName)
+                : $moduleManager->deactivateModule($moduleName);
+
+            if ($success) {
+                $module = $moduleManager->getModule($moduleName);
+                $displayName = $module->getDisplayName();
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => sprintf('Module "%s" %s avec succès', $displayName, $action === 'activate' ? 'activé' : 'désactivé'),
+                    'active' => $module->isActive()
+                ]);
+            }
+
+            return new JsonResponse(['success' => false, 'message' => 'Module non trouvé'], 404);
+
+        } catch (\RuntimeException $e) {
+            return new JsonResponse(['success' => false, 'message' => $e->getMessage()], 400);
+        } catch (\Exception $e) {
+            return new JsonResponse(['success' => false, 'message' => 'Erreur inattendue : ' . $e->getMessage()], 500);
         }
-
-        return new JsonResponse(['success' => false, 'message' => 'Module not found'], 404);
     }
 }

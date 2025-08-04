@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Login - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'title'|trans({}, 'security') }}{% endblock %}
 
 {% block body %}
 <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
         <div>
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                ZeTilt CMS
+                {{ 'app_title'|trans({}, 'security') }}
             </h2>
             <p class="mt-2 text-center text-sm text-gray-600">
-                Sign in to your account
+                {{ 'subtitle'|trans({}, 'security') }}
             </p>
         </div>
         
@@ -24,26 +24,26 @@
             <input type="hidden" name="token" value="{{ csrf_token('authenticate') }}">
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
-                    <label for="inputEmail" class="sr-only">Email address</label>
+                    <label for="inputEmail" class="sr-only">{{ 'login.email'|trans({}, 'security') }}</label>
                     <input 
                         type="email" 
                         value="{{ last_username }}" 
                         name="_username" 
                         id="inputEmail" 
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                        placeholder="Email address" 
+                        placeholder="{{ 'login.email_placeholder'|trans({}, 'security') }}" 
                         required 
                         autofocus
                     >
                 </div>
                 <div>
-                    <label for="inputPassword" class="sr-only">Password</label>
+                    <label for="inputPassword" class="sr-only">{{ 'login.password'|trans({}, 'security') }}</label>
                     <input 
                         type="password" 
                         name="_password" 
                         id="inputPassword" 
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                        placeholder="Password" 
+                        placeholder="{{ 'login.password_placeholder'|trans({}, 'security') }}" 
                         required
                     >
                 </div>
@@ -58,7 +58,7 @@
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                     >
                     <label for="remember_me" class="ml-2 block text-sm text-gray-900">
-                        Remember me
+                        {{ 'login.remember_me'|trans({}, 'security') }}
                     </label>
                 </div>
             </div>
@@ -68,19 +68,19 @@
                     type="submit" 
                     class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                    Sign in
+                    {{ 'login.sign_in'|trans({}, 'security') }}
                 </button>
             </div>
             
             <div class="text-center text-xs text-gray-500">
-                Default: admin@zetilt.cms / admin123
+                {{ 'login.default_credentials'|trans({}, 'security') }}
             </div>
             
             <div class="text-center">
                 <span class="text-sm text-gray-600">
-                    Don't have an account?
+                    {{ 'login.no_account'|trans({}, 'security') }}
                     <a href="{{ path('registration_form') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                        Create account
+                        {{ 'login.create_account'|trans({}, 'security') }}
                     </a>
                 </span>
             </div>

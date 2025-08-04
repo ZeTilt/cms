@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\EventRegistration;
+use App\Entity\EventType;
 use App\Service\ModuleManager;
+use App\Service\EventRegistrationValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +19,8 @@ class PublicEventController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private ModuleManager $moduleManager
+        private ModuleManager $moduleManager,
+        private EventRegistrationValidator $registrationValidator
     ) {
     }
 
@@ -118,6 +121,10 @@ class PublicEventController extends AbstractController
         $totalEvents = $totalQuery->getQuery()->getSingleScalarResult();
         $totalPages = ceil($totalEvents / $limit);
 
+        // Get all active event types for the filter
+        $eventTypes = $this->entityManager->getRepository(EventType::class)
+            ->findBy(['active' => true], ['sortOrder' => 'ASC']);
+
         return $this->render('events/index.html.twig', [
             'events' => $events,
             'currentPage' => $page,
@@ -126,6 +133,7 @@ class PublicEventController extends AbstractController
             'currentType' => $type,
             'currentFilter' => $filter,
             'currentDate' => $dateFilter,
+            'eventTypes' => $eventTypes,
         ]);
     }
 
@@ -243,8 +251,22 @@ class PublicEventController extends AbstractController
         
         
 
+        // Get all event types for the legend
+        $eventTypes = $this->entityManager->getRepository(EventType::class)
+            ->findBy(['active' => true], ['sortOrder' => 'ASC']);
+
+        $eventTypesData = [];
+        foreach ($eventTypes as $eventType) {
+            $eventTypesData[] = [
+                'slug' => $eventType->getSlug(),
+                'name' => $eventType->getName(),
+                'color' => $eventType->getColor(),
+            ];
+        }
+
         return $this->render('events/calendar.html.twig', [
             'events' => $eventsData,
+            'eventTypes' => $eventTypesData,
             'year' => $year,
             'month' => $month,
             'currentDate' => $startDate,
@@ -299,6 +321,15 @@ class PublicEventController extends AbstractController
 
     private function getEventColor(string $type): string
     {
+        // Try to get color from EventType entity
+        $eventType = $this->entityManager->getRepository(EventType::class)
+            ->findOneBy(['slug' => $type, 'active' => true]);
+        
+        if ($eventType && $eventType->getColor()) {
+            return $eventType->getColor();
+        }
+        
+        // Fallback to default colors if no EventType found
         return match ($type) {
             'meeting' => '#3b82f6',      // Blue
             'conference' => '#8b5cf6',   // Purple
@@ -308,7 +339,7 @@ class PublicEventController extends AbstractController
         };
     }
 
-    #[Route('/{slug}/register', name: 'event_register', methods: ['POST'])]
+    #[Route('/{slug}/register', name: 'event_register', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function register(string $slug, Request $request): Response
     {
@@ -339,16 +370,44 @@ class PublicEventController extends AbstractController
             return $this->redirectToRoute('events_show', ['slug' => $slug]);
         }
 
-        // Verify CSRF token
-        if (!$this->isCsrfTokenValid('register_' . $event->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Invalid security token.');
-            return $this->redirectToRoute('events_show', ['slug' => $slug]);
+        if ($request->getMethod() === 'GET') {
+            // Validate user prerequisites and show requirements
+            $validationErrors = $this->registrationValidator->validateUserForEvent($user, $event);
+            
+            return $this->render('events/register.html.twig', [
+                'event' => $event,
+                'validation_errors' => $validationErrors,
+                'can_register' => empty($validationErrors)
+            ]);
+        }
+
+        // Handle POST request
+        $numberOfSpots = (int) $request->request->get('number_of_spots', 1);
+        $departureLocation = $request->request->get('departure_location', 'club');
+        $registrationComment = $request->request->get('registration_comment', '');
+
+        // Validate number of spots
+        if ($numberOfSpots < 1 || $numberOfSpots > 5) {
+            $this->addFlash('error', 'Number of spots must be between 1 and 5.');
+            return $this->redirectToRoute('event_register', ['slug' => $slug]);
+        }
+
+        // Validate user prerequisites and requirements
+        $validationErrors = $this->registrationValidator->validateUserForEvent($user, $event);
+        if (!empty($validationErrors)) {
+            foreach ($validationErrors as $error) {
+                $this->addFlash('error', $error);
+            }
+            return $this->redirectToRoute('event_register', ['slug' => $slug]);
         }
 
         $registration = new EventRegistration();
         $registration->setEvent($event);
         $registration->setUser($user);
         $registration->setRegisteredAt(new \DateTimeImmutable());
+        $registration->setNumberOfSpots($numberOfSpots);
+        $registration->setDepartureLocation($departureLocation);
+        $registration->setRegistrationComment($registrationComment);
 
         // Determine registration status
         if ($event->requiresWaitingList()) {

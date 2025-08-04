@@ -1,0 +1,85 @@
+# Module Cart - English  
+title: "Shopping Cart"
+subtitle: "Manage your purchases and access"
+
+# Empty cart
+empty:
+  title: "Your cart is empty"
+  message: "Start by browsing our galleries and events"
+  browse_galleries: "Browse galleries"
+
+# Cart items
+item:
+  gallery_access: "Gallery access"
+  event_registration: "Event registration"
+
+# Metadata
+metadata:
+  event_date: "Event date"
+
+# Actions
+quantity: "Quantity"
+remove: "Remove"
+total: "Total"
+total_items: "%count% item(s)"
+continue_shopping: "Continue shopping"
+checkout_button: "Checkout"
+clear_cart: "Clear cart"
+
+# Confirmations
+confirm_remove: "Are you sure you want to remove this item?"
+confirm_clear: "Are you sure you want to clear the entire cart?"
+
+# Checkout
+checkout:
+  title: "Checkout"
+  breadcrumb:
+    cart: "Cart"
+    checkout: "Checkout"
+  
+  # Contact information
+  contact_info: "Contact information"
+  first_name: "First name"
+  last_name: "Last name"
+  email: "Email address"
+  
+  # Address
+  billing_address: "Billing address"
+  address: "Address"
+  city: "City"
+  postal_code: "Postal code"
+  country: "Country"
+  
+  # Notes
+  special_notes: "Special notes"
+  notes_label: "Comments (optional)"
+  notes_placeholder: "Add comments or special instructions..."
+  
+  # Summary
+  order_summary: "Order summary"
+  items_in_cart: "Items in cart"
+  quantity: "Quantity"
+  subtotal: "Subtotal"
+  taxes: "Taxes"
+  total: "Total"
+  
+  # Payment
+  proceed_to_payment: "Proceed to payment"
+  confirm_free_order: "Confirm free order"
+  payment_notice: "You will be redirected to our secure payment platform"
+  free_order_notice: "This order requires no payment"
+
+# Messages
+messages:
+  added_to_cart: "Item added to cart"
+  removed_from_cart: "Item removed from cart"
+  cart_cleared: "Cart cleared"
+  order_created: "Order created successfully"
+  payment_required: "Payment required to complete order"
+  
+# Errors
+errors:
+  item_not_found: "Item not found"
+  access_denied: "Access denied"
+  cart_empty: "Cart is empty"
+  invalid_quantity: "Invalid quantity"

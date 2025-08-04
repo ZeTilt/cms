@@ -28,7 +28,7 @@ list:
   title: "Liste des Articles"
   no_articles: "Aucun article trouvé"
   create_first: "Créer votre premier article"
-  
+
 header:
   title: "Titre"
   author: "Auteur"
@@ -56,21 +56,24 @@ delete:
 fields:
   title: "Titre de l'article"
   title_help: "Le titre principal de votre article"
+  title_placeholder: "Saisissez le titre de l'article..."
   slug: "URL (slug)"
   slug_help: "L'adresse web de votre article (générée automatiquement)"
   content: "Contenu"
   content_help: "Le contenu complet de votre article"
   excerpt: "Extrait"
-  excerpt_help: "Un résumé court de l'article pour les aperçus"
+  excerpt_help: "Brève description qui sera affichée dans les listes d'articles"
+  excerpt_placeholder: "Brève description de l'article (optionnel)..."
   featured_image: "Image à la une"
   featured_image_help: "L'image principale de l'article"
   category: "Catégorie"
   category_help: "Classifiez votre article"
+  category_placeholder: "ex. Technologie, Voyage, Style de vie..."
   tags: "Étiquettes"
-  tags_help: "Mots-clés séparés par des virgules"
+  tags_help: "Séparez les tags par des virgules"
+  tags_placeholder: "tag1, tag2, tag3..."
   author: "Auteur"
   status: "Statut de publication"
-  published_at: "Date de publication"
   meta_title: "Titre SEO"
   meta_title_help: "Le titre qui apparaîtra dans les moteurs de recherche"
   meta_description: "Description SEO"
@@ -80,6 +83,11 @@ fields:
   reading_time: "Temps de lecture estimé"
   view_count: "Nombre de vues"
   tag: "Tag"
+  article_info: "Informations de l'article"
+  organization: "Organisation"
+  created_at: "Créé le"
+  updated_at: "Modifié le"
+  published_at: "Publié le"
 
 messages:
   no_articles: "Aucun article"
@@ -162,7 +170,7 @@ search:
   by_author: "Par auteur"
   by_category: "Par catégorie"
   by_tag: "Par étiquette"
-  
+
 filters:
   all: "Tous les articles"
   published: "Publiés"
@@ -174,7 +182,7 @@ filters:
   by_author: "Par auteur"
   by_category: "Par catégorie"
   by_date: "Par date"
-  
+
 bulk_actions:
   select_action: "Sélectionner une action"
   publish_selected: "Publier la sélection"
@@ -194,6 +202,11 @@ validation:
   category_required: "Veuillez sélectionner une catégorie"
   author_required: "L'auteur est obligatoire"
   published_date_future: "La date de publication ne peut pas être dans le futur pour un article publié"
+  invalid_status: "Statut invalide"
+
+success:
+  published: "Article publié avec succès!"
+  unpublished: "Article dépublié avec succès!"
 
 editor:
   bold: "Gras"
@@ -242,7 +255,7 @@ export:
   excel: "Excel"
   pdf: "PDF"
   xml: "XML"
-  
+
 statistics:
   total_views: "Total des vues"
   average_reading_time: "Temps de lecture moyen"

@@ -1,0 +1,256 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ role.displayName }} - Détails du Rôle{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_roles_list') }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">Gestion des Rôles</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-2 text-sm font-medium text-gray-500">{{ role.displayName }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="sm:flex-auto">
+            <div class="flex items-center space-x-3">
+                <span class="px-4 py-2 text-lg font-medium rounded-full {{ role.badgeColor }}">
+                    {{ role.displayName }}
+                </span>
+                <span class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full">
+                    Niveau {{ role.hierarchy }}
+                </span>
+            </div>
+            <p class="mt-2 text-sm text-gray-700">{{ role.description }}</p>
+        </div>
+        <div class="mt-4 sm:mt-0 flex space-x-3">
+            {% if role.name not in ['ROLE_SUPER_ADMIN', 'ROLE_USER'] %}
+            <a href="{{ path('admin_roles_edit', {id: role.id}) }}" 
+               class="inline-flex items-center px-4 py-2 border border-yellow-300 shadow-sm text-sm font-medium rounded-md text-yellow-700 bg-yellow-50 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Modifier le Rôle
+            </a>
+            {% endif %}
+            <a href="{{ path('admin_roles_manage_users', {id: role.id}) }}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Gérer les Utilisateurs
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Informations du rôle -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informations du Rôle</h3>
+                    
+                    <dl class="space-y-4">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Nom technique</dt>
+                            <dd class="mt-1 text-sm text-gray-900 font-mono">{{ role.name }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Niveau hiérarchique</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ role.hierarchy }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                            <dd class="mt-1">
+                                <span class="px-2 py-1 text-xs rounded-full {{ role.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ role.active ? 'Actif' : 'Inactif' }}
+                                </span>
+                            </dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Créé le</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ role.createdAt|date('d/m/Y à H:i') }}</dd>
+                        </div>
+                        
+                        {% if role.updatedAt %}
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Modifié le</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ role.updatedAt|date('d/m/Y à H:i') }}</dd>
+                        </div>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Permissions -->
+            <div class="mt-6 bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Permissions</h3>
+                    {% if role.permissions|length > 0 %}
+                        <div class="space-y-3">
+                            {% set permissions_by_module = {} %}
+                            {% for permission in role.permissions %}
+                                {% set module = permission.module|capitalize %}
+                                {% set permissions_by_module = permissions_by_module|merge({(module): (permissions_by_module[module]|default([]))|merge([permission])}) %}
+                            {% endfor %}
+                            
+                            {% for module, permissions in permissions_by_module %}
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">{{ module }}</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        {% for permission in permissions %}
+                                            <span class="inline-block px-3 py-1 text-sm {{ permission.badgeColor }} rounded-full">
+                                                {{ permission.displayName }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-sm text-gray-500">Aucune permission attribuée à ce rôle.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Zone de danger -->
+            {% if role.name not in ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_USER'] %}
+            <div class="mt-6 bg-white shadow rounded-lg border border-red-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-red-900 mb-4">Zone de Danger</h3>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-red-700">
+                                Supprimer définitivement ce rôle du système.
+                            </p>
+                            <p class="text-xs text-red-600 mt-1">
+                                Cette action est irréversible et ne peut pas être annulée.
+                            </p>
+                        </div>
+                        <form method="post" action="{{ path('admin_roles_delete', {id: role.id}) }}" 
+                              onsubmit="return confirm('Êtes-vous absolument sûr de vouloir supprimer le rôle {{ role.displayName }} ? Cette action est irréversible.')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_role_' ~ role.id) }}">
+                            <button type="submit" 
+                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Supprimer le Rôle
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Liste des utilisateurs -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Utilisateurs avec ce rôle ({{ userRoles|length }})
+                        </h3>
+                    </div>
+                    
+                    {% if userRoles is empty %}
+                        <div class="text-center py-12">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun utilisateur</h3>
+                            <p class="mt-1 text-sm text-gray-500">Commencez par attribuer ce rôle à des utilisateurs.</p>
+                        </div>
+                    {% else %}
+                        <div class="overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Utilisateur
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Statut
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Attribué le
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Attribué par
+                                        </th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for userRole in userRoles %}
+                                        <tr class="{{ not userRole.active ? 'bg-gray-50 opacity-60' : '' }}">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <img class="h-8 w-8 rounded-full" 
+                                                         src="https://ui-avatars.com/api/?name={{ userRole.user.fullName|url_encode }}&background=6366f1&color=ffffff" 
+                                                         alt="{{ userRole.user.fullName }}">
+                                                    <div class="ml-3">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ userRole.user.fullName }}
+                                                        </div>
+                                                        <div class="text-sm text-gray-500">
+                                                            {{ userRole.user.email }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs rounded-full {{ userRole.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                    {{ userRole.active ? 'Actif' : 'Inactif' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ userRole.assignedAt|date('d/m/Y H:i') }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {% if userRole.assignedBy %}
+                                                    {{ userRole.assignedBy.fullName }}
+                                                {% else %}
+                                                    <span class="text-gray-400">Système</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <form method="post" action="{{ path('admin_roles_toggle_user_role', {id: userRole.id}) }}" class="inline">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle_user_role_' ~ userRole.id) }}">
+                                                    <button type="submit" 
+                                                            class="text-indigo-600 hover:text-indigo-900"
+                                                            onclick="return confirm('Êtes-vous sûr de vouloir {{ userRole.active ? 'désactiver' : 'activer' }} ce rôle pour {{ userRole.user.fullName }} ?')">
+                                                        {{ userRole.active ? 'Désactiver' : 'Activer' }}
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

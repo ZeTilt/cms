@@ -25,6 +25,23 @@ list:
   title: "Event List"
   no_events: "No events found"
   create_first: "Create your first event"
+
+calendar:
+  title: "Events Calendar - ZeTilt CMS"
+  page_title: "Events Calendar"
+  subtitle: "View events in calendar format"
+  list_view: "List View"
+  month_view: "Month view"
+  week_view: "Week view"
+  day_view: "Day view"
+  today: "Today"
+  month: "Month"
+  week: "Week"
+  day: "Day"
+  events_on: "Events on"
+  no_events_today: "No events today"
+  legend_title: "Legend - Event Types"
+  event_type_other: "Other"
   
 header:
   title: "Title"
@@ -123,6 +140,15 @@ registration:
   registration_full: "Event full"
   registration_success: "Registration successful"
   unregistration_success: "Unregistration successful"
+  form:
+    title: "Register for Event"
+    prerequisites_not_met: "You do not meet the prerequisites required for this event."
+    prerequisites_contact: "Contact a supervisor if you think this is an error."
+    select_spots: "Select the number of spots you want to reserve"
+    comments_placeholder: "Add a comment or special information..."
+    cancel: "Cancel"
+    confirm: "Confirm Registration"
+    confirm_unregister: "Are you sure you want to unregister from this event?"
   
 participant:
   name: "Participant name"
@@ -134,18 +160,6 @@ participant:
   export_list: "Export list"
   send_email: "Send email"
 
-calendar:
-  title: "Event Calendar"
-  month_view: "Month view"
-  week_view: "Week view"
-  day_view: "Day view"
-  list_view: "List view"
-  today: "Today"
-  month: "Month"
-  week: "Week"
-  day: "Day"
-  events_on: "Events on"
-  no_events_today: "No events today"
   
 actions:
   create_event: "Create Event"
@@ -228,3 +242,39 @@ pagination:
   page: "Page"
   of: "of"
   total_events: "total events"
+
+attributes:
+  title: "Event Attributes"
+  subtitle: "Manage custom attributes"  
+  add_new: "Add New Attribute"
+  current: "Current Attributes"
+  key: "Attribute Key"
+  key_placeholder: "e.g: difficulty_level, required_equipment"
+  initial_value: "Initial Value"
+  initial_value_placeholder: "Initial value (optional)"
+  add: "Add Attribute"
+  current_value: "Current Value"
+  no_attributes: "No attributes"
+  no_attributes_help: "This event has no custom attributes yet. Add one above to get started."
+  key_required: "Attribute key is required"
+  key_already_exists: "An attribute with this key already exists"
+  added_successfully: "Attribute added successfully"
+  deleted_successfully: "Attribute deleted successfully"
+
+errors:
+  module_not_active: "Events module is not active"
+  event_not_found: "Event not found"
+  attribute_not_found: "Attribute not found"
+  registration_not_found: "Registration not found"  
+  user_not_found: "User not found"
+  user_already_registered: "User is already registered for this event"
+  event_no_registrations: "This event does not accept registrations"
+  invalid_status: "Invalid status"
+
+success:
+  event_saved: "Event saved successfully!"
+  event_deleted: "Event deleted successfully!"
+  user_registered: "User registered successfully"
+  user_registered_waitlist: "User registered on waiting list"
+  registration_status_updated: "Registration status updated from %old_status% to %new_status%"
+  registration_deleted: "Registration for %username% deleted successfully"

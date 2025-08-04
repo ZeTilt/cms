@@ -1,0 +1,330 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'edit_title'|trans({}, 'profile') }} - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="max-w-3xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ 'edit_title'|trans({}, 'profile') }}</h1>
+                <p class="mt-1 text-sm text-gray-500">{{ 'form.update_info_subtitle'|trans({}, 'profile') }}</p>
+            </div>
+            <a href="{{ path('profile_show') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                {{ 'back_to_profile'|trans({}, 'profile') }}
+            </a>
+        </div>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="bg-white shadow rounded-lg">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">{{ 'form.personal_info_title'|trans({}, 'profile') }}</h3>
+                <p class="mt-1 text-sm text-gray-600">{{ 'form.personal_info_subtitle'|trans({}, 'profile') }}</p>
+            </div>
+
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700">{{ 'form.first_name_label'|trans({}, 'profile') }}</label>
+                        <input type="text" 
+                               name="first_name" 
+                               id="first_name" 
+                               value="{{ user.firstName }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700">{{ 'form.last_name_label'|trans({}, 'profile') }}</label>
+                        <input type="text" 
+                               name="last_name" 
+                               id="last_name" 
+                               value="{{ user.lastName }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">{{ 'form.email_label'|trans({}, 'profile') }}</label>
+                    <input type="email" 
+                           name="email" 
+                           id="email" 
+                           value="{{ user.email }}"
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <p class="mt-2 text-sm text-gray-500">{{ 'form.email_notice'|trans({}, 'profile') }}</p>
+                </div>
+
+                {% if attributeDefinitions %}
+                    <div class="border-t border-gray-200 pt-6">
+                        <h4 class="text-base font-medium text-gray-900 mb-4">{{ 'form.additional_info_title'|trans({}, 'profile') }}</h4>
+                        <div class="space-y-4">
+                            {% for definition in attributeDefinitions %}
+                                {% set currentValue = userAttributes[definition.attributeName] ?? '' %}
+                                <div>
+                                    <label for="attr_{{ definition.attributeName }}" class="block text-sm font-medium text-gray-700">
+                                        {{ definition.displayName }}
+                                        {% if definition.required %}
+                                            <span class="text-red-500">*</span>
+                                        {% endif %}
+                                    </label>
+                                    
+                                    {% if definition.description %}
+                                        <p class="mt-1 text-sm text-gray-500">{{ definition.description }}</p>
+                                    {% endif %}
+                                    
+                                    {% if definition.attributeType == 'select' %}
+                                        <select name="attributes[{{ definition.attributeName }}]" 
+                                                id="attr_{{ definition.attributeName }}"
+                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                {% if definition.required %}required{% endif %}>
+                                            <option value="">{{ 'form.select_option'|trans({}, 'profile') }}</option>
+                                            {% if definition.options %}
+                                                {% for option in definition.options %}
+                                                    <option value="{{ option }}" 
+                                                            {% if currentValue == option %}selected{% endif %}>
+                                                        {{ option }}
+                                                    </option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    {% elseif definition.attributeType == 'textarea' %}
+                                        <textarea name="attributes[{{ definition.attributeName }}]"
+                                                  id="attr_{{ definition.attributeName }}"
+                                                  rows="3"
+                                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                  {% if definition.required %}required{% endif %}>{{ currentValue }}</textarea>
+                                    {% elseif definition.attributeType == 'date' %}
+                                        <input type="date" 
+                                               name="attributes[{{ definition.attributeName }}]"
+                                               id="attr_{{ definition.attributeName }}"
+                                               value="{{ currentValue }}"
+                                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                               {% if definition.required %}required{% endif %}>
+                                    {% elseif definition.attributeType == 'number' %}
+                                        <input type="number" 
+                                               name="attributes[{{ definition.attributeName }}]"
+                                               id="attr_{{ definition.attributeName }}"
+                                               value="{{ currentValue }}"
+                                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                               {% if definition.required %}required{% endif %}>
+                                    {% elseif definition.attributeType == 'boolean' %}
+                                        <div class="mt-2">
+                                            <label class="inline-flex items-center">
+                                                <input type="checkbox" 
+                                                       name="attributes[{{ definition.attributeName }}]"
+                                                       id="attr_{{ definition.attributeName }}"
+                                                       value="1"
+                                                       {% if currentValue == '1' %}checked{% endif %}
+                                                       class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out">
+                                                <span class="ml-2 text-sm text-gray-900">{{ definition.displayName }}</span>
+                                            </label>
+                                        </div>
+                                    {% elseif definition.attributeType == 'file' %}
+                                        <div class="mt-2">
+                                            {% if currentValue %}
+                                                <div class="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                                                    <div class="flex items-center justify-between">
+                                                        <div class="flex items-center space-x-2">
+                                                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                            </svg>
+                                                            <span class="text-sm text-gray-700">{{ currentValue|split('/')|last }}</span>
+                                                            <a href="{{ currentValue }}" target="_blank" class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                                                {{ 'form.view_file_link'|trans({}, 'profile') }}
+                                                            </a>
+                                                        </div>
+                                                        <span class="text-xs text-gray-500">{{ 'form.current_file_label'|trans({}, 'profile') }}</span>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            <input type="file" 
+                                                   name="file_uploads[{{ definition.attributeName }}]"
+                                                   id="attr_{{ definition.attributeName }}"
+                                                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                                                   {% if definition.options and definition.options.allowed_mime_types %}
+                                                   accept="{% for mimeType in definition.options.allowed_mime_types %}{{ mimeType }}{% if not loop.last %},{% endif %}{% endfor %}"
+                                                   {% endif %}
+                                                   {% if definition.required and not currentValue %}required{% endif %}>
+                                            {% if currentValue %}
+                                                <p class="mt-1 text-xs text-gray-500">{{ 'form.keep_current_file_notice'|trans({}, 'profile') }}</p>
+                                            {% endif %}
+                                            {% if definition.options %}
+                                                <div class="mt-1 text-xs text-gray-500">
+                                                    {% if definition.options.allowed_mime_types %}
+                                                        <span>{{ 'form.allowed_types_label'|trans({}, 'profile') }}: 
+                                                        {% for mimeType in definition.options.allowed_mime_types %}
+                                                            {% if mimeType == 'image/jpeg' %}.jpg, .jpeg{% 
+                                                            elseif mimeType == 'image/png' %}.png{% 
+                                                            elseif mimeType == 'image/webp' %}.webp{% 
+                                                            elseif mimeType == 'application/pdf' %}.pdf{% 
+                                                            elseif mimeType == 'application/msword' %}.doc{% 
+                                                            elseif mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' %}.docx{% 
+                                                            elseif mimeType == 'text/plain' %}.txt{% 
+                                                            elseif mimeType == 'application/zip' %}.zip{% 
+                                                            else %}{{ mimeType }}{% endif %}{% if not loop.last %}, {% endif %}
+                                                        {% endfor %}
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if definition.options.max_file_size %}
+                                                        <span> • {{ 'form.max_size_label'|trans({}, 'profile') }}: {{ definition.options.max_file_size }}MB</span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <input type="text" 
+                                               name="attributes[{{ definition.attributeName }}]"
+                                               id="attr_{{ definition.attributeName }}"
+                                               value="{{ currentValue }}"
+                                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                               {% if definition.required %}required{% endif %}>
+                                    {% endif %}
+                                    
+                                    {% if definition.attributeName == 'niveau_plongee' %}
+                                        <p class="mt-1 text-xs text-yellow-600">
+                                            {{ 'form.diving_level_info'|trans({}, 'profile') }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+                <a href="{{ path('profile_show') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    {{ 'buttons.cancel'|trans({}, 'profile') }}
+                </a>
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    {{ 'buttons.save_changes'|trans({}, 'profile') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    
+    // Add real-time validation for file inputs
+    fileInputs.forEach(function(input) {
+        input.addEventListener('change', function() {
+            validateFileInput(this);
+        });
+    });
+    
+    // Validate form on submission
+    form.addEventListener('submit', function(e) {
+        let hasErrors = false;
+        
+        fileInputs.forEach(function(input) {
+            if (!validateFileInput(input)) {
+                hasErrors = true;
+            }
+        });
+        
+        if (hasErrors) {
+            e.preventDefault();
+            showError('{{ 'form.file_validation_error'|trans({}, 'profile') }}');
+        }
+    });
+    
+    function validateFileInput(input) {
+        // Clear previous error
+        clearInputError(input);
+        
+        if (!input.files || input.files.length === 0) {
+            return true; // No file selected is okay unless required
+        }
+        
+        const file = input.files[0];
+        const acceptedTypes = input.getAttribute('accept');
+        
+        if (acceptedTypes) {
+            const allowedMimeTypes = acceptedTypes.split(',').map(type => type.trim());
+            const fileMimeType = file.type;
+            
+            if (!allowedMimeTypes.includes(fileMimeType)) {
+                showInputError(input, `Type de fichier non autorisé: ${fileMimeType}. Types acceptés: ${getReadableFileTypes(allowedMimeTypes)}`);
+                return false;
+            }
+        }
+        
+        // Check file size (get max size from data attribute or nearby text)
+        const maxSizeMatch = input.parentElement.textContent.match(/Taille max:\s*(\d+)MB/);
+        if (maxSizeMatch) {
+            const maxSizeMB = parseInt(maxSizeMatch[1]);
+            const fileSizeMB = file.size / (1024 * 1024);
+            
+            if (fileSizeMB > maxSizeMB) {
+                showInputError(input, `Fichier trop volumineux: ${fileSizeMB.toFixed(2)}MB. Taille maximale: ${maxSizeMB}MB`);
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    function showInputError(input, message) {
+        input.classList.add('border-red-500');
+        
+        // Create or update error message
+        let errorDiv = input.parentElement.querySelector('.file-error');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'file-error mt-1 text-sm text-red-600';
+            input.parentElement.appendChild(errorDiv);
+        }
+        errorDiv.textContent = message;
+    }
+    
+    function clearInputError(input) {
+        input.classList.remove('border-red-500');
+        const errorDiv = input.parentElement.querySelector('.file-error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+    }
+    
+    function getReadableFileTypes(mimeTypes) {
+        return mimeTypes.map(function(mimeType) {
+            switch(mimeType) {
+                case 'image/jpeg': return '.jpg, .jpeg';
+                case 'image/png': return '.png';
+                case 'image/webp': return '.webp';
+                case 'application/pdf': return '.pdf';
+                case 'application/msword': return '.doc';
+                case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': return '.docx';
+                case 'text/plain': return '.txt';
+                case 'application/zip': return '.zip';
+                default: return mimeType;
+            }
+        }).join(', ');
+    }
+    
+    function showError(message) {
+        // Create a temporary error notification
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg bg-red-100 text-red-800 border border-red-200';
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(function() {
+            notification.remove();
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

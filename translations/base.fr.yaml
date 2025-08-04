@@ -1,0 +1,65 @@
+navigation:
+  admin: Admin
+  my_profile: Mon Profil
+  login: Connexion
+  logout: Déconnexion
+  hello: Bonjour, %username%
+
+common:
+  back: Retour
+  edit: Modifier
+  save: Enregistrer
+  cancel: Annuler
+  delete: Supprimer
+  create: Créer
+  update: Mettre à jour
+  actions: Actions
+  yes: Oui
+  no: Non
+  confirm: Confirmer
+  close: Fermer
+  loading: Chargement...
+  search: Rechercher
+  filter: Filtrer
+  clear: Effacer
+  all: Tous
+  none: Aucun
+  or: ou
+  and: et
+  of: de
+  in: dans
+  at: à
+  on: le
+  by: par
+  for: pour
+  with: avec
+  from: depuis
+  to: vers
+  
+buttons:
+  save_changes: Enregistrer les modifications
+  create_new: Créer nouveau
+  go_back: Retour
+  view_details: Voir les détails
+  edit_item: Modifier l'élément
+  delete_item: Supprimer l'élément
+  confirm_delete: Confirmer la suppression
+  
+messages:
+  success: Opération réussie
+  error: Une erreur s'est produite
+  warning: Attention
+  info: Information
+  not_found: Non trouvé
+  access_denied: Accès refusé
+  invalid_data: Données invalides
+  required_field: Ce champ est obligatoire
+  
+forms:
+  required: Obligatoire
+  optional: Facultatif
+  choose: Choisir
+  select: Sélectionner
+  enter: Saisir
+  upload: Télécharger
+  browse: Parcourir

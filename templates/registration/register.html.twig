@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'title_page'|trans({}, 'registration') }}{% endblock %}
 
 {% block body %}
 <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
         <div>
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Create your account
+                {{ 'form.title'|trans({}, 'registration') }}
             </h2>
             {% if config.welcome_message %}
                 <p class="mt-2 text-center text-sm text-gray-600">
@@ -53,7 +53,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label for="first_name" class="block text-sm font-medium text-gray-700">
-                            First Name
+                            {{ 'form.first_name'|trans({}, 'registration') }}
                         </label>
                         <input id="first_name" 
                                name="first_name" 
@@ -68,7 +68,7 @@
                     
                     <div>
                         <label for="last_name" class="block text-sm font-medium text-gray-700">
-                            Last Name
+                            {{ 'form.last_name'|trans({}, 'registration') }}
                         </label>
                         <input id="last_name" 
                                name="last_name" 
@@ -84,7 +84,7 @@
 
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">
-                        Email Address
+                        {{ 'form.email'|trans({}, 'registration') }}
                     </label>
                     <input id="email" 
                            name="email" 
@@ -93,7 +93,7 @@
                            autocomplete="email" 
                            required 
                            class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.email is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                           placeholder="your@email.com">
+                           placeholder="{{ 'form.email_placeholder'|trans({}, 'registration') }}">
                     {% if errors.email is defined %}
                         <p class="mt-1 text-sm text-red-600">{{ errors.email|first }}</p>
                     {% endif %}
@@ -102,12 +102,12 @@
                 {% if userTypes is not empty %}
                     <div>
                         <label for="user_type_id" class="block text-sm font-medium text-gray-700">
-                            Account Type
+                            {{ 'form.account_type'|trans({}, 'registration') }}
                         </label>
                         <select id="user_type_id" 
                                 name="user_type_id" 
                                 class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option value="">Select account type (optional)</option>
+                            <option value="">{{ 'form.account_type_optional'|trans({}, 'registration') }}</option>
                             {% for userType in userTypes %}
                                 <option value="{{ userType.id }}" {{ (formData.userTypeId ?? '') == userType.id ? 'selected' : '' }}>
                                     {{ userType.displayName }}
@@ -125,7 +125,7 @@
 
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">
-                        Password
+                        {{ 'form.password'|trans({}, 'registration') }}
                     </label>
                     <input id="password" 
                            name="password" 
@@ -133,7 +133,7 @@
                            autocomplete="new-password" 
                            required 
                            class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.password is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                           placeholder="Minimum 8 characters">
+                           placeholder="{{ 'form.password_placeholder'|trans({}, 'registration') }}">
                     {% if errors.password is defined %}
                         <p class="mt-1 text-sm text-red-600">{{ errors.password|first }}</p>
                     {% endif %}
@@ -141,7 +141,7 @@
 
                 <div>
                     <label for="confirm_password" class="block text-sm font-medium text-gray-700">
-                        Confirm Password
+                        {{ 'form.confirm_password'|trans({}, 'registration') }}
                     </label>
                     <input id="confirm_password" 
                            name="confirm_password" 
@@ -149,7 +149,7 @@
                            autocomplete="new-password" 
                            required 
                            class="mt-1 appearance-none relative block w-full px-3 py-2 border {{ errors.confirmPassword is defined ? 'border-red-300' : 'border-gray-300' }} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                           placeholder="Repeat your password">
+                           placeholder="{{ 'form.confirm_password_placeholder'|trans({}, 'registration') }}">
                     {% if errors.confirmPassword is defined %}
                         <p class="mt-1 text-sm text-red-600">{{ errors.confirmPassword|first }}</p>
                     {% endif %}
@@ -165,13 +165,13 @@
                                    required
                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                             <label for="terms_accepted" class="ml-2 block text-sm text-gray-900">
-                                I agree to the
+                                {{ 'form.terms_agree'|trans({}, 'registration') }}
                                 {% if config.terms_url %}
                                     <a href="{{ config.terms_url }}" target="_blank" class="text-indigo-600 hover:text-indigo-500">
-                                        Terms and Conditions
+                                        {{ 'form.terms_conditions'|trans({}, 'registration') }}
                                     </a>
                                 {% else %}
-                                    Terms and Conditions
+                                    {{ 'form.terms_conditions'|trans({}, 'registration') }}
                                 {% endif %}
                             </label>
                         </div>
@@ -190,15 +190,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                         </svg>
                     </span>
-                    Create Account
+                    {{ 'form.submit'|trans({}, 'registration') }}
                 </button>
             </div>
 
             <div class="text-center">
                 <span class="text-sm text-gray-600">
-                    Already have an account?
+                    {{ 'form.already_account'|trans({}, 'registration') }}
                     <a href="{{ path('app_login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                        Sign in here
+                        {{ 'form.sign_in_here'|trans({}, 'registration') }}
                     </a>
                 </span>
             </div>

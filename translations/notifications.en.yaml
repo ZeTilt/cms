@@ -1,0 +1,87 @@
+# Email notifications translations - English
+email:
+  greeting: "Hello %name%,"
+  
+  # Gallery expiration
+  gallery_expiration:
+    subject: "Gallery expiring in %days% days: %title%"
+    title: "Gallery Expiration Notice"
+    warning_1_day: "Your gallery \"%title%\" expires tomorrow!"
+    warning_few_days: "Your gallery \"%title%\" expires in %days% days."
+    warning_general: "Your gallery \"%title%\" expires in %days% days."
+    countdown_1_day: "1 DAY REMAINING"
+    countdown_days: "%days% DAYS REMAINING"
+    gallery_details: "Gallery Details"
+    extend_button: "Extend Gallery"
+    what_happens_title: "What happens when it expires?"
+    what_happens_desc: "When your gallery expires, the following actions are automatically performed:"
+    access_disabled: "Public access to the gallery is disabled"
+    codes_revoked: "All access codes are revoked"
+    admin_access: "You keep access from the administration panel"
+    reactivation_possible: "Reactivation is possible at any time"
+    actions_title: "Possible Actions"
+    action_extend: "Extend the gallery's lifetime"
+    action_remove_expiration: "Remove expiration completely"
+    action_let_expire: "Let it expire if no longer needed"
+
+  # Gallery expired
+  gallery_expired:
+    subject: "Gallery expired: %title%"
+    title: "Your Gallery Has Expired"
+    message: "Your gallery \"%title%\" has expired and has been automatically deactivated."
+    status: "GALLERY EXPIRED"
+    gallery_details: "Expired Gallery Details"
+    what_happened_title: "What happened?"
+    what_happened_desc: "Your gallery reached its expiration date and the following actions were automatically performed:"
+    access_disabled: "Public access has been disabled"
+    codes_revoked: "Access codes have been revoked"
+    visibility_changed: "Visibility has been changed to 'expired'"
+    data_preserved: "All your images are preserved"
+    reactivation_title: "Reactivation Available"
+    reactivation_desc: "You can reactivate your gallery at any time from the administration panel."
+    reactivate_button: "Reactivate Gallery"
+    reactivation_options_title: "Reactivation Options"
+    option_extend: "Set a new expiration duration"
+    option_remove_expiration: "Remove expiration (permanent gallery)"
+    option_new_access_code: "Set new access codes"
+    cleanup_warning_title: "Warning:"
+    cleanup_warning_desc: "Galleries expired for more than 90 days are automatically archived. Reactivate your gallery if you want to keep it."
+
+  # Welcome email
+  welcome:
+    subject: "Welcome to ZeTilt CMS"
+    title: "Welcome!"
+    message: "Your account has been successfully created."
+    intro: "We're excited to welcome you to ZeTilt CMS, your content management platform."
+    features_title: "Available features:"
+    feature_galleries: "Create and manage photo galleries"
+    feature_events: "Organize events and manage registrations"
+    feature_articles: "Publish articles and news"
+    feature_profile: "Manage your profile and information"
+    get_started_button: "Get Started"
+    support_title: "Need help?"
+    support_message: "Don't hesitate to contact the administrator if you have any questions."
+
+  # Password reset
+  password_reset:
+    subject: "Reset Your Password"
+    title: "Password Reset"
+
+  # Payment success
+  payment_success:
+    subject: "Payment Confirmed - %amount%"
+    title: "Payment Successful"
+    confirmation: "Your payment has been processed successfully"
+    details_title: "Transaction Details"
+    next_steps: "You will receive confirmation of your order or registration shortly."
+    receipt_note: "Keep this email as a receipt for your transaction."
+
+  # Event registration
+  event_registration:
+    subject: "Registration Confirmed - %event_title%"
+    title: "Event Registration Confirmed"
+
+  # Footer
+  footer:
+    automated: "This is an automated message, please do not reply."
+    contact: "For any questions, contact the site administrator."

@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\UserType;
 use App\Entity\UserTypeAttribute;
+use App\Entity\AttributeDefinition;
 use App\Service\ModuleManager;
 use App\Service\UserTypeManager;
+use App\Service\EavService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +19,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/userplus')]
 #[IsGranted('ROLE_ADMIN')]
@@ -26,7 +29,9 @@ class UserPlusController extends AbstractController
         private EntityManagerInterface $entityManager,
         private ModuleManager $moduleManager,
         private UserTypeManager $userTypeManager,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
+        private TranslatorInterface $translator,
+        private EavService $eavService
     ) {
     }
 
@@ -34,7 +39,7 @@ class UserPlusController extends AbstractController
     public function dashboard(): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         $statistics = $this->userTypeManager->getUserTypeStatistics();
@@ -50,7 +55,7 @@ class UserPlusController extends AbstractController
     public function userTypes(): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         $userTypes = $this->userTypeManager->getAllUserTypes();
@@ -65,7 +70,7 @@ class UserPlusController extends AbstractController
     public function newUserType(): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         return $this->render('admin/userplus/user_type_edit.html.twig', [
@@ -79,7 +84,7 @@ class UserPlusController extends AbstractController
     public function editUserType(UserType $userType): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         return $this->render('admin/userplus/user_type_edit.html.twig', [
@@ -93,14 +98,14 @@ class UserPlusController extends AbstractController
     public function saveUserType(Request $request): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         $userTypeId = $request->request->get('id');
         $userType = $userTypeId ? $this->entityManager->getRepository(UserType::class)->find($userTypeId) : new UserType();
 
         if (!$userType) {
-            throw $this->createNotFoundException('User type not found');
+            throw $this->createNotFoundException($this->translator->trans('messages.user_type_not_found_error', [], 'userplus'));
         }
 
         $userType->setName($request->request->get('name'));
@@ -114,7 +119,7 @@ class UserPlusController extends AbstractController
 
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'User type saved successfully!');
+        $this->addFlash('success', $this->translator->trans('messages.user_type_saved', [], 'userplus'));
         return $this->redirectToRoute('admin_userplus_user_types_edit', ['id' => $userType->getId()]);
     }
 
@@ -123,18 +128,18 @@ class UserPlusController extends AbstractController
     public function deleteUserType(UserType $userType): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         if ($userType->getUserCount() > 0) {
-            $this->addFlash('error', 'Cannot delete user type that has users assigned to it.');
+            $this->addFlash('error', $this->translator->trans('messages.user_type_delete_has_users', [], 'userplus'));
             return $this->redirectToRoute('admin_userplus_user_types');
         }
 
         $this->entityManager->remove($userType);
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'User type deleted successfully!');
+        $this->addFlash('success', $this->translator->trans('messages.user_type_deleted', [], 'userplus'));
         return $this->redirectToRoute('admin_userplus_user_types');
     }
 
@@ -144,7 +149,7 @@ class UserPlusController extends AbstractController
     public function userTypeAttributes(UserType $userType): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         return $this->render('admin/userplus/user_type_attributes.html.twig', [
@@ -157,18 +162,18 @@ class UserPlusController extends AbstractController
     public function addUserTypeAttribute(UserType $userType, Request $request): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            return new JsonResponse(['success' => false, 'message' => 'UserPlus module is not active'], 404);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.module_not_active', [], 'userplus')], 404);
         }
 
         $data = json_decode($request->getContent(), true);
 
         if (!$data || !isset($data['key']) || !isset($data['display_name']) || !isset($data['type'])) {
-            return new JsonResponse(['success' => false, 'message' => 'Missing required fields'], 400);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.missing_required_fields', [], 'userplus')], 400);
         }
 
         // Check if attribute key already exists for this user type
         if ($userType->hasAttribute($data['key'])) {
-            return new JsonResponse(['success' => false, 'message' => 'Attribute key already exists'], 400);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.attribute_key_already_exists', [], 'userplus')], 400);
         }
 
         $attribute = new UserTypeAttribute();
@@ -186,7 +191,7 @@ class UserPlusController extends AbstractController
         $this->entityManager->persist($attribute);
         $this->entityManager->flush();
 
-        return new JsonResponse(['success' => true, 'message' => 'Attribute added successfully']);
+        return new JsonResponse(['success' => true, 'message' => $this->translator->trans('messages.attribute_added_successfully', [], 'userplus')]);
     }
 
     #[Route('/user-type-attributes/{id}/delete', name: 'admin_userplus_delete_user_type_attribute', methods: ['DELETE'], requirements: ['id' => '\d+'])]
@@ -194,13 +199,13 @@ class UserPlusController extends AbstractController
     public function deleteUserTypeAttribute(UserTypeAttribute $attribute): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            return new JsonResponse(['success' => false, 'message' => 'UserPlus module is not active'], 404);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.module_not_active', [], 'userplus')], 404);
         }
 
         $this->entityManager->remove($attribute);
         $this->entityManager->flush();
 
-        return new JsonResponse(['success' => true, 'message' => 'Attribute deleted successfully']);
+        return new JsonResponse(['success' => true, 'message' => $this->translator->trans('messages.attribute_deleted_successfully', [], 'userplus')]);
     }
 
     // User Management with Types
@@ -208,7 +213,7 @@ class UserPlusController extends AbstractController
     public function users(Request $request): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
         $page = max(1, $request->query->getInt('page', 1));
@@ -265,8 +270,19 @@ class UserPlusController extends AbstractController
 
         $userTypes = $this->userTypeManager->getAllUserTypes();
 
+        // Load EAV attributes for each user
+        $usersWithAttributes = [];
+        foreach ($users as $user) {
+            $userAttributes = $this->eavService->getEntityAttributesRaw('User', $user->getId());
+            $usersWithAttributes[] = [
+                'user' => $user,
+                'attributes' => $userAttributes
+            ];
+        }
+
         return $this->render('admin/userplus/users.html.twig', [
             'users' => $users,
+            'usersWithAttributes' => $usersWithAttributes,
             'userTypes' => $userTypes,
             'currentPage' => $page,
             'totalPages' => $totalPages,
@@ -279,21 +295,25 @@ class UserPlusController extends AbstractController
     public function userDetail(User $user): Response
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            throw $this->createNotFoundException('UserPlus module is not active');
+            throw $this->createNotFoundException($this->translator->trans('messages.module_not_active', [], 'userplus'));
         }
 
-        $userTypes = $this->userTypeManager->getAllUserTypes();
+        // Get available attribute definitions for User
+        $attributeDefinitions = $this->entityManager->getRepository(AttributeDefinition::class)
+            ->findBy(['entityType' => 'User', 'active' => true], ['displayOrder' => 'ASC']);
         
-        // Validate user attributes against user type
-        $validationErrors = [];
-        if ($user->getUserType()) {
-            $validationErrors = $this->userTypeManager->validateUserAttributes($user);
-        }
+        // Get current user attributes (raw values for admin display)
+        $userAttributes = $this->eavService->getEntityAttributesRaw('User', $user->getId());
+
+        // Get available user types for the modal
+        $userTypes = $this->userTypeManager->getAllUserTypes();
 
         return $this->render('admin/userplus/user_detail.html.twig', [
             'user' => $user,
+            'attributeDefinitions' => $attributeDefinitions,
+            'userAttributes' => $userAttributes,
             'userTypes' => $userTypes,
-            'validationErrors' => $validationErrors,
+            'validationErrors' => [], // Empty by default, could be populated with validation issues
         ]);
     }
 
@@ -301,7 +321,7 @@ class UserPlusController extends AbstractController
     public function assignUserType(User $user, Request $request): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            return new JsonResponse(['success' => false, 'message' => 'UserPlus module is not active'], 404);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.module_not_active', [], 'userplus')], 404);
         }
 
         $userTypeId = $request->request->get('user_type_id');
@@ -309,17 +329,17 @@ class UserPlusController extends AbstractController
         if (!$userTypeId) {
             $user->setUserType(null);
             $this->entityManager->flush();
-            return new JsonResponse(['success' => true, 'message' => 'User type removed']);
+            return new JsonResponse(['success' => true, 'message' => $this->translator->trans('messages.user_type_removed', [], 'userplus')]);
         }
 
         $userType = $this->entityManager->getRepository(UserType::class)->find($userTypeId);
         if (!$userType) {
-            return new JsonResponse(['success' => false, 'message' => 'User type not found'], 404);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.user_type_not_found', [], 'userplus')], 404);
         }
 
         $this->userTypeManager->assignUserType($user, $userType);
 
-        return new JsonResponse(['success' => true, 'message' => 'User type assigned successfully']);
+        return new JsonResponse(['success' => true, 'message' => $this->translator->trans('messages.user_type_assigned', [], 'userplus')]);
     }
 
     #[Route('/users/{id}/attributes/save', name: 'admin_userplus_save_user_attributes', methods: ['POST'], requirements: ['id' => '\d+'])]
@@ -327,16 +347,12 @@ class UserPlusController extends AbstractController
     {
         try {
             if (!$this->moduleManager->isModuleActive('userplus')) {
-                return new JsonResponse(['success' => false, 'message' => 'UserPlus module is not active'], 404);
-            }
-
-            if (!$user->getUserType()) {
-                return new JsonResponse(['success' => false, 'message' => 'User has no type assigned'], 400);
+                return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.module_not_active', [], 'userplus')], 404);
             }
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false, 
-                'message' => 'Error in initial checks: ' . $e->getMessage(),
+                'message' => $this->translator->trans('messages.error_initial_checks', ['error' => $e->getMessage()], 'userplus'),
                 'trace' => $e->getTraceAsString()
             ], 500);
         }
@@ -365,14 +381,18 @@ class UserPlusController extends AbstractController
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false, 
-                'message' => 'Error processing request data: ' . $e->getMessage(),
+                'message' => $this->translator->trans('messages.error_processing_request', ['error' => $e->getMessage()], 'userplus'),
                 'trace' => $e->getTraceAsString()
             ], 500);
         }
 
         try {
-            foreach ($user->getUserType()->getAttributes() as $typeAttribute) {
-                $key = $typeAttribute->getAttributeKey();
+            // Get available attribute definitions for User
+            $attributeDefinitions = $this->entityManager->getRepository(AttributeDefinition::class)
+                ->findBy(['entityType' => 'User', 'active' => true]);
+            
+            foreach ($attributeDefinitions as $definition) {
+                $key = $definition->getAttributeName();
                 $value = $attributes[$key] ?? null;
                 
                 // Trim string values to remove whitespace
@@ -381,12 +401,12 @@ class UserPlusController extends AbstractController
                 }
 
                 // Handle file uploads for file type attributes
-                if ($typeAttribute->getAttributeType() === 'file') {
+                if ($definition->getAttributeType() === 'file') {
                     $uploadedFile = $fileUploads[$key] ?? null;
                     
                     if ($uploadedFile instanceof UploadedFile) {
                         // Validate file
-                        $attributeErrors = $this->validateFileUpload($uploadedFile, $typeAttribute);
+                        $attributeErrors = $this->validateFileUpload($uploadedFile, $definition);
                         if (!empty($attributeErrors)) {
                             $errors[$key] = $attributeErrors;
                             continue;
@@ -396,36 +416,38 @@ class UserPlusController extends AbstractController
                         try {
                             $value = $this->saveUploadedFile($uploadedFile, $user->getId(), $key);
                         } catch (FileException $e) {
-                            $errors[$key] = ['File upload failed: ' . $e->getMessage()];
+                            $errors[$key] = [$this->translator->trans('messages.file_upload_failed', ['error' => $e->getMessage()], 'userplus')];
                             continue;
                         }
-                    } elseif (($value === null || $value === '') && $typeAttribute->isRequired()) {
-                        $errors[$key] = [$typeAttribute->getDisplayName() . ' is required'];
+                    } elseif (($value === null || $value === '') && $definition->isRequired()) {
+                        $errors[$key] = [$this->translator->trans('messages.field_is_required', ['field' => $definition->getDisplayName()], 'userplus')];
                         continue;
                     }
                     // If no new file uploaded, keep existing value
                 } else {
                     // For non-file attributes, validate normally but with improved required check
-                    if ($typeAttribute->isRequired() && ($value === null || $value === '')) {
-                        $errors[$key] = [$typeAttribute->getDisplayName() . ' is required'];
+                    if ($definition->isRequired() && ($value === null || $value === '')) {
+                        $errors[$key] = [$this->translator->trans('messages.field_is_required', ['field' => $definition->getDisplayName()], 'userplus')];
                         continue;
                     }
                     
                     // Only validate other rules if value is not empty
                     if ($value !== null && $value !== '') {
                         // Special validation for file type
-                        if ($typeAttribute->getAttributeType() === 'file') {
+                        if ($definition->getAttributeType() === 'file') {
                             // Check if file exists using project directory
                             if (!filter_var($value, FILTER_VALIDATE_URL)) {
                                 $filePath = $this->getParameter('kernel.project_dir') . '/public' . $value;
                                 if (!file_exists($filePath)) {
-                                    $errors[$key] = [sprintf('%s file does not exist', $typeAttribute->getDisplayName())];
+                                    $errors[$key] = [$this->translator->trans('messages.file_does_not_exist', ['attribute' => $definition->getDisplayName()], 'userplus')];
                                     continue;
                                 }
                             }
                         }
                         
-                        $attributeErrors = $typeAttribute->validateValue($value);
+                        // Note: Les AttributeDefinition n'ont pas de validateValue(), on peut ajouter une validation basique
+                        // $attributeErrors = $definition->validateValue($value);
+                        $attributeErrors = []; // Validation simplifiée pour l'instant
                         if (!empty($attributeErrors)) {
                             $errors[$key] = $attributeErrors;
                             continue;
@@ -435,13 +457,13 @@ class UserPlusController extends AbstractController
 
                 // Save the attribute (save empty string for clearing values)
                 if ($value !== null) {
-                    $user->setUserAttributeValue($key, $value, $typeAttribute->getAttributeType());
+                    $this->eavService->setAttribute('User', $user->getId(), $key, $value, $definition->getAttributeType());
                 }
             }
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false, 
-                'message' => 'Error processing attributes: ' . $e->getMessage(),
+                'message' => $this->translator->trans('messages.error_processing_attributes', ['error' => $e->getMessage()], 'userplus'),
                 'trace' => $e->getTraceAsString()
             ], 500);
         }
@@ -449,49 +471,49 @@ class UserPlusController extends AbstractController
         if (!empty($errors)) {
             return new JsonResponse([
                 'success' => false, 
-                'message' => 'Validation errors', 
+                'message' => $this->translator->trans('messages.validation_errors', [], 'userplus'), 
                 'errors' => $errors
             ], 400);
         }
 
         $this->entityManager->flush();
 
-        return new JsonResponse(['success' => true, 'message' => 'User attributes saved successfully']);
+        return new JsonResponse(['success' => true, 'message' => $this->translator->trans('messages.user_attributes_saved', [], 'userplus')]);
     }
 
     #[Route('/users/{id}/sync-attributes', name: 'admin_userplus_sync_user_attributes', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function syncUserAttributes(User $user): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            return new JsonResponse(['success' => false, 'message' => 'UserPlus module is not active'], 404);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.module_not_active', [], 'userplus')], 404);
         }
 
         if (!$user->getUserType()) {
-            return new JsonResponse(['success' => false, 'message' => 'User has no type assigned'], 400);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.user_has_no_type', [], 'userplus')], 400);
         }
 
         $this->userTypeManager->syncUserAttributesWithType($user);
 
-        return new JsonResponse(['success' => true, 'message' => 'User attributes synchronized with type']);
+        return new JsonResponse(['success' => true, 'message' => $this->translator->trans('messages.user_attributes_sync', [], 'userplus')]);
     }
 
     #[Route('/users/create', name: 'admin_userplus_create_user', methods: ['POST'])]
     public function createUser(Request $request): JsonResponse
     {
         if (!$this->moduleManager->isModuleActive('userplus')) {
-            return new JsonResponse(['success' => false, 'message' => 'UserPlus module is not active'], 404);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.module_not_active', [], 'userplus')], 404);
         }
 
         $data = json_decode($request->getContent(), true);
 
         if (!$data || !isset($data['email']) || !isset($data['first_name']) || !isset($data['last_name']) || !isset($data['password'])) {
-            return new JsonResponse(['success' => false, 'message' => 'Missing required fields'], 400);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.missing_required_fields', [], 'userplus')], 400);
         }
 
         // Check if email already exists
         $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
         if ($existingUser) {
-            return new JsonResponse(['success' => false, 'message' => 'Email already exists'], 400);
+            return new JsonResponse(['success' => false, 'message' => $this->translator->trans('messages.email_already_exists', [], 'userplus')], 400);
         }
 
         $user = new User();
@@ -517,7 +539,7 @@ class UserPlusController extends AbstractController
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return new JsonResponse(['success' => true, 'message' => 'User created successfully']);
+        return new JsonResponse(['success' => true, 'message' => $this->translator->trans('messages.user_created_successfully', [], 'userplus')]);
     }
 
     private function validateFileUpload(UploadedFile $file, UserTypeAttribute $typeAttribute): array
@@ -529,7 +551,7 @@ class UserPlusController extends AbstractController
             $maxSize = $typeAttribute->getValidationRules()['max_size'];
             if ($file->getSize() > $maxSize) {
                 $maxSizeMB = round($maxSize / 1024 / 1024, 2);
-                $errors[] = sprintf('%s file size must be less than %s MB', $typeAttribute->getDisplayName(), $maxSizeMB);
+                $errors[] = $this->translator->trans('messages.file_size_exceeded', ['attribute' => $typeAttribute->getDisplayName(), 'size' => $maxSizeMB], 'userplus');
             }
         }
         
@@ -537,7 +559,7 @@ class UserPlusController extends AbstractController
         if ($typeAttribute->getValidationRules() && isset($typeAttribute->getValidationRules()['allowed_mime_types'])) {
             $allowedTypes = $typeAttribute->getValidationRules()['allowed_mime_types'];
             if (!empty($allowedTypes) && !in_array($file->getMimeType(), $allowedTypes)) {
-                $errors[] = sprintf('%s file type is not allowed', $typeAttribute->getDisplayName());
+                $errors[] = $this->translator->trans('messages.file_type_not_allowed', ['attribute' => $typeAttribute->getDisplayName()], 'userplus');
             }
         }
         

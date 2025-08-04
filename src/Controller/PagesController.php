@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Twig\Environment;
 
 #[Route('/admin/pages')]
 #[IsGranted('ROLE_ADMIN')]
@@ -18,7 +19,8 @@ class PagesController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private PageTemplateService $templateService
+        private PageTemplateService $templateService,
+        private Environment $twig
     ) {
     }
 
@@ -97,7 +99,15 @@ class PagesController extends AbstractController
                 'is_preview' => true,
             ]);
         } else {
-            return $this->render('public/page/show.html.twig', [
+            // Utiliser le template spécifique de la page si défini et s'il existe
+            $specificTemplate = $page->getTemplatePath();
+            $template = 'public/page/show.html.twig'; // template par défaut
+            
+            if ($specificTemplate && $this->twig->getLoader()->exists($specificTemplate)) {
+                $template = $specificTemplate;
+            }
+            
+            return $this->render($template, [
                 'page' => $page,
                 'is_preview' => true,
             ]);
@@ -135,12 +145,8 @@ class PagesController extends AbstractController
         $page->setMetaTitle($request->request->get('meta_title'));
         $page->setMetaDescription($request->request->get('meta_description'));
         
-        // Generate slug if new or if title changed
-        if ($isNew || $request->request->get('generate_slug')) {
-            $page->generateSlug();
-        } else {
-            $page->setSlug($request->request->get('slug'));
-        }
+        // Always generate slug from title
+        $page->generateSlug();
 
         // Handle template path
         if ($isNew) {

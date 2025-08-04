@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test du Système de Rôles{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Test du Système de Rôles Hiérarchiques</h1>
+    
+    <!-- Messages flash -->
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="mb-4 p-4 rounded {{ type == 'success' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
+    <!-- Utilisateur actuel -->
+    {% if current_user %}
+        <div class="mb-8 p-4 bg-blue-50 rounded">
+            <h2 class="text-xl font-semibold mb-2">Utilisateur connecté</h2>
+            <p><strong>{{ current_user.fullName }}</strong> ({{ current_user.email }})</p>
+            <div class="mt-2">
+                <span class="text-sm font-medium">Rôles Symfony:</span>
+                {% for role in current_user.roles %}
+                    <span class="inline-block px-2 py-1 text-xs bg-gray-200 rounded mr-1">{{ role }}</span>
+                {% endfor %}
+            </div>
+            {% if current_user.userRoles is not empty %}
+                <div class="mt-2">
+                    <span class="text-sm font-medium">Rôles hiérarchiques:</span>
+                    {% for userRole in current_user.userRoles %}
+                        {% if userRole.active %}
+                            <span class="inline-block px-2 py-1 text-xs rounded mr-1 {{ userRole.role.badgeColor }}">
+                                {{ userRole.role.displayName }}
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% set highestRole = current_user.highestRole %}
+                {% if highestRole %}
+                    <div class="mt-2">
+                        <span class="text-sm font-medium">Rôle le plus élevé:</span>
+                        <span class="inline-block px-2 py-1 text-xs rounded {{ highestRole.badgeColor }}">
+                            {{ highestRole.displayName }} (niveau {{ highestRole.hierarchy }})
+                        </span>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <!-- Rôles disponibles -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Rôles Disponibles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for role in roles %}
+                <div class="border rounded p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="px-3 py-1 text-sm rounded {{ role.badgeColor }}">
+                            {{ role.displayName }}
+                        </span>
+                        <span class="text-sm text-gray-500">Niveau {{ role.hierarchy }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">{{ role.description }}</p>
+                    <div class="text-xs">
+                        <strong>{{ 'common.messages.permissions'|trans({}, 'admin') }}:</strong>
+                        {% for permission in role.permissions %}
+                            <span class="inline-block px-1 py-0.5 bg-gray-100 rounded mr-1">{{ permission }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Utilisateurs et leurs rôles -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Utilisateurs et Attribution de Rôles</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="border border-gray-300 px-4 py-2 text-left">Utilisateur</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Rôles Actuels</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Niveau Max</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td class="border border-gray-300 px-4 py-2">
+                                <strong>{{ user.fullName }}</strong><br>
+                                <small class="text-gray-500">{{ user.email }}</small>
+                            </td>
+                            <td class="border border-gray-300 px-4 py-2">
+                                {% if user.userRoles is not empty %}
+                                    {% for userRole in user.userRoles %}
+                                        {% if userRole.active %}
+                                            <span class="inline-block px-2 py-1 text-xs rounded mr-1 mb-1 {{ userRole.role.badgeColor }}">
+                                                {{ userRole.role.displayName }}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-gray-400 text-sm">Aucun rôle hiérarchique</span>
+                                {% endif %}
+                            </td>
+                            <td class="border border-gray-300 px-4 py-2">
+                                {% set highestRole = user.highestRole %}
+                                {% if highestRole %}
+                                    <span class="px-2 py-1 text-xs rounded {{ highestRole.badgeColor }}">
+                                        Niveau {{ highestRole.hierarchy }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-gray-400 text-sm">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="border border-gray-300 px-4 py-2">
+                                <div class="flex flex-wrap gap-1">
+                                    {% for role in roles %}
+                                        {% set hasRole = false %}
+                                        {% for userRole in user.userRoles %}
+                                            {% if userRole.active and userRole.role.id == role.id %}
+                                                {% set hasRole = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if not hasRole %}
+                                            <a href="{{ path('test_assign_role', {userId: user.id, roleId: role.id}) }}" 
+                                               class="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                                + {{ role.displayName }}
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Tests de permissions -->
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Tests de Permissions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border rounded p-4">
+                <h3 class="font-semibold mb-2">Tests is_granted()</h3>
+                <ul class="text-sm space-y-1">
+                    <li>ROLE_USER: <span class="{{ is_granted('ROLE_USER') ? 'text-green-600' : 'text-red-600' }}">{{ is_granted('ROLE_USER') ? '✓' : '✗' }}</span></li>
+                    <li>ROLE_PLONGEUR: <span class="{{ is_granted('ROLE_PLONGEUR') ? 'text-green-600' : 'text-red-600' }}">{{ is_granted('ROLE_PLONGEUR') ? '✓' : '✗' }}</span></li>
+                    <li>ROLE_PILOTE: <span class="{{ is_granted('ROLE_PILOTE') ? 'text-green-600' : 'text-red-600' }}">{{ is_granted('ROLE_PILOTE') ? '✓' : '✗' }}</span></li>
+                    <li>ROLE_DIRECTEUR_PLONGEE: <span class="{{ is_granted('ROLE_DIRECTEUR_PLONGEE') ? 'text-green-600' : 'text-red-600' }}">{{ is_granted('ROLE_DIRECTEUR_PLONGEE') ? '✓' : '✗' }}</span></li>
+                    <li>ROLE_ADMIN: <span class="{{ is_granted('ROLE_ADMIN') ? 'text-green-600' : 'text-red-600' }}">{{ is_granted('ROLE_ADMIN') ? '✓' : '✗' }}</span></li>
+                    <li>ROLE_SUPER_ADMIN: <span class="{{ is_granted('ROLE_SUPER_ADMIN') ? 'text-green-600' : 'text-red-600' }}">{{ is_granted('ROLE_SUPER_ADMIN') ? '✓' : '✗' }}</span></li>
+                </ul>
+            </div>
+            
+            {% if current_user %}
+                <div class="border rounded p-4">
+                    <h3 class="font-semibold mb-2">Tests de Niveau Hiérarchique</h3>
+                    <ul class="text-sm space-y-1">
+                        <li>Niveau ≥ 20: <span class="{{ current_user.hasMinimumHierarchyLevel(20) ? 'text-green-600' : 'text-red-600' }}">{{ current_user.hasMinimumHierarchyLevel(20) ? '✓' : '✗' }}</span></li>
+                        <li>Niveau ≥ 40: <span class="{{ current_user.hasMinimumHierarchyLevel(40) ? 'text-green-600' : 'text-red-600' }}">{{ current_user.hasMinimumHierarchyLevel(40) ? '✓' : '✗' }}</span></li>
+                        <li>Niveau ≥ 60: <span class="{{ current_user.hasMinimumHierarchyLevel(60) ? 'text-green-600' : 'text-red-600' }}">{{ current_user.hasMinimumHierarchyLevel(60) ? '✓' : '✗' }}</span></li>
+                        <li>Niveau ≥ 80: <span class="{{ current_user.hasMinimumHierarchyLevel(80) ? 'text-green-600' : 'text-red-600' }}">{{ current_user.hasMinimumHierarchyLevel(80) ? '✓' : '✗' }}</span></li>
+                        <li>Niveau ≥ 100: <span class="{{ current_user.hasMinimumHierarchyLevel(100) ? 'text-green-600' : 'text-red-600' }}">{{ current_user.hasMinimumHierarchyLevel(100) ? '✓' : '✗' }}</span></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

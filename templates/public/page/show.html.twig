@@ -32,7 +32,13 @@
         </header>
         
         <div class="prose max-w-none">
-            {{ page.content|raw }}
+            {% block page_content %}
+                {% if page.excerpt %}
+                    {{ page.excerpt|raw }}
+                {% else %}
+                    <p class="text-gray-600">Ce template n'a pas de contenu défini. Le développeur doit créer un template spécifique ou ajouter du contenu.</p>
+                {% endif %}
+            {% endblock %}
         </div>
         
         {% if page.tags %}

@@ -1,11 +1,22 @@
 # Security/System Module - English
+title: "Login - ZeTilt CMS"
+app_title: "ZeTilt CMS"
+subtitle: "Sign in to your account"
+
 login:
   title: "Login"
+  subtitle: "Sign in to your account"
   email: "Email address"
+  email_placeholder: "Email address"
   password: "Password"
+  password_placeholder: "Password"
   remember_me: "Remember me"
   submit: "Login"
+  sign_in: "Sign in"
   forgot_password: "Forgot password?"
+  default_credentials: "Default: admin@zetilt.cms / admin123"
+  no_account: "Don't have an account?"
+  create_account: "Create account"
   
 logout:
   title: "Logout"

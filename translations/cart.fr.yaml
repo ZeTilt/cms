@@ -1,0 +1,85 @@
+# Module Cart - Français
+title: "Panier"
+subtitle: "Gérez vos achats et accès"
+
+# Panier vide
+empty:
+  title: "Votre panier est vide"
+  message: "Commencez par parcourir nos galeries et événements"
+  browse_galleries: "Parcourir les galeries"
+
+# Éléments du panier
+item:
+  gallery_access: "Accès à la galerie"
+  event_registration: "Inscription à l'événement"
+
+# Métadonnées
+metadata:
+  event_date: "Date de l'événement"
+
+# Actions
+quantity: "Quantité"
+remove: "Supprimer"
+total: "Total"
+total_items: "%count% élément(s)"
+continue_shopping: "Continuer mes achats"
+checkout_button: "Finaliser la commande"
+clear_cart: "Vider le panier"
+
+# Confirmations
+confirm_remove: "Êtes-vous sûr de vouloir supprimer cet élément ?"
+confirm_clear: "Êtes-vous sûr de vouloir vider entièrement le panier ?"
+
+# Checkout
+checkout:
+  title: "Finaliser la commande"
+  breadcrumb:
+    cart: "Panier"
+    checkout: "Commande"
+  
+  # Informations de contact
+  contact_info: "Informations de contact"
+  first_name: "Prénom"
+  last_name: "Nom de famille"
+  email: "Adresse email"
+  
+  # Adresse
+  billing_address: "Adresse de facturation"
+  address: "Adresse"
+  city: "Ville"
+  postal_code: "Code postal"
+  country: "Pays"
+  
+  # Notes
+  special_notes: "Notes spéciales"
+  notes_label: "Commentaires (optionnel)"
+  notes_placeholder: "Ajoutez des commentaires ou instructions spéciales..."
+  
+  # Résumé
+  order_summary: "Résumé de la commande"
+  items_in_cart: "Éléments dans le panier"
+  quantity: "Quantité"
+  subtotal: "Sous-total"
+  taxes: "Taxes"
+  total: "Total"
+  
+  # Paiement
+  proceed_to_payment: "Procéder au paiement"
+  confirm_free_order: "Confirmer la commande gratuite"
+  payment_notice: "Vous serez redirigé vers notre plateforme de paiement sécurisée"
+  free_order_notice: "Cette commande ne nécessite aucun paiement"
+
+# Messages
+messages:
+  added_to_cart: "Élément ajouté au panier"
+  removed_from_cart: "Élément supprimé du panier"
+  cart_cleared: "Panier vidé"
+  order_created: "Commande créée avec succès"
+  payment_required: "Paiement requis pour finaliser la commande"
+  
+# Erreurs
+errors:
+  item_not_found: "Élément non trouvé"
+  access_denied: "Accès non autorisé"
+  cart_empty: "Le panier est vide"
+  invalid_quantity: "Quantité non valide"

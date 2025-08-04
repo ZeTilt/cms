@@ -1,0 +1,353 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Sécurité des Images{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">Sécurité des Images</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Sécurité des Images</h1>
+                <p class="mt-1 text-sm text-gray-500">Configuration du watermarking et de la protection anti-scrapping</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    🔒 Protection Active
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    
+    {% for message in app.flashes('success') %}
+        <div class="mb-6 bg-green-50 border-l-4 border-green-400 p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-green-700">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    
+    {% for message in app.flashes('error') %}
+        <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+        
+        <!-- Watermark Settings -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">⚡ Configuration du Watermarking</h2>
+                <p class="mt-1 text-sm text-gray-500">Ajout automatique de filigrane sur les images pour les utilisateurs non-propriétaires</p>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                
+                <!-- Enable Watermark -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="watermark_enabled" name="watermark_enabled" 
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                           {{ params['image.watermark.enabled'] ? 'checked' : '' }}>
+                    <label for="watermark_enabled" class="ml-3 block text-sm font-medium text-gray-700">
+                        Activer le watermarking automatique
+                    </label>
+                </div>
+                
+                <!-- Watermark Type -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Type de watermark</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <input type="radio" id="watermark_type_text" name="watermark_type" value="text"
+                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                                   {{ params['image.watermark.type'] == 'text' or params['image.watermark.type'] is empty ? 'checked' : '' }}>
+                            <label for="watermark_type_text" class="ml-3 block text-sm text-gray-700">
+                                📝 Texte dynamique
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="watermark_type_image" name="watermark_type" value="image"
+                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                                   {{ params['image.watermark.type'] == 'image' ? 'checked' : '' }}>
+                            <label for="watermark_type_image" class="ml-3 block text-sm text-gray-700">
+                                🖼️ Logo/Image PNG
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watermark Template -->
+                <div>
+                    <label for="watermark_template" class="block text-sm font-medium text-gray-700 mb-2">
+                        Template du filigrane
+                    </label>
+                    <input type="text" id="watermark_template" name="watermark_template" 
+                           value="{{ params['image.watermark.template'] | default('{gallery_title} - {owner_name}') }}"
+                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Variables disponibles : <code>{gallery_title}</code>, <code>{owner_name}</code>
+                    </p>
+                    <div class="mt-2 p-3 bg-gray-50 rounded-md">
+                        <p class="text-xs text-gray-600">
+                            <strong>Exemple :</strong> Pour une galerie "Plongée Lavandou 2024" du propriétaire "Jean Dupont", 
+                            le template <code>{gallery_title} - {owner_name}</code> donnera : 
+                            <em>"Plongée Lavandou 2024 - Jean Dupont"</em>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Image Watermark Settings -->
+                <div id="image_watermark_settings" class="space-y-4" style="{{ params['image.watermark.type'] != 'image' ? 'display: none;' : '' }}">
+                    
+                    <!-- File Upload -->
+                    <div>
+                        <label for="watermark_file" class="block text-sm font-medium text-gray-700 mb-2">
+                            📁 Nouveau fichier watermark (PNG)
+                        </label>
+                        <input type="file" id="watermark_file" name="watermark_file" accept=".png"
+                               class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Sélectionnez un fichier PNG avec transparence. Le fichier actuel sera remplacé.
+                        </p>
+                    </div>
+                    
+                    <!-- Current Image Path (read-only) -->
+                    <div>
+                        <label for="watermark_image_path" class="block text-sm font-medium text-gray-700 mb-2">
+                            📍 Fichier actuel
+                        </label>
+                        <input type="text" id="watermark_image_path" name="watermark_image_path" 
+                               value="{{ params['image.watermark.image_path'] | default('public/assets/watermark.png') }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500"
+                               readonly>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Chemin du fichier watermark actuellement utilisé.
+                        </p>
+                    </div>
+                    
+                    <!-- Position -->
+                    <div>
+                        <label for="watermark_position" class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                        <select id="watermark_position" name="watermark_position" 
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="top-left" {{ params['image.watermark.position'] == 'top-left' ? 'selected' : '' }}>Haut à gauche</option>
+                            <option value="top-right" {{ params['image.watermark.position'] == 'top-right' ? 'selected' : '' }}>Haut à droite</option>
+                            <option value="bottom-left" {{ params['image.watermark.position'] == 'bottom-left' ? 'selected' : '' }}>Bas à gauche</option>
+                            <option value="bottom-right" {{ params['image.watermark.position'] == 'bottom-right' or params['image.watermark.position'] is empty ? 'selected' : '' }}>Bas à droite</option>
+                            <option value="center" {{ params['image.watermark.position'] == 'center' ? 'selected' : '' }}>Centre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Opacity -->
+                        <div>
+                            <label for="watermark_opacity" class="block text-sm font-medium text-gray-700 mb-2">Opacité (%)</label>
+                            <input type="number" id="watermark_opacity" name="watermark_opacity" min="1" max="100"
+                                   value="{{ params['image.watermark.opacity'] | default(70) }}"
+                                   class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        
+                        <!-- Margin -->
+                        <div>
+                            <label for="watermark_margin" class="block text-sm font-medium text-gray-700 mb-2">Marge (px)</label>
+                            <input type="number" id="watermark_margin" name="watermark_margin" min="0" max="100"
+                                   value="{{ params['image.watermark.margin'] | default(20) }}"
+                                   class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        
+                        <!-- Scale -->
+                        <div>
+                            <label for="watermark_scale" class="block text-sm font-medium text-gray-700 mb-2">Taille (%)</label>
+                            <input type="number" id="watermark_scale" name="watermark_scale" min="10" max="200"
+                                   value="{{ params['image.watermark.scale'] | default(100) }}"
+                                   class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div class="bg-gray-50 rounded-md p-4">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Aperçu du watermark</p>
+                        {% set watermarkPath = params['image.watermark.image_path'] | default('public/assets/watermark.png') %}
+                        {% if watermarkPath starts with 'public/' %}
+                            {% set publicPath = watermarkPath | replace({'public/': ''}) %}
+                            <img src="{{ asset(publicPath) }}" alt="Watermark preview" class="max-h-20 border border-gray-200 rounded" 
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <p class="text-xs text-red-600 hidden">Image non trouvée. Vérifiez le chemin du fichier.</p>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Anti-Scrapping Settings -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">🛡️ Protection Anti-Scrapping</h2>
+                <p class="mt-1 text-sm text-gray-500">Blocage des bots et outils de téléchargement automatique</p>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                
+                <!-- Enable Anti-Scrapping -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="anti_scrapping_enabled" name="anti_scrapping_enabled" 
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                           {{ params['image.anti_scrapping.enabled'] ? 'checked' : '' }}>
+                    <label for="anti_scrapping_enabled" class="ml-3 block text-sm font-medium text-gray-700">
+                        Activer la protection anti-scrapping
+                    </label>
+                </div>
+                
+                <!-- Rate Limiting -->
+                <div>
+                    <label for="rate_limit" class="block text-sm font-medium text-gray-700 mb-2">
+                        Limite de requêtes par minute par IP
+                    </label>
+                    <input type="number" id="rate_limit" name="rate_limit" min="1" max="1000"
+                           value="{{ params['image.rate_limit.requests_per_minute'] | default(60) }}"
+                           class="block w-32 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <!-- Suspicious Agents -->
+                <div>
+                    <label for="suspicious_agents" class="block text-sm font-medium text-gray-700 mb-2">
+                        User Agents suspects (un par ligne)
+                    </label>
+                    <textarea id="suspicious_agents" name="suspicious_agents" rows="8"
+                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ params['image.anti_scrapping.suspicious_agents'] ? params['image.anti_scrapping.suspicious_agents']|join('\n') : "wget\ncurl\npython\nscrapy\nbot\ncrawler\nspider\nscraper\nharvest\nextract\ncollect" }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500">Ces user agents seront bloqués automatiquement</p>
+                </div>
+                
+                <!-- Allowed Agents -->
+                <div>
+                    <label for="allowed_agents" class="block text-sm font-medium text-gray-700 mb-2">
+                        User Agents autorisés (un par ligne)
+                    </label>
+                    <textarea id="allowed_agents" name="allowed_agents" rows="4"
+                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ params['image.anti_scrapping.allowed_agents'] ? params['image.anti_scrapping.allowed_agents']|join('\n') : "googlebot\nfacebook\ntwitter\nlinkedin" }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500">Ces user agents sont autorisés même s'ils contiennent des mots suspects (SEO, réseaux sociaux)</p>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Cache Settings -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">⚡ Configuration du Cache</h2>
+                <p class="mt-1 text-sm text-gray-500">Durée de mise en cache des images dans le navigateur</p>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Private Cache -->
+                    <div>
+                        <label for="private_cache" class="block text-sm font-medium text-gray-700 mb-2">
+                            Cache images privées (secondes)
+                        </label>
+                        <input type="number" id="private_cache" name="private_cache" min="0" max="86400"
+                               value="{{ params['image.cache.private_max_age'] | default(3600) }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">3600 = 1 heure</p>
+                    </div>
+                    
+                    <!-- Thumbnail Cache -->
+                    <div>
+                        <label for="thumbnail_cache" class="block text-sm font-medium text-gray-700 mb-2">
+                            Cache thumbnails (secondes)
+                        </label>
+                        <input type="number" id="thumbnail_cache" name="thumbnail_cache" min="0" max="86400"
+                               value="{{ params['image.cache.thumbnail_max_age'] | default(7200) }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">7200 = 2 heures</p>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end">
+            <button type="submit" class="bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                💾 Enregistrer la Configuration
+            </button>
+        </div>
+        
+    </form>
+    
+    <!-- Info Box -->
+    <div class="mt-8 bg-blue-50 border-l-4 border-blue-400 p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">Information importante</h3>
+                <div class="mt-2 text-sm text-blue-700">
+                    <p>Après avoir modifié cette configuration, vous devez <strong>redémarrer le serveur Symfony</strong> pour que les changements soient pris en compte :</p>
+                    <div class="mt-2 bg-blue-100 rounded p-2">
+                        <code class="text-xs">symfony server:stop && symfony server:start</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textRadio = document.getElementById('watermark_type_text');
+    const imageRadio = document.getElementById('watermark_type_image');
+    const imageSettings = document.getElementById('image_watermark_settings');
+    
+    function toggleWatermarkSettings() {
+        if (imageRadio.checked) {
+            imageSettings.style.display = 'block';
+        } else {
+            imageSettings.style.display = 'none';
+        }
+    }
+    
+    textRadio.addEventListener('change', toggleWatermarkSettings);
+    imageRadio.addEventListener('change', toggleWatermarkSettings);
+    
+    // Initial state
+    toggleWatermarkSettings();
+});
+</script>
+{% endblock %}

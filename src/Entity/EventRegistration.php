@@ -36,6 +36,15 @@ class EventRegistration
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(options: ['default' => 1])]
+    private int $numberOfSpots = 1;
+
+    #[ORM\Column(length: 20, options: ['default' => 'club'])]
+    private string $departureLocation = 'club'; // 'club' or 'dock'
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $registrationComment = null;
+
     public function __construct()
     {
         $this->registeredAt = new \DateTimeImmutable();
@@ -155,6 +164,48 @@ class EventRegistration
             'cancelled' => 'bg-red-100 text-red-800',
             'no_show' => 'bg-gray-100 text-gray-800',
             default => 'bg-gray-100 text-gray-800'
+        };
+    }
+
+    public function getNumberOfSpots(): int
+    {
+        return $this->numberOfSpots;
+    }
+
+    public function setNumberOfSpots(int $numberOfSpots): static
+    {
+        $this->numberOfSpots = max(1, $numberOfSpots); // Minimum 1 place
+        return $this;
+    }
+
+    public function getDepartureLocation(): string
+    {
+        return $this->departureLocation;
+    }
+
+    public function setDepartureLocation(string $departureLocation): static
+    {
+        $this->departureLocation = in_array($departureLocation, ['club', 'dock']) ? $departureLocation : 'club';
+        return $this;
+    }
+
+    public function getRegistrationComment(): ?string
+    {
+        return $this->registrationComment;
+    }
+
+    public function setRegistrationComment(?string $registrationComment): static
+    {
+        $this->registrationComment = $registrationComment;
+        return $this;
+    }
+
+    public function getDepartureLocationLabel(): string
+    {
+        return match($this->departureLocation) {
+            'club' => 'Départ du club',
+            'dock' => 'Départ au quai',
+            default => 'Non spécifié'
         };
     }
 }

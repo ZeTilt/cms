@@ -2,9 +2,9 @@
 
 {% block title %}
     {% if isEdit %}
-        Edit Service: {{ service.name }} - ZeTilt CMS
+        {{ 'edit.title'|trans({}, 'services') }}: {{ service.name }} - ZeTilt CMS
     {% else %}
-        New Service - ZeTilt CMS
+        {{ 'create.title'|trans({}, 'services') }} - ZeTilt CMS
     {% endif %}
 {% endblock %}
 
@@ -14,7 +14,7 @@
         <nav class="flex" aria-label="Breadcrumb">
             <ol role="list" class="flex items-center space-x-4">
                 <li>
-                    <a href="{{ path('admin_services_list') }}" class="text-gray-400 hover:text-gray-500">Services</a>
+                    <a href="{{ path('admin_services_list') }}" class="text-gray-400 hover:text-gray-500">{{ 'breadcrumb.services'|trans({}, 'services') }}</a>
                 </li>
                 <li>
                     <div class="flex items-center">
@@ -22,7 +22,7 @@
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
                         <span class="ml-4 text-sm font-medium text-gray-500">
-                            {% if isEdit %}Edit Service{% else %}New Service{% endif %}
+                            {% if isEdit %}{{ 'edit.title'|trans({}, 'services') }}{% else %}{{ 'create.title'|trans({}, 'services') }}{% endif %}
                         </span>
                     </div>
                 </li>
@@ -30,9 +30,9 @@
         </nav>
         <h1 class="mt-2 text-3xl font-bold text-gray-900">
             {% if isEdit %}
-                Edit Service: {{ service.name }}
+                {{ 'edit.title'|trans({}, 'services') }}: {{ service.name }}
             {% else %}
-                Create New Service
+                {{ 'create.title'|trans({}, 'services') }}
             {% endif %}
         </h1>
     </div>
@@ -45,11 +45,11 @@
         <!-- Basic Information -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Basic Information</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'form.basic_info'|trans({}, 'services') }}</h3>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Service Name</label>
+                    <label for="name" class="block text-sm font-medium text-gray-700">{{ 'fields.name'|trans({}, 'services') }}</label>
                     <input type="text" 
                            name="name" 
                            id="name" 
@@ -59,43 +59,43 @@
                 </div>
 
                 <div>
-                    <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
+                    <label for="slug" class="block text-sm font-medium text-gray-700">{{ 'fields.slug'|trans({}, 'services') }}</label>
                     <input type="text" 
                            name="slug" 
                            id="slug" 
                            value="{{ service.slug ?? '' }}"
                            required
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <p class="mt-2 text-sm text-gray-500">URL-friendly version of the service name</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.slug_help'|trans({}, 'services') }}</p>
                 </div>
 
                 <div>
-                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <label for="category" class="block text-sm font-medium text-gray-700">{{ 'fields.category'|trans({}, 'services') }}</label>
                     <input type="text" 
                            name="category" 
                            id="category" 
                            value="{{ service.category ?? '' }}"
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                            placeholder="e.g., Photography, Training, Consultation">
-                    <p class="mt-2 text-sm text-gray-500">Service category for organization and filtering</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.category_help'|trans({}, 'services') }}</p>
                 </div>
 
                 <div>
-                    <label for="short_description" class="block text-sm font-medium text-gray-700">Short Description</label>
+                    <label for="short_description" class="block text-sm font-medium text-gray-700">{{ 'fields.short_description'|trans({}, 'services') }}</label>
                     <textarea name="short_description" 
                               id="short_description" 
                               rows="3"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ service.shortDescription ?? '' }}</textarea>
-                    <p class="mt-2 text-sm text-gray-500">Brief summary for service cards and previews</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.short_description_help'|trans({}, 'services') }}</p>
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700">Full Description</label>
+                    <label for="description" class="block text-sm font-medium text-gray-700">{{ 'fields.description'|trans({}, 'services') }}</label>
                     <textarea name="description" 
                               id="description" 
                               rows="8"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ service.description ?? '' }}</textarea>
-                    <p class="mt-2 text-sm text-gray-500">Detailed description of the service</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.description_help'|trans({}, 'services') }}</p>
                 </div>
             </div>
         </div>
@@ -103,12 +103,12 @@
         <!-- Pricing -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Pricing & Duration</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'form.pricing_duration'|trans({}, 'services') }}</h3>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
                     <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                        <label for="price" class="block text-sm font-medium text-gray-700">{{ 'fields.price'|trans({}, 'services') }}</label>
                         <input type="number" 
                                name="price" 
                                id="price" 
@@ -116,11 +116,11 @@
                                step="0.01"
                                min="0"
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <p class="mt-2 text-sm text-gray-500">Leave empty for "Price on request"</p>
+                        <p class="mt-2 text-sm text-gray-500">{{ 'fields.price_help'|trans({}, 'services') }}</p>
                     </div>
 
                     <div>
-                        <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+                        <label for="currency" class="block text-sm font-medium text-gray-700">{{ 'fields.currency'|trans({}, 'services') }}</label>
                         <select name="currency" 
                                 id="currency" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -131,28 +131,28 @@
                     </div>
 
                     <div>
-                        <label for="pricing_type" class="block text-sm font-medium text-gray-700">Pricing Type</label>
+                        <label for="pricing_type" class="block text-sm font-medium text-gray-700">{{ 'fields.pricing_type'|trans({}, 'services') }}</label>
                         <select name="pricing_type" 
                                 id="pricing_type" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option value="fixed" {{ (service.pricingType ?? 'fixed') == 'fixed' ? 'selected' : '' }}>Fixed Price</option>
-                            <option value="per_hour" {{ (service.pricingType ?? '') == 'per_hour' ? 'selected' : '' }}>Per Hour</option>
-                            <option value="per_day" {{ (service.pricingType ?? '') == 'per_day' ? 'selected' : '' }}>Per Day</option>
-                            <option value="per_session" {{ (service.pricingType ?? '') == 'per_session' ? 'selected' : '' }}>Per Session</option>
-                            <option value="custom" {{ (service.pricingType ?? '') == 'custom' ? 'selected' : '' }}>Custom</option>
+                            <option value="fixed" {{ (service.pricingType ?? 'fixed') == 'fixed' ? 'selected' : '' }}>{{ 'pricing_type.fixed'|trans({}, 'services') }}</option>
+                            <option value="per_hour" {{ (service.pricingType ?? '') == 'per_hour' ? 'selected' : '' }}>{{ 'pricing_type.per_hour'|trans({}, 'services') }}</option>
+                            <option value="per_day" {{ (service.pricingType ?? '') == 'per_day' ? 'selected' : '' }}>{{ 'pricing_type.per_day'|trans({}, 'services') }}</option>
+                            <option value="per_session" {{ (service.pricingType ?? '') == 'per_session' ? 'selected' : '' }}>{{ 'pricing_type.per_session'|trans({}, 'services') }}</option>
+                            <option value="custom" {{ (service.pricingType ?? '') == 'custom' ? 'selected' : '' }}>{{ 'pricing_type.custom'|trans({}, 'services') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div>
-                    <label for="duration" class="block text-sm font-medium text-gray-700">Duration (minutes)</label>
+                    <label for="duration" class="block text-sm font-medium text-gray-700">{{ 'fields.duration'|trans({}, 'services') }}</label>
                     <input type="number" 
                            name="duration" 
                            id="duration" 
                            value="{{ service.duration ?? '' }}"
                            min="0"
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <p class="mt-2 text-sm text-gray-500">Typical duration of the service in minutes (optional)</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.duration_help'|trans({}, 'services') }}</p>
                 </div>
             </div>
         </div>
@@ -160,11 +160,11 @@
         <!-- Features -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Features & Benefits</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'form.features_benefits'|trans({}, 'services') }}</h3>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div>
-                    <label for="features" class="block text-sm font-medium text-gray-700">Features List</label>
+                    <label for="features" class="block text-sm font-medium text-gray-700">{{ 'fields.features'|trans({}, 'services') }}</label>
                     <textarea name="features" 
                               id="features" 
                               rows="6"
@@ -174,7 +174,7 @@ Professional consultation
 High-quality deliverables
 Follow-up support
 Satisfaction guaranteed">{{ service.features ? service.features|join("\n") : '' }}</textarea>
-                    <p class="mt-2 text-sm text-gray-500">Enter one feature per line. These will be displayed as bullet points.</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.features_help'|trans({}, 'services') }}</p>
                 </div>
             </div>
         </div>
@@ -182,30 +182,30 @@ Satisfaction guaranteed">{{ service.features ? service.features|join("\n") : '' 
         <!-- Settings -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Service Settings</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'form.service_settings'|trans({}, 'services') }}</h3>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <label for="status" class="block text-sm font-medium text-gray-700">{{ 'fields.status'|trans({}, 'services') }}</label>
                         <select name="status" 
                                 id="status" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option value="draft" {{ (service.status ?? 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="active" {{ (service.status ?? '') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ (service.status ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="draft" {{ (service.status ?? 'draft') == 'draft' ? 'selected' : '' }}>{{ 'status.draft'|trans({}, 'services') }}</option>
+                            <option value="active" {{ (service.status ?? '') == 'active' ? 'selected' : '' }}>{{ 'status.active'|trans({}, 'services') }}</option>
+                            <option value="inactive" {{ (service.status ?? '') == 'inactive' ? 'selected' : '' }}>{{ 'status.inactive'|trans({}, 'services') }}</option>
                         </select>
                     </div>
 
                     <div>
-                        <label for="display_order" class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <label for="display_order" class="block text-sm font-medium text-gray-700">{{ 'fields.display_order'|trans({}, 'services') }}</label>
                         <input type="number" 
                                name="display_order" 
                                id="display_order" 
                                value="{{ service.displayOrder ?? 0 }}"
                                min="0"
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <p class="mt-2 text-sm text-gray-500">Lower numbers appear first (0 = first)</p>
+                        <p class="mt-2 text-sm text-gray-500">{{ 'fields.display_order_help'|trans({}, 'services') }}</p>
                     </div>
                 </div>
 
@@ -217,9 +217,9 @@ Satisfaction guaranteed">{{ service.features ? service.features|join("\n") : '' 
                                {{ service.bookable ?? false ? 'checked' : '' }}
                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                         <label for="bookable" class="ml-2 block text-sm text-gray-900">
-                            Bookable Online
+                            {{ 'fields.bookable'|trans({}, 'services') }}
                         </label>
-                        <p class="ml-2 text-sm text-gray-500">Allow clients to book this service online</p>
+                        <p class="ml-2 text-sm text-gray-500">{{ 'fields.bookable_help'|trans({}, 'services') }}</p>
                     </div>
 
                     <div class="flex items-center">
@@ -229,9 +229,9 @@ Satisfaction guaranteed">{{ service.features ? service.features|join("\n") : '' 
                                {{ service.featured ?? false ? 'checked' : '' }}
                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                         <label for="featured" class="ml-2 block text-sm text-gray-900">
-                            Featured Service
+                            {{ 'fields.featured'|trans({}, 'services') }}
                         </label>
-                        <p class="ml-2 text-sm text-gray-500">Highlight this service on the website</p>
+                        <p class="ml-2 text-sm text-gray-500">{{ 'fields.featured_help'|trans({}, 'services') }}</p>
                     </div>
                 </div>
             </div>
@@ -241,11 +241,11 @@ Satisfaction guaranteed">{{ service.features ? service.features|join("\n") : '' 
         <div class="flex justify-end">
             <a href="{{ path('admin_services_list') }}" 
                class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Cancel
+                {{ 'actions.cancel'|trans({}, 'services') }}
             </a>
             <button type="submit" 
                     class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                {% if isEdit %}Update Service{% else %}Create Service{% endif %}
+                {% if isEdit %}{{ 'actions.update_service'|trans({}, 'services') }}{% else %}{{ 'actions.create_service'|trans({}, 'services') }}{% endif %}
             </button>
         </div>
     </form>
@@ -253,19 +253,19 @@ Satisfaction guaranteed">{{ service.features ? service.features|join("\n") : '' 
     {% if isEdit %}
         <div class="bg-white shadow rounded-lg mt-8">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-red-900">Danger Zone</h3>
+                <h3 class="text-lg font-medium text-red-900">{{ 'form.danger_zone'|trans({}, 'services') }}</h3>
             </div>
             <div class="px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h4 class="text-sm font-medium text-gray-900">Delete Service</h4>
-                        <p class="text-sm text-gray-500">This action cannot be undone.</p>
+                        <h4 class="text-sm font-medium text-gray-900">{{ 'actions.delete_service'|trans({}, 'services') }}</h4>
+                        <p class="text-sm text-gray-500">{{ 'form.delete_warning'|trans({}, 'services') }}</p>
                     </div>
                     <form method="post" action="{{ path('admin_services_delete', {id: service.id}) }}" 
                           onsubmit="return confirm('{{ 'actions.confirm_delete_service'|trans({}, 'services') }}');">
                         <button type="submit" 
                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
-                            Delete Service
+                            {{ 'actions.delete_service'|trans({}, 'services') }}
                         </button>
                     </form>
                 </div>

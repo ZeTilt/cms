@@ -240,11 +240,13 @@ class Image
 
     public function getUrl(): string
     {
-        return '/uploads/images/' . $this->filename;
+        // Legacy method - use secure URLs in templates instead
+        return '/uploads/galleries/' . $this->gallery->getId() . '/' . $this->filename;
     }
 
     public function getThumbnailUrl(): string
     {
+        // Legacy method - use secure URLs in templates instead
         $info = pathinfo($this->filename);
         $thumbnailName = $info['filename'] . '_thumb.' . $info['extension'];
         $thumbnailPath = '/uploads/thumbnails/' . $thumbnailName;
@@ -256,6 +258,14 @@ class Image
         }
         
         return $thumbnailPath;
+    }
+
+    /**
+     * Get the direct file path for internal use (not for web URLs)
+     */
+    public function getFilePath(): string
+    {
+        return '/uploads/galleries/' . $this->gallery->getId() . '/' . $this->filename;
     }
 
     public function getFormattedSize(): string

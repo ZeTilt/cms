@@ -135,7 +135,9 @@ actions:
 user_types:
   title: "Types d'Utilisateurs"
   subtitle: "Définissez les types d'utilisateurs et leurs attributs personnalisés"
+  new_type: "Nouveau Type"
   new_user_type: "Nouveau Type d'Utilisateur"
+  no_types: "Aucun type d'utilisateur"
   no_user_types: "Aucun type d'utilisateur"
   get_started_types: "Commencez par créer votre premier type d'utilisateur."
   users_count: "utilisateurs"
@@ -335,6 +337,38 @@ messages:
   certification_remove_error: "Erreur lors de la suppression de la certification"
   confirm_remove_certification: "Êtes-vous sûr de vouloir supprimer la"
   edit_functionality_todo: "La fonctionnalité de modification sera implémentée prochainement"
+  
+  # Messages du contrôleur UserPlusController
+  user_type_saved: "Type d'utilisateur enregistré avec succès !"
+  user_type_delete_has_users: "Impossible de supprimer un type d'utilisateur qui a des utilisateurs affectés."
+  user_type_deleted: "Type d'utilisateur supprimé avec succès !"
+  missing_required_fields: "Champs obligatoires manquants"
+  attribute_key_already_exists: "La clé d'attribut existe déjà"
+  attribute_added_successfully: "Attribut ajouté avec succès"
+  attribute_deleted_successfully: "Attribut supprimé avec succès"
+  user_type_removed: "Type d'utilisateur supprimé"
+  user_type_not_found: "Type d'utilisateur non trouvé"
+  user_type_assigned: "Type d'utilisateur affecté avec succès"
+  user_has_no_type: "L'utilisateur n'a aucun type affecté"
+  user_attributes_saved: "Attributs utilisateur enregistrés avec succès"
+  user_attributes_sync: "Attributs utilisateur synchronisés avec le type"
+  email_already_exists: "L'email existe déjà"
+  user_created_successfully: "Utilisateur créé avec succès"
+  
+  # Messages d'erreur
+  module_not_active: "Le module UserPlus n'est pas actif"
+  user_type_not_found_error: "Type d'utilisateur non trouvé"
+  validation_errors: "Erreurs de validation"
+  file_upload_failed: "Échec du téléchargement de fichier : {error}"
+  file_does_not_exist: "Le fichier {attribute} n'existe pas"
+  field_is_required: "{field} est requis"
+  
+  # Messages d'erreur détaillés
+  error_initial_checks: "Erreur lors des vérifications initiales : {error}"
+  error_processing_request: "Erreur lors du traitement des données de la requête : {error}"
+  error_processing_attributes: "Erreur lors du traitement des attributs : {error}"
+  file_size_exceeded: "La taille du fichier {attribute} doit être inférieure à {size} MB"
+  file_type_not_allowed: "Le type de fichier {attribute} n'est pas autorisé"
   
 # Valeurs booléennes
 boolean:

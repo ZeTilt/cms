@@ -1,0 +1,275 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Commande {{ order.orderNumber }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_shop_dashboard') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Boutique</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_shop_orders') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Commandes</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ order.orderNumber }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Commande {{ order.orderNumber }}</h1>
+                    <p class="text-sm text-gray-600">Passée le {{ order.createdAt|date('d/m/Y à H:i') }}</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full {{ order.statusColor }}">
+                    {{ order.statusLabel }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details -->
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Order Items -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Articles commandés</h3>
+                </div>
+                <div class="flow-root">
+                    <ul role="list" class="divide-y divide-gray-200">
+                        {% for item in order.orderItems %}
+                        <li class="px-4 py-6 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+                                        {% if item.itemType == 'gallery_access' %}
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        {% else %}
+                                            <span class="text-gray-400 font-medium">{{ item.itemType|slice(0, 2)|upper }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ item.itemName }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {% if item.itemType == 'gallery_access' %}
+                                                Accès à la galerie
+                                            {% else %}
+                                                {{ item.itemType|title }}
+                                            {% endif %}
+                                        </div>
+                                        {% if item.metadata %}
+                                            <div class="text-xs text-gray-400 mt-1">
+                                                {% for key, value in item.metadata %}
+                                                    {{ key }}: {{ value }}{% if not loop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ item.totalPrice|number_format(2, ',', ' ') }} €
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ item.quantity }} × {{ item.unitPrice|number_format(2, ',', ' ') }} €
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Sous-total</span>
+                            <span class="text-gray-900">{{ order.subtotalAmount|number_format(2, ',', ' ') }} {{ order.currency }}</span>
+                        </div>
+                        {% if order.taxAmount != '0.00' %}
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Taxes</span>
+                            <span class="text-gray-900">{{ order.taxAmount|number_format(2, ',', ' ') }} {{ order.currency }}</span>
+                        </div>
+                        {% endif %}
+                        {% if order.shippingAmount != '0.00' %}
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Frais de port</span>
+                            <span class="text-gray-900">{{ order.shippingAmount|number_format(2, ',', ' ') }} {{ order.currency }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="border-t border-gray-200 pt-2">
+                            <div class="flex justify-between text-base font-medium">
+                                <span class="text-gray-900">Total</span>
+                                <span class="text-gray-900">{{ order.totalAmount|number_format(2, ',', ' ') }} {{ order.currency }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Info & Customer -->
+        <div class="lg:col-span-1 space-y-6">
+            
+            <!-- Customer Info -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Client</h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Nom</dt>
+                            <dd class="text-sm text-gray-900">{{ order.customer.fullName }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Email</dt>
+                            <dd class="text-sm text-gray-900">{{ order.customer.email }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Payment Status -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Paiement</h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                            <dd class="text-sm">
+                                {% if order.isPaid %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        ✅ Payé
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        ❌ Non payé
+                                    </span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                        {% if not order.isPaid %}
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Montant restant</dt>
+                            <dd class="text-sm font-medium text-red-600">{{ order.remainingAmount|number_format(2, ',', ' ') }} {{ order.currency }}</dd>
+                        </div>
+                        {% endif %}
+                    </dl>
+                    
+                    {% if order.payments|length > 0 %}
+                    <div class="mt-4">
+                        <h4 class="text-sm font-medium text-gray-900 mb-2">Historique des paiements</h4>
+                        <div class="space-y-2">
+                            {% for payment in order.payments %}
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">{{ payment.createdAt|date('d/m/Y H:i') }}</span>
+                                <span class="font-medium {{ payment.status == 'completed' ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ payment.amount|number_format(2, ',', ' ') }} {{ payment.currency }}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Order Timeline -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Chronologie</h3>
+                </div>
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="flow-root">
+                        <ul role="list" class="-mb-8">
+                            <li>
+                                <div class="relative pb-8">
+                                    <div class="relative flex items-start space-x-3">
+                                        <div class="relative">
+                                            <div class="h-8 w-8 bg-gray-400 rounded-full flex items-center justify-center ring-8 ring-white">
+                                                <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div>
+                                                <div class="text-sm">
+                                                    <span class="font-medium text-gray-900">Commande créée</span>
+                                                </div>
+                                                <p class="mt-0.5 text-sm text-gray-500">{{ order.createdAt|date('d/m/Y à H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                            {% if order.confirmedAt %}
+                            <li>
+                                <div class="relative pb-8">
+                                    <div class="relative flex items-start space-x-3">
+                                        <div class="relative">
+                                            <div class="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center ring-8 ring-white">
+                                                <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div>
+                                                <div class="text-sm">
+                                                    <span class="font-medium text-gray-900">Commande confirmée</span>
+                                                </div>
+                                                <p class="mt-0.5 text-sm text-gray-500">{{ order.confirmedAt|date('d/m/Y à H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

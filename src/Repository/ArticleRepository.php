@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use App\Entity\User;
+use App\Service\EavService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,8 +13,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private EavService $eavService
+    ) {
         parent::__construct($registry, Article::class);
     }
 
@@ -139,15 +142,36 @@ class ArticleRepository extends ServiceEntityRepository
      */
     public function findPublishedByTag(string $tag, int $limit = null): array
     {
-        $qb = $this->createQueryBuilder('a')
-            ->where('a.status = :status')
-            ->andWhere('a.published_at IS NOT NULL')
-            ->andWhere('a.published_at <= :now')
-            ->andWhere('JSON_CONTAINS(a.tags, :tag) = 1')
-            ->setParameter('status', 'published')
-            ->setParameter('now', new \DateTime())
-            ->setParameter('tag', json_encode($tag))
-            ->orderBy('a.published_at', 'DESC');
+        // Utiliser EAV pour trouver les articles avec le tag
+        $articleIds = $this->eavService->findEntitiesByAttribute(
+            'Article',
+            'tags',
+            json_encode([$tag]) // Rechercher dans le JSON
+        );
+
+        if (!empty($articleIds)) {
+            // Utiliser les IDs trouvés via EAV
+            $qb = $this->createQueryBuilder('a')
+                ->where('a.status = :status')
+                ->andWhere('a.published_at IS NOT NULL')
+                ->andWhere('a.published_at <= :now')
+                ->andWhere('a.id IN (:ids)')
+                ->setParameter('status', 'published')
+                ->setParameter('now', new \DateTime())
+                ->setParameter('ids', $articleIds)
+                ->orderBy('a.published_at', 'DESC');
+        } else {
+            // Fallback vers la recherche JSON pour les données non migrées
+            $qb = $this->createQueryBuilder('a')
+                ->where('a.status = :status')
+                ->andWhere('a.published_at IS NOT NULL')
+                ->andWhere('a.published_at <= :now')
+                ->andWhere('a.tags LIKE :tag')
+                ->setParameter('status', 'published')
+                ->setParameter('now', new \DateTime())
+                ->setParameter('tag', '%"' . $tag . '"%')
+                ->orderBy('a.published_at', 'DESC');
+        }
 
         if ($limit) {
             $qb->setMaxResults($limit);
@@ -224,6 +248,41 @@ class ArticleRepository extends ServiceEntityRepository
             ->select('COUNT(a.id)')
             ->where('a.status = :status')
             ->setParameter('status', $status)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Find all articles for admin (no filtering by author)
+     */
+    public function findAllForAdmin(array $orderBy = ['created_at' => 'DESC'], int $limit = null, int $offset = null): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.author', 'author')
+            ->addSelect('author');
+
+        foreach ($orderBy as $field => $direction) {
+            $qb->addOrderBy('a.' . $field, $direction);
+        }
+
+        if ($limit) {
+            $qb->setMaxResults($limit);
+        }
+
+        if ($offset) {
+            $qb->setFirstResult($offset);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Count all articles for admin
+     */
+    public function countAllForAdmin(): int
+    {
+        return $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }

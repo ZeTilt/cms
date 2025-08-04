@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use App\Trait\HasDynamicAttributesTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -12,6 +13,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[ORM\HasLifecycleCallbacks]
 class Article
 {
+    use HasDynamicAttributesTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -49,21 +51,22 @@ class Article
     private ?User $author = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
+    private array $tags = [];
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $meta_data = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $category = null;
 
-    #[ORM\Column(type: Types::JSON, nullable: true)]
-    private ?array $tags = null;
 
     public function __construct()
     {
         $this->created_at = new \DateTime();
         $this->updated_at = new \DateTime();
         $this->status = 'draft';
-        $this->tags = [];
         $this->meta_data = [];
+        $this->tags = [];
     }
 
     public function getId(): ?int
@@ -209,37 +212,6 @@ class Article
         return $this;
     }
 
-    public function getTags(): ?array
-    {
-        return $this->tags;
-    }
-
-    public function setTags(?array $tags): static
-    {
-        $this->tags = $tags;
-        return $this;
-    }
-
-    public function addTag(string $tag): static
-    {
-        $tags = $this->getTags() ?? [];
-        if (!in_array($tag, $tags)) {
-            $tags[] = $tag;
-            $this->setTags($tags);
-        }
-        return $this;
-    }
-
-    public function removeTag(string $tag): static
-    {
-        $tags = $this->getTags() ?? [];
-        $key = array_search($tag, $tags);
-        if ($key !== false) {
-            unset($tags[$key]);
-            $this->setTags(array_values($tags));
-        }
-        return $this;
-    }
 
     public function isPublished(): bool
     {
@@ -276,6 +248,59 @@ class Article
     {
         if (empty($this->slug) && !empty($this->title)) {
             $this->slug = $slugger->slug(strtolower($this->title))->toString();
+        }
+        return $this;
+    }
+
+    // ========== TAGS METHODS ==========
+
+
+    /**
+     * Obtient les tags
+     */
+    public function getTags(): array
+    {
+        return $this->tags ?? [];
+    }
+
+    /**
+     * Définit les tags
+     */
+    public function setTags(array $tags): static
+    {
+        $this->tags = $tags;
+        $this->updated_at = new \DateTime();
+        return $this;
+    }
+
+    /**
+     * Ajoute un tag
+     */
+    public function addTag(string $tag): static
+    {
+        if ($this->tags === null) {
+            $this->tags = [];
+        }
+        if (!in_array($tag, $this->tags)) {
+            $this->tags[] = $tag;
+            $this->updated_at = new \DateTime();
+        }
+        return $this;
+    }
+
+    /**
+     * Supprime un tag
+     */
+    public function removeTag(string $tag): static
+    {
+        if ($this->tags === null) {
+            $this->tags = [];
+        }
+        $key = array_search($tag, $this->tags);
+        if ($key !== false) {
+            unset($this->tags[$key]);
+            $this->tags = array_values($this->tags);
+            $this->updated_at = new \DateTime();
         }
         return $this;
     }

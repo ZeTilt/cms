@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Registration Settings - ZeTilt CMS{% endblock %}
+{% block title %}{{ 'registration.settings.title'|trans({}, 'admin') }} - ZeTilt CMS{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -8,65 +8,65 @@
         <nav class="flex" aria-label="Breadcrumb">
             <ol role="list" class="flex items-center space-x-4">
                 <li>
-                    <a href="{{ path('admin_registration_dashboard') }}" class="text-gray-400 hover:text-gray-500">Registration Management</a>
+                    <a href="{{ path('admin_registration_dashboard') }}" class="text-gray-400 hover:text-gray-500">{{ 'registration.settings.breadcrumb_management'|trans({}, 'admin') }}</a>
                 </li>
                 <li>
                     <div class="flex items-center">
                         <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="ml-4 text-sm font-medium text-gray-500">Settings</span>
+                        <span class="ml-4 text-sm font-medium text-gray-500">{{ 'registration.settings.breadcrumb_settings'|trans({}, 'admin') }}</span>
                     </div>
                 </li>
             </ol>
         </nav>
-        <h1 class="mt-2 text-3xl font-bold text-gray-900">Registration Settings</h1>
-        <p class="mt-1 text-sm text-gray-500">Configure how user registration works on your site</p>
+        <h1 class="mt-2 text-3xl font-bold text-gray-900">{{ 'registration.settings.title'|trans({}, 'admin') }}</h1>
+        <p class="mt-1 text-sm text-gray-500">{{ 'registration.settings.subtitle'|trans({}, 'admin') }}</p>
     </div>
 
     <form method="post" class="space-y-8">
         <!-- General Settings -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">General Settings</h3>
-                <p class="mt-1 text-sm text-gray-500">Basic registration configuration</p>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'registration.settings.general_title'|trans({}, 'admin') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ 'registration.settings.general_subtitle'|trans({}, 'admin') }}</p>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div class="flex items-center">
                     <input id="enabled" 
                            name="enabled" 
                            type="checkbox" 
-                           {{ config.enabled ? 'checked' : '' }}
+                           {{ config.enabled|default(true) ? 'checked' : '' }}
                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                     <label for="enabled" class="ml-2 block text-sm text-gray-900">
-                        Enable user registration
+                        {{ 'registration.settings.enable_registration'|trans({}, 'admin') }}
                     </label>
                 </div>
 
                 <div>
                     <label for="welcome_message" class="block text-sm font-medium text-gray-700">
-                        Welcome Message
+                        {{ 'registration.settings.welcome_message_label'|trans({}, 'admin') }}
                     </label>
                     <textarea id="welcome_message" 
                               name="welcome_message" 
                               rows="3"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              placeholder="Optional message shown on the registration page">{{ config.welcome_message ?? '' }}</textarea>
-                    <p class="mt-2 text-sm text-gray-500">This message will be displayed above the registration form.</p>
+                              placeholder="{{ 'registration.settings.welcome_message_placeholder'|trans({}, 'admin') }}">{{ config.welcome_message ?? '' }}</textarea>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'registration.settings.welcome_message_help'|trans({}, 'admin') }}</p>
                 </div>
 
                 <div>
                     <label for="default_role" class="block text-sm font-medium text-gray-700">
-                        Default Role for New Users
+                        {{ 'registration.settings.default_role_label'|trans({}, 'admin') }}
                     </label>
                     <select id="default_role" 
                             name="default_role" 
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         <option value="ROLE_USER" {{ (config.default_role ?? 'ROLE_USER') == 'ROLE_USER' ? 'selected' : '' }}>
-                            User (ROLE_USER)
+                            {{ 'registration.settings.role_user'|trans({}, 'admin') }}
                         </option>
                         <option value="ROLE_ADMIN" {{ (config.default_role ?? '') == 'ROLE_ADMIN' ? 'selected' : '' }}>
-                            Admin (ROLE_ADMIN)
+                            {{ 'registration.settings.role_admin'|trans({}, 'admin') }}
                         </option>
                     </select>
                 </div>
@@ -76,48 +76,48 @@
         <!-- Approval Workflow -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Approval Workflow</h3>
-                <p class="mt-1 text-sm text-gray-500">Control how new registrations are handled</p>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'registration.settings.approval_title'|trans({}, 'admin') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ 'registration.settings.approval_subtitle'|trans({}, 'admin') }}</p>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div class="flex items-center">
                     <input id="require_approval" 
                            name="require_approval" 
                            type="checkbox" 
-                           {{ config.require_approval ? 'checked' : '' }}
+                           {{ config.require_approval|default(false) ? 'checked' : '' }}
                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                     <label for="require_approval" class="ml-2 block text-sm text-gray-900">
-                        Require admin approval for new registrations
+                        {{ 'registration.settings.require_approval'|trans({}, 'admin') }}
                     </label>
                 </div>
-                <p class="text-sm text-gray-500 ml-6">When enabled, new users will remain inactive until an admin approves their registration.</p>
+                <p class="text-sm text-gray-500 ml-6">{{ 'registration.settings.require_approval_help'|trans({}, 'admin') }}</p>
 
                 <div class="flex items-center">
                     <input id="email_verification" 
                            name="email_verification" 
                            type="checkbox" 
-                           {{ config.email_verification ? 'checked' : '' }}
+                           {{ config.email_verification|default(false) ? 'checked' : '' }}
                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                     <label for="email_verification" class="ml-2 block text-sm text-gray-900">
-                        Require email verification (not implemented yet)
+                        {{ 'registration.settings.email_verification'|trans({}, 'admin') }}
                     </label>
                 </div>
-                <p class="text-sm text-gray-500 ml-6">When enabled, users must verify their email address before their account becomes active.</p>
+                <p class="text-sm text-gray-500 ml-6">{{ 'registration.settings.email_verification_help'|trans({}, 'admin') }}</p>
             </div>
         </div>
 
         <!-- User Types -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">User Types</h3>
-                <p class="mt-1 text-sm text-gray-500">Configure which user types are available during registration</p>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'registration.settings.user_types_title'|trans({}, 'admin') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ 'registration.settings.user_types_subtitle'|trans({}, 'admin') }}</p>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div>
-                    <label class="text-base font-medium text-gray-900">Allowed User Types</label>
-                    <p class="text-sm text-gray-500">Select which user types users can choose from during registration</p>
+                    <label class="text-base font-medium text-gray-900">{{ 'registration.settings.allowed_user_types_label'|trans({}, 'admin') }}</label>
+                    <p class="text-sm text-gray-500">{{ 'registration.settings.allowed_user_types_help'|trans({}, 'admin') }}</p>
                     <fieldset class="mt-4">
-                        <legend class="sr-only">User Types</legend>
+                        <legend class="sr-only">{{ 'registration.settings.user_types_legend'|trans({}, 'admin') }}</legend>
                         <div class="space-y-4">
                             {% for userType in userTypes %}
                                 <div class="flex items-center">
@@ -137,24 +137,24 @@
                             {% endfor %}
                         </div>
                     </fieldset>
-                    <p class="mt-2 text-sm text-gray-500">If no types are selected, all user types will be available.</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'registration.settings.allowed_user_types_note'|trans({}, 'admin') }}</p>
                 </div>
 
                 <div>
                     <label for="default_user_type" class="block text-sm font-medium text-gray-700">
-                        Default User Type
+                        {{ 'registration.settings.default_user_type_label'|trans({}, 'admin') }}
                     </label>
                     <select id="default_user_type" 
                             name="default_user_type" 
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="">No default type</option>
+                        <option value="">{{ 'common.filters.no_default_type'|trans({}, 'admin') }}</option>
                         {% for userType in userTypes %}
                             <option value="{{ userType.id }}" {{ (config.default_user_type ?? '') == userType.id ? 'selected' : '' }}>
                                 {{ userType.displayName }}
                             </option>
                         {% endfor %}
                     </select>
-                    <p class="mt-2 text-sm text-gray-500">Automatically assign this user type to new registrations.</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'registration.settings.default_user_type_help'|trans({}, 'admin') }}</p>
                 </div>
             </div>
         </div>
@@ -162,32 +162,32 @@
         <!-- Terms and Conditions -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Terms and Conditions</h3>
-                <p class="mt-1 text-sm text-gray-500">Configure terms acceptance requirements</p>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'registration.settings.terms_title'|trans({}, 'admin') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ 'registration.settings.terms_subtitle'|trans({}, 'admin') }}</p>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div class="flex items-center">
                     <input id="terms_required" 
                            name="terms_required" 
                            type="checkbox" 
-                           {{ config.terms_required ? 'checked' : '' }}
+                           {{ config.terms_required|default(false) ? 'checked' : '' }}
                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                     <label for="terms_required" class="ml-2 block text-sm text-gray-900">
-                        Require acceptance of terms and conditions
+                        {{ 'registration.settings.terms_required'|trans({}, 'admin') }}
                     </label>
                 </div>
 
                 <div>
                     <label for="terms_url" class="block text-sm font-medium text-gray-700">
-                        Terms and Conditions URL
+                        {{ 'registration.settings.terms_url_label'|trans({}, 'admin') }}
                     </label>
                     <input type="url" 
                            id="terms_url" 
                            name="terms_url" 
                            value="{{ config.terms_url ?? '' }}"
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                           placeholder="https://yoursite.com/terms">
-                    <p class="mt-2 text-sm text-gray-500">URL to your terms and conditions page. Leave empty to show text without a link.</p>
+                           placeholder="{{ 'registration.settings.terms_url_placeholder'|trans({}, 'admin') }}">
+                    <p class="mt-2 text-sm text-gray-500">{{ 'registration.settings.terms_url_help'|trans({}, 'admin') }}</p>
                 </div>
             </div>
         </div>
@@ -196,7 +196,7 @@
         <div class="flex justify-end">
             <button type="submit" 
                     class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Save Settings
+                {{ 'registration.settings.save_settings'|trans({}, 'admin') }}
             </button>
         </div>
     </form>

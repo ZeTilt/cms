@@ -1,0 +1,751 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ entityLabel }} {{ 'eav.attributes'|trans({}, 'admin') }} - ZeTilt CMS{% endblock %}
+
+{% block content %}
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol role="list" class="flex items-center space-x-4">
+                <li>
+                    <a href="{{ path('admin_attributes_index') }}" class="text-gray-400 hover:text-gray-500">
+                        {{ 'eav.title'|trans({}, 'admin') }}
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="ml-4 text-sm font-medium text-gray-500">{{ entityLabel }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <h1 class="mt-2 text-3xl font-bold text-gray-900">{{ entityLabel }} {{ 'eav.attributes'|trans({}, 'admin') }}</h1>
+        <p class="mt-1 text-sm text-gray-500">{{ 'eav.manage_entity_attributes'|trans({'%entity%': entityLabel}, 'admin') }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900">{{ 'eav.attribute_definitions'|trans({}, 'admin') }}</h3>
+                <button type="button" onclick="showCreateAttributeModal()" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    {{ 'eav.add_attribute'|trans({}, 'admin') }}
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            {% if definitions is empty %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'eav.no_attributes'|trans({}, 'admin') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'eav.no_attributes_help'|trans({'%entity%': entityLabel}, 'admin') }}</p>
+                </div>
+            {% else %}
+                <div class="space-y-4">
+                    {% for definition in definitions %}
+                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg attribute-definition" 
+                             data-definition-id="{{ definition.id }}">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3">
+                                    <h4 class="text-sm font-medium text-gray-900">{{ definition.displayName }}</h4>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ supportedTypes[definition.attributeType].label }}
+                                    </span>
+                                    {% if definition.required %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                            {{ 'eav.required'|trans({}, 'admin') }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <p class="mt-1 text-sm text-gray-600">
+                                    {{ 'eav.attribute_key'|trans({}, 'admin') }}: <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">{{ definition.attributeName }}</code>
+                                </p>
+                                {% if definition.description %}
+                                    <p class="mt-1 text-sm text-gray-500">{{ definition.description }}</p>
+                                {% endif %}
+                                {% if definition.defaultValue %}
+                                    <p class="mt-1 text-xs text-gray-500">{{ 'eav.default_value'|trans({}, 'admin') }}: {{ definition.defaultValue }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button type="button" onclick="editAttribute({{ definition.id }})" 
+                                        class="text-indigo-600 hover:text-indigo-900 text-sm">
+                                    {{ 'actions.edit'|trans({}, 'admin') }}
+                                </button>
+                                <button type="button" onclick="deleteAttribute({{ definition.id }})" 
+                                        class="text-red-600 hover:text-red-900 text-sm">
+                                    {{ 'actions.delete'|trans({}, 'admin') }}
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit Attribute Modal -->
+<div id="attributeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-10 mx-auto p-5 border max-w-2xl shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modalTitle" class="text-lg font-medium text-gray-900">{{ 'eav.add_attribute'|trans({}, 'admin') }}</h3>
+                <button type="button" onclick="hideAttributeModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="attributeForm" class="space-y-6">
+                <input type="hidden" id="definitionId" name="definition_id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="attribute_name" class="block text-sm font-medium text-gray-700">
+                            {{ 'eav.attribute_name'|trans({}, 'admin') }} *
+                            <button type="button" onclick="toggleAttributeNameEdit()" id="editAttributeNameBtn" 
+                                    class="ml-2 text-xs text-indigo-600 hover:text-indigo-900">
+                                {{ 'actions.edit'|trans({}, 'admin') }}
+                            </button>
+                        </label>
+                        <input type="text" id="attribute_name" name="attribute_name" required readonly
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50"
+                               pattern="^[a-z0-9_]+$" title="{{ 'eav.attribute_name_pattern'|trans({}, 'admin') }}">
+                        <p class="mt-1 text-xs text-gray-500">{{ 'eav.attribute_name_help'|trans({}, 'admin') }} <span class="text-indigo-600">Auto-généré depuis le nom d'affichage.</span></p>
+                    </div>
+                    
+                    <div>
+                        <label for="display_name" class="block text-sm font-medium text-gray-700">{{ 'eav.display_name'|trans({}, 'admin') }} *</label>
+                        <input type="text" id="display_name" name="display_name" required 
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">{{ 'eav.display_name_help'|trans({}, 'admin') }}</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="attribute_type" class="block text-sm font-medium text-gray-700">{{ 'eav.attribute_type'|trans({}, 'admin') }} *</label>
+                        <select id="attribute_type" name="attribute_type" required onchange="handleAttributeTypeChange()"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">{{ 'eav.select_type'|trans({}, 'admin') }}</option>
+                            {% for typeKey, typeInfo in supportedTypes %}
+                                <option value="{{ typeKey }}">{{ typeInfo.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="display_order" class="block text-sm font-medium text-gray-700">{{ 'eav.display_order'|trans({}, 'admin') }}</label>
+                        <input type="number" id="display_order" name="display_order" min="0" value="0"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">{{ 'eav.display_order_help'|trans({}, 'admin') }}</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">{{ 'fields.description'|trans({}, 'admin') }}</label>
+                    <textarea id="description" name="description" rows="2"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <p class="mt-1 text-xs text-gray-500">{{ 'eav.description_help'|trans({}, 'admin') }}</p>
+                </div>
+
+                <!-- Configuration des références d'entité -->
+                <div id="entityReferenceConfig" style="display: none;" class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-gray-900 mb-4">Configuration de la référence d'entité</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="target_entity" class="block text-sm font-medium text-gray-700">Entité cible *</label>
+                            <select id="target_entity" name="target_entity" onchange="handleTargetEntityChange()"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ 'eav.select_entity'|trans({}, 'admin') }}</option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Type d'entité à référencer</p>
+                        </div>
+                        
+                        <div>
+                            <label for="target_attribute" class="block text-sm font-medium text-gray-700">Attribut cible *</label>
+                            <select id="target_attribute" name="target_attribute"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ 'eav.select_attribute'|trans({}, 'admin') }}</option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Attribut à utiliser comme valeur</p>
+                        </div>
+                        
+                        <div>
+                            <label for="display_attribute" class="block text-sm font-medium text-gray-700">Attribut d'affichage *</label>
+                            <select id="display_attribute" name="display_attribute"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ 'eav.select_attribute'|trans({}, 'admin') }}</option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Attribut à afficher à l'utilisateur</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                        <p class="text-sm text-blue-700">
+                            <strong>{{ 'eav_help.example_intro'|trans({}, 'admin') }}</strong> {{ 'eav_help.diving_level_example'|trans({}, 'admin') }}
+                            <br>• {{ 'eav_help.target_entity'|trans({}, 'admin') }}
+                            <br>• {{ 'eav_help.target_attribute'|trans({}, 'admin') }}  
+                            <br>• {{ 'eav_help.display_attribute'|trans({}, 'admin') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Configuration des options pour les listes déroulantes -->
+                <div id="selectOptionsConfig" style="display: none;" class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-gray-900 mb-4">Options de la liste déroulante</h4>
+                    
+                    <div>
+                        <label for="select_options" class="block text-sm font-medium text-gray-700">Options disponibles *</label>
+                        <textarea id="select_options" name="select_options" rows="4" 
+                                  placeholder="Une option par ligne&#10;Débutant&#10;Intermédiaire&#10;Avancé"
+                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <p class="mt-1 text-xs text-gray-500">Saisissez une option par ligne</p>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                        <p class="text-sm text-blue-700">
+                            <strong>{{ 'eav_help.diving_level_example_intro'|trans({}, 'admin') }}</strong><br>
+                            Débutant<br>
+                            Niveau 1<br>
+                            Niveau 2<br>
+                            Niveau 3<br>
+                            Moniteur
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Configuration pour les fichiers -->
+                <div id="fileOptionsConfig" style="display: none;" class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-gray-900 mb-4">Configuration des fichiers</h4>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Types de fichiers autorisés</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <!-- Images -->
+                                <div class="space-y-2">
+                                    <h5 class="text-xs font-medium text-gray-600 uppercase tracking-wide">Images</h5>
+                                    <div class="space-y-1">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="image/jpeg" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">JPEG (.jpg, .jpeg)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="image/png" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">PNG (.png)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="image/webp" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">WebP (.webp)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Documents -->
+                                <div class="space-y-2">
+                                    <h5 class="text-xs font-medium text-gray-600 uppercase tracking-wide">Documents</h5>
+                                    <div class="space-y-1">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="application/pdf" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">PDF (.pdf)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="application/msword" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">Word (.doc)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">Word (.docx)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Autres -->
+                                <div class="space-y-2">
+                                    <h5 class="text-xs font-medium text-gray-600 uppercase tracking-wide">{{ 'eav.other'|trans({}, 'admin') }}</h5>
+                                    <div class="space-y-1">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="text/plain" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">Texte (.txt)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="mime_types[]" value="application/zip" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                            <span class="ml-2 text-sm text-gray-700">ZIP (.zip)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="max_file_size" class="block text-sm font-medium text-gray-700">Taille maximale (en Mo)</label>
+                            <input type="number" id="max_file_size" name="max_file_size" min="1" max="50" value="10"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <p class="mt-1 text-xs text-gray-500">Taille maximale autorisée pour un fichier (1-50 Mo)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                        <p class="text-sm text-blue-700">
+                            <strong>Conseil :</strong> {{ 'eav_help.file_security_advice'|trans({}, 'admin') }}<br>
+                            <strong>{{ 'eav_help.example_intro'|trans({}, 'admin') }}</strong> {{ 'eav_help.medical_certificate_example'|trans({}, 'admin') }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="required" name="required" value="1"
+                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="required" class="ml-2 block text-sm text-gray-900">{{ 'eav.required'|trans({}, 'admin') }}</label>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">{{ 'eav.required_help'|trans({}, 'admin') }}</p>
+                    </div>
+                    
+                    <div>
+                        <label for="default_value" class="block text-sm font-medium text-gray-700">{{ 'eav.default_value'|trans({}, 'admin') }}</label>
+                        <input type="text" id="default_value" name="default_value"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500">{{ 'eav.default_value_help'|trans({}, 'admin') }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-6 border-t">
+                    <button type="button" onclick="hideAttributeModal()" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        {{ 'actions.cancel'|trans({}, 'admin') }}
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700">
+                        <span id="submitButtonText">{{ 'eav.add_attribute'|trans({}, 'admin') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const entityType = '{{ entityType }}';
+const supportedTypes = {{ supportedTypes|json_encode|raw }};
+
+// Auto-generation functions
+function generateAttributeName(displayName) {
+    return displayName
+        .toLowerCase()
+        .replace(/[àáâãäå]/g, 'a')
+        .replace(/[èéêë]/g, 'e')
+        .replace(/[ìíîï]/g, 'i')
+        .replace(/[òóôõö]/g, 'o')
+        .replace(/[ùúûü]/g, 'u')
+        .replace(/[ñ]/g, 'n')
+        .replace(/[ç]/g, 'c')
+        .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+        .replace(/\s+/g, '_') // Replace spaces with underscores
+        .replace(/_+/g, '_') // Replace multiple underscores with single
+        .replace(/^_|_$/g, ''); // Remove leading/trailing underscores
+}
+
+function toggleAttributeNameEdit() {
+    const attributeNameInput = document.getElementById('attribute_name');
+    const editBtn = document.getElementById('editAttributeNameBtn');
+    
+    if (attributeNameInput.hasAttribute('readonly')) {
+        // Enable editing
+        attributeNameInput.removeAttribute('readonly');
+        attributeNameInput.classList.remove('bg-gray-50');
+        attributeNameInput.classList.add('bg-white');
+        editBtn.textContent = '{{ 'actions.auto_generate'|trans({}, 'admin') }}';
+        attributeNameInput.focus();
+    } else {
+        // Go back to auto-generation
+        attributeNameInput.setAttribute('readonly', true);
+        attributeNameInput.classList.remove('bg-white');
+        attributeNameInput.classList.add('bg-gray-50');
+        editBtn.textContent = '{{ 'actions.edit'|trans({}, 'admin') }}';
+        
+        // Regenerate from display name
+        const displayName = document.getElementById('display_name').value;
+        if (displayName) {
+            attributeNameInput.value = generateAttributeName(displayName);
+        }
+    }
+}
+
+// Auto-generate attribute name when display name changes
+document.addEventListener('DOMContentLoaded', function() {
+    const displayNameInput = document.getElementById('display_name');
+    const attributeNameInput = document.getElementById('attribute_name');
+    
+    displayNameInput.addEventListener('input', function() {
+        // Only auto-generate if the attribute name field is readonly
+        if (attributeNameInput.hasAttribute('readonly')) {
+            attributeNameInput.value = generateAttributeName(this.value);
+        }
+    });
+});
+
+function showCreateAttributeModal() {
+    document.getElementById('modalTitle').textContent = '{{ 'eav.add_attribute'|trans({}, 'admin') }}';
+    document.getElementById('submitButtonText').textContent = '{{ 'eav.add_attribute'|trans({}, 'admin') }}';
+    document.getElementById('attributeForm').reset();
+    document.getElementById('definitionId').value = '';
+    
+    // Reset attribute name to auto-generation mode
+    const attributeNameInput = document.getElementById('attribute_name');
+    const editBtn = document.getElementById('editAttributeNameBtn');
+    attributeNameInput.setAttribute('readonly', true);
+    attributeNameInput.disabled = false;
+    attributeNameInput.classList.remove('bg-white', 'bg-gray-100');
+    attributeNameInput.classList.add('bg-gray-50');
+    editBtn.textContent = '{{ 'actions.edit'|trans({}, 'admin') }}';
+    editBtn.style.display = 'inline';
+    
+    document.getElementById('attributeModal').classList.remove('hidden');
+}
+
+function hideAttributeModal() {
+    document.getElementById('attributeModal').classList.add('hidden');
+    document.getElementById('attributeForm').reset();
+    
+    // Réinitialiser les champs spéciaux
+    const attributeNameInput = document.getElementById('attribute_name');
+    const editBtn = document.getElementById('editAttributeNameBtn');
+    attributeNameInput.setAttribute('readonly', true);
+    attributeNameInput.disabled = false;
+    attributeNameInput.classList.remove('bg-white', 'bg-gray-100');
+    attributeNameInput.classList.add('bg-gray-50');
+    editBtn.textContent = '{{ 'actions.edit'|trans({}, 'admin') }}';
+    editBtn.style.display = 'inline';
+    
+    document.getElementById('definitionId').value = '';
+    document.getElementById('select_options').value = '';
+    document.getElementById('target_entity').value = '';
+    document.getElementById('target_attribute').value = '';
+    document.getElementById('display_attribute').value = '';
+    
+    // Réinitialiser la configuration des fichiers
+    document.getElementById('max_file_size').value = '10';
+    const mimeTypeCheckboxes = document.querySelectorAll('input[name="mime_types[]"]');
+    mimeTypeCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    // Cacher les sections de configuration spéciale
+    document.getElementById('entityReferenceConfig').style.display = 'none';
+    document.getElementById('selectOptionsConfig').style.display = 'none';
+    document.getElementById('fileOptionsConfig').style.display = 'none';
+    
+    // Réinitialiser les titres
+    document.getElementById('modalTitle').textContent = '{{ 'eav.add_attribute'|trans({}, 'admin') }}';
+    document.getElementById('submitButtonText').textContent = '{{ 'eav.add_attribute'|trans({}, 'admin') }}';
+}
+
+function handleAttributeTypeChange() {
+    const typeSelect = document.getElementById('attribute_type');
+    const selectedType = typeSelect.value;
+    
+    // Gérer les champs spéciaux pour entity_reference, select et file
+    const entityReferenceConfig = document.getElementById('entityReferenceConfig');
+    const selectOptionsConfig = document.getElementById('selectOptionsConfig');
+    const fileOptionsConfig = document.getElementById('fileOptionsConfig');
+    
+    if (selectedType === 'entity_reference') {
+        entityReferenceConfig.style.display = 'block';
+        selectOptionsConfig.style.display = 'none';
+        fileOptionsConfig.style.display = 'none';
+        loadSupportedEntities();
+    } else if (selectedType === 'select') {
+        entityReferenceConfig.style.display = 'none';
+        selectOptionsConfig.style.display = 'block';
+        fileOptionsConfig.style.display = 'none';
+    } else if (selectedType === 'file') {
+        entityReferenceConfig.style.display = 'none';
+        selectOptionsConfig.style.display = 'none';
+        fileOptionsConfig.style.display = 'block';
+    } else {
+        entityReferenceConfig.style.display = 'none';
+        selectOptionsConfig.style.display = 'none';
+        fileOptionsConfig.style.display = 'none';
+    }
+}
+
+function loadSupportedEntities() {
+    const targetEntitySelect = document.getElementById('target_entity');
+    targetEntitySelect.innerHTML = '<option value="">{{ 'eav.select_entity'|trans({}, 'admin') }}</option>';
+    
+    // Charger les entités supportées
+    const supportedEntities = {
+        'User': 'Utilisateurs',
+        'Event': 'Événements', 
+        'Article': 'Articles',
+        'Gallery': 'Galeries',
+        'Service': 'Services',
+        'Page': 'Pages'
+    };
+    
+    for (const [entityType, label] of Object.entries(supportedEntities)) {
+        const option = document.createElement('option');
+        option.value = entityType;
+        option.textContent = label;
+        targetEntitySelect.appendChild(option);
+    }
+}
+
+function handleTargetEntityChange() {
+    const targetEntity = document.getElementById('target_entity').value;
+    const targetAttributeSelect = document.getElementById('target_attribute');
+    const displayAttributeSelect = document.getElementById('display_attribute');
+    
+    if (!targetEntity) {
+        targetAttributeSelect.innerHTML = '<option value="">{{ 'eav.select_attribute'|trans({}, 'admin') }}</option>';
+        displayAttributeSelect.innerHTML = '<option value="">{{ 'eav.select_attribute'|trans({}, 'admin') }}</option>';
+        return;
+    }
+    
+    // Charger les attributs de l'entité cible
+    fetch(`/admin/attributes/entity/${targetEntity}/attributes`)
+        .then(response => response.json())
+        .then(data => {
+            targetAttributeSelect.innerHTML = '<option value="">{{ 'eav.select_attribute'|trans({}, 'admin') }}</option>';
+            displayAttributeSelect.innerHTML = '<option value="">{{ 'eav.select_attribute'|trans({}, 'admin') }}</option>';
+            
+            for (const [attrName, attrInfo] of Object.entries(data.attributes)) {
+                const targetOption = document.createElement('option');
+                targetOption.value = attrName;
+                targetOption.textContent = `${attrInfo.label} (${attrInfo.type})`;
+                targetAttributeSelect.appendChild(targetOption);
+                
+                const displayOption = document.createElement('option');
+                displayOption.value = attrName;
+                displayOption.textContent = `${attrInfo.label} (${attrInfo.type})`;
+                displayAttributeSelect.appendChild(displayOption);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading attributes:', error);
+            showNotification('{{ 'eav.error_loading_attributes'|trans({}, 'admin') }}', 'error');
+        });
+}
+
+function editAttribute(definitionId) {
+    // Récupérer les données de la définition via API
+    fetch(`/admin/attributes/definition/${definitionId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const definition = data.definition;
+            
+            // Populate the modal
+            document.getElementById('modalTitle').textContent = '{{ 'actions.edit'|trans({}, 'admin') }} {{ 'eav.attribute_name'|trans({}, 'admin') }}';
+            document.getElementById('submitButtonText').textContent = '{{ 'actions.save'|trans({}, 'admin') }}';
+            document.getElementById('definitionId').value = definitionId;
+            
+            // For editing, disable attribute name completely and hide edit button
+            const attributeNameInput = document.getElementById('attribute_name');
+            const editBtn = document.getElementById('editAttributeNameBtn');
+            attributeNameInput.value = definition.attribute_name;
+            attributeNameInput.setAttribute('readonly', true);
+            attributeNameInput.disabled = true; // Can't change attribute name for existing
+            attributeNameInput.classList.remove('bg-gray-50');
+            attributeNameInput.classList.add('bg-gray-100');
+            editBtn.style.display = 'none'; // Hide edit button for existing attributes
+            
+            document.getElementById('display_name').value = definition.display_name;
+            document.getElementById('attribute_type').value = definition.attribute_type;
+            document.getElementById('required').checked = definition.required;
+            document.getElementById('description').value = definition.description || '';
+            document.getElementById('default_value').value = definition.default_value || '';
+            document.getElementById('display_order').value = definition.display_order || 0;
+            
+            // Gérer les configurations spéciales selon le type
+            if (definition.attribute_type === 'select' && definition.options) {
+                // Remplir le textarea des options
+                document.getElementById('select_options').value = definition.options.join('\n');
+            } else if (definition.attribute_type === 'entity_reference' && definition.options) {
+                // Remplir les champs de référence d'entité
+                document.getElementById('target_entity').value = definition.options.target_entity || '';
+                document.getElementById('target_attribute').value = definition.options.target_attribute || '';
+                document.getElementById('display_attribute').value = definition.options.display_attribute || '';
+            } else if (definition.attribute_type === 'file' && definition.options) {
+                // Remplir la configuration des fichiers
+                if (definition.options.max_file_size) {
+                    document.getElementById('max_file_size').value = definition.options.max_file_size;
+                }
+                
+                // Cocher les MIME types autorisés
+                if (definition.options.allowed_mime_types) {
+                    const mimeTypeCheckboxes = document.querySelectorAll('input[name="mime_types[]"]');
+                    mimeTypeCheckboxes.forEach(checkbox => {
+                        checkbox.checked = definition.options.allowed_mime_types.includes(checkbox.value);
+                    });
+                }
+            }
+            
+            // Déclencher le changement de type pour afficher les bonnes sections
+            handleAttributeTypeChange();
+            
+            // Show modal
+            document.getElementById('attributeModal').classList.remove('hidden');
+        } else {
+            showNotification('{{ 'eav.error_occurred'|trans({}, 'admin') }}', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('{{ 'eav.error_occurred'|trans({}, 'admin') }}', 'error');
+    });
+}
+
+function deleteAttribute(definitionId) {
+    if (!confirm('{{ 'eav.confirm_delete'|trans({}, 'admin') }}')) {
+        return;
+    }
+    
+    fetch(`/admin/attributes/definition/${definitionId}/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            location.reload();
+        } else {
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('{{ 'eav.error_occurred'|trans({}, 'admin') }}', 'error');
+    });
+}
+
+// Handle form submission
+document.getElementById('attributeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {};
+    const mimeTypes = [];
+    
+    for (let [key, value] of formData.entries()) {
+        if (key === 'required') {
+            data[key] = true;
+        } else if (key === 'mime_types[]') {
+            mimeTypes.push(value);
+        } else {
+            data[key] = value;
+        }
+    }
+    
+    // Si c'est une référence d'entité, ajouter la configuration dans les options
+    if (data.attribute_type === 'entity_reference') {
+        data.options = {
+            target_entity: data.target_entity,
+            target_attribute: data.target_attribute,
+            display_attribute: data.display_attribute
+        };
+        
+        // Supprimer les champs individuels du data principal
+        delete data.target_entity;
+        delete data.target_attribute;
+        delete data.display_attribute;
+    }
+    
+    // Si c'est un select, traiter les options
+    if (data.attribute_type === 'select') {
+        const selectOptions = data.select_options;
+        if (selectOptions) {
+            // Convertir le texte en tableau d'options (une par ligne)
+            data.options = selectOptions.split('\n')
+                .map(option => option.trim())
+                .filter(option => option.length > 0);
+        }
+        
+        // Supprimer le champ texte des options
+        delete data.select_options;
+    }
+    
+    // Si c'est un fichier, traiter la configuration des MIME types
+    if (data.attribute_type === 'file') {
+        data.options = {
+            allowed_mime_types: mimeTypes,
+            max_file_size: parseInt(data.max_file_size) || 10
+        };
+        
+        // Supprimer le champ max_file_size du data principal
+        delete data.max_file_size;
+    }
+    
+    const definitionId = document.getElementById('definitionId').value;
+    const isEdit = definitionId !== '';
+    const url = isEdit 
+        ? `/admin/attributes/definition/${definitionId}/update`
+        : `/admin/attributes/entity/${entityType}/create`;
+    const method = isEdit ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            hideAttributeModal();
+            location.reload();
+        } else {
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('{{ 'eav.error_occurred'|trans({}, 'admin') }}', 'error');
+    });
+});
+
+function showNotification(message, type) {
+    // Simple notification implementation
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg ${
+        type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 
+        'bg-red-100 text-red-800 border border-red-200'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+</script>
+{% endblock %}

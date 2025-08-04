@@ -3,7 +3,7 @@
 {% block title %}Events Calendar - ZeTilt CMS{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <div class="mb-6">
         <div class="flex justify-between items-center">
             <div>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="flex items-center space-x-2">
                     <button id="todayBtn" class="px-3 py-1 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                        Today
+                        {{ 'calendar.today'|trans({}, 'events') }}
                     </button>
                 </div>
             </div>
@@ -74,25 +74,19 @@
     <!-- Event Legend -->
     <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">Legend</h3>
+            <h3 class="text-lg font-medium text-gray-900">{{ 'calendar.legend_title'|trans({}, 'events') }}</h3>
         </div>
         <div class="px-6 py-4">
             <div class="flex flex-wrap gap-4">
+                {% for eventType in eventTypes %}
                 <div class="flex items-center">
-                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                    <span class="text-sm text-gray-700">Published Events</span>
+                    <div class="w-3 h-3 rounded-full mr-2" style="background-color: {{ eventType.color }};"></div>
+                    <span class="text-sm text-gray-700">{{ eventType.name }}</span>
                 </div>
+                {% endfor %}
                 <div class="flex items-center">
-                    <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                    <span class="text-sm text-gray-700">Draft Events</span>
-                </div>
-                <div class="flex items-center">
-                    <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                    <span class="text-sm text-gray-700">Cancelled Events</span>
-                </div>
-                <div class="flex items-center">
-                    <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                    <span class="text-sm text-gray-700">Today</span>
+                    <div class="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+                    <span class="text-sm text-gray-700">{{ 'calendar.event_type_other'|trans({}, 'events') }}</span>
                 </div>
             </div>
         </div>
@@ -137,6 +131,7 @@
 <script>
 // Events data from server
 const events = {{ events|json_encode|raw }};
+const eventTypes = {{ eventTypes|json_encode|raw }};
 
 // Translations for JavaScript use
 const translations = {
@@ -166,10 +161,10 @@ function updateCalendar() {
 
 function renderCalendarDays() {
     const calendarGrid = document.getElementById('calendarGrid');
-    // Remove existing day cells (keep headers)
-    const headers = calendarGrid.querySelectorAll('div:nth-child(-n+7)');
-    calendarGrid.innerHTML = '';
-    headers.forEach(header => calendarGrid.appendChild(header));
+    
+    // Clear all day cells but keep the header row (first 7 elements)
+    const dayElements = calendarGrid.querySelectorAll('div:nth-child(n+8)');
+    dayElements.forEach(element => element.remove());
     
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
@@ -210,7 +205,8 @@ function renderCalendarDays() {
         const dayEvents = getEventsForDay(date);
         dayEvents.forEach(event => {
             const eventElement = document.createElement('div');
-            eventElement.className = `text-xs p-1 mb-1 rounded cursor-pointer truncate ${getEventColor(event.status)}`;
+            const eventType = event.type || 'other';
+            eventElement.className = `text-xs p-1 mb-1 rounded cursor-pointer truncate ${getEventColor(eventType)}`;
             eventElement.textContent = event.title;
             eventElement.title = event.title; // Tooltip for long titles
             eventElement.onclick = () => showEventModal(event);
@@ -223,31 +219,71 @@ function renderCalendarDays() {
 
 function getEventsForDay(date) {
     return events.filter(event => {
-        const eventDate = new Date(event.startDate);
+        // Handle different date formats that might come from Symfony
+        let eventDate;
+        if (event.startDate) {
+            if (typeof event.startDate === 'string') {
+                eventDate = new Date(event.startDate);
+            } else if (event.startDate.date) {
+                // Handle DateTime object format from Symfony
+                eventDate = new Date(event.startDate.date);
+            } else {
+                eventDate = new Date(event.startDate);
+            }
+        } else {
+            return false;
+        }
+        
         return eventDate.toDateString() === date.toDateString();
     });
 }
 
-function getEventColor(status) {
-    switch(status) {
-        case 'published': return 'bg-green-100 text-green-800 hover:bg-green-200';
-        case 'cancelled': return 'bg-red-100 text-red-800 hover:bg-red-200';
-        default: return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+function getEventColor(type) {
+    // Find event type configuration
+    const eventType = eventTypes.find(et => et.slug === type);
+    
+    if (eventType) {
+        // Convert hex color to Tailwind classes
+        const color = eventType.color;
+        switch(color) {
+            case '#3B82F6': return 'bg-blue-100 text-blue-800 hover:bg-blue-200 border-l-4 border-blue-500';
+            case '#10B981': return 'bg-green-100 text-green-800 hover:bg-green-200 border-l-4 border-green-500';
+            case '#F59E0B': return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-l-4 border-yellow-500';
+            case '#EF4444': return 'bg-red-100 text-red-800 hover:bg-red-200 border-l-4 border-red-500';
+            default: return 'bg-purple-100 text-purple-800 hover:bg-purple-200 border-l-4 border-purple-500';
+        }
     }
+    
+    // Fallback for unknown types
+    return 'bg-gray-100 text-gray-800 hover:bg-gray-200 border-l-4 border-gray-400';
 }
 
 function showEventModal(event) {
     document.getElementById('modalTitle').textContent = event.title;
     
+    // Handle date formatting
+    const formatDate = (dateValue) => {
+        if (!dateValue) return '';
+        let date;
+        if (typeof dateValue === 'string') {
+            date = new Date(dateValue);
+        } else if (dateValue.date) {
+            date = new Date(dateValue.date);
+        } else {
+            date = new Date(dateValue);
+        }
+        return date.toLocaleString('fr-FR');
+    };
+    
     const content = `
         <div class="space-y-2">
-            <p><strong>${translations.status}:</strong> ${event.status}</p>
-            <p><strong>Type:</strong> ${event.type}</p>
-            ${event.startDate ? `<p><strong>${translations.start}:</strong> ${new Date(event.startDate).toLocaleString()}</p>` : ''}
-            ${event.endDate ? `<p><strong>${translations.end}:</strong> ${new Date(event.endDate).toLocaleString()}</p>` : ''}
+            <p><strong>${translations.status}:</strong> ${event.status || 'draft'}</p>
+            <p><strong>Type:</strong> ${event.type || 'event'}</p>
+            ${event.startDate ? `<p><strong>${translations.start}:</strong> ${formatDate(event.startDate)}</p>` : ''}
+            ${event.endDate ? `<p><strong>${translations.end}:</strong> ${formatDate(event.endDate)}</p>` : ''}
             ${event.location ? `<p><strong>${translations.location}:</strong> ${event.location}</p>` : ''}
             ${event.shortDescription ? `<p><strong>${translations.description}:</strong> ${event.shortDescription}</p>` : ''}
-            ${event.maxParticipants ? `<p><strong>${translations.max_participants}:</strong> ${event.maxParticipants}</p>` : ''}
+            ${event.description ? `<p><strong>${translations.description}:</strong> ${event.description}</p>` : ''}
         </div>
     `;
     

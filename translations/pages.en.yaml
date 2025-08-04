@@ -127,3 +127,10 @@ seo:
   characters_left: "characters left"
   title_length: "SEO title should be between 50 and 60 characters"
   description_length: "SEO description should be between 150 and 160 characters"
+
+demo:
+  section_title: "Section Title"
+  section_content: "Section content..."
+  feature_1: "Feature 1"
+  feature_2: "Feature 2"
+  description: "Description..."

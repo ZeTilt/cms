@@ -38,17 +38,34 @@ actions:
   reason_rejection_placeholder: "Fournissez une raison pour le rejet..."
   reject_user: "Rejeter l'Utilisateur"
 
+# Titres de page
+title_page: "Inscription - ZeTilt CMS"
+disabled_title_page: "Inscription Désactivée - ZeTilt CMS"
+
 form:
-  title: "Créer un compte"
+  title: "Créer votre compte"
   first_name: "Prénom"
   last_name: "Nom"
   email: "Adresse email"
+  email_placeholder: "votre@email.com"
+  account_type: "Type de compte"
+  account_type_optional: "Sélectionnez le type de compte (optionnel)"
   password: "Mot de passe"
+  password_placeholder: "Minimum 8 caractères"
   confirm_password: "Confirmer le mot de passe"
+  confirm_password_placeholder: "Répétez votre mot de passe"
+  terms_agree: "J'accepte les"
+  terms_conditions: "Conditions d'utilisation"
   phone: "Téléphone"
-  terms: "J'accepte les conditions d'utilisation"
   newsletter: "Je souhaite recevoir la newsletter"
-  submit: "S'inscrire"
+  submit: "Créer le compte"
+  already_account: "Vous avez déjà un compte ?"
+  sign_in_here: "Connectez-vous ici"
+
+disabled:
+  title: "Inscription Désactivée"
+  message: "L'inscription de nouveaux comptes est actuellement désactivée. Veuillez contacter un administrateur si vous avez besoin d'un accès."
+  back_to_login: "Retour à la Connexion"
 
 messages:
   success: "Inscription réussie ! Vérifiez votre email."

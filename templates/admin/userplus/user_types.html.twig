@@ -5,7 +5,7 @@
 {% block content %}
 <!-- Header -->
 <div class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
             <div>
                 <nav class="flex" aria-label="Breadcrumb">
@@ -43,7 +43,7 @@
 </div>
 
 <!-- Main content -->
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
     {% if userTypes is empty %}
         <div class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,71 +61,93 @@
             </div>
         </div>
     {% else %}
-        <div class="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" class="divide-y divide-gray-200">
-                {% for userType in userTypes %}
-                    <li>
-                        <div class="px-4 py-4 sm:px-6">
-                            <div class="flex items-center justify-between">
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Statut
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type d'utilisateur
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Description
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Utilisateurs
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Attributs
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for userType in userTypes %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-2 h-2 rounded-full mr-3 {{ userType.active ? 'bg-green-400' : 'bg-red-400' }}"></div>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center">
-                                            <p class="text-sm font-medium text-indigo-600 truncate">{{ userType.displayName }}</p>
-                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ userType.badgeColor }}">
-                                                {{ userType.name }}
-                                            </span>
+                                    <div class="w-2 h-2 rounded-full {{ userType.active ? 'bg-green-400' : 'bg-red-400' }}"></div>
+                                    <span class="ml-2 text-sm text-gray-500">
+                                        {{ userType.active ? 'Actif' : 'Inactif' }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ userType.displayName }}
                                         </div>
-                                        {% if userType.description %}
-                                            <div class="mt-2 flex items-center text-sm text-gray-500">
-                                                <p class="truncate">{{ userType.description }}</p>
-                                            </div>
-                                        {% endif %}
-                                        <div class="mt-2 flex items-center text-sm text-gray-500">
-                                            <p class="flex items-center">
-                                                <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                                </svg>
-                                                {{ userType.userCount }} utilisateurs
-                                            </p>
-                                            <span class="mx-2">•</span>
-                                            <p class="flex items-center">
-                                                <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                </svg>
-                                                {{ userType.attributes.count }} attributs
-                                                {% if userType.requiredAttributes.count > 0 %}
-                                                    ({{ userType.requiredAttributes.count }} requis)
-                                                {% endif %}
-                                            </p>
+                                        <div class="text-sm text-gray-500">
+                                            {{ userType.name }}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    {% if is_granted('ROLE_SUPER_ADMIN') %}
-                                        <a href="{{ path('admin_userplus_user_type_attributes', {id: userType.id}) }}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                            <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if userType.description %}
+                                    <div class="text-sm text-gray-900 max-w-xs truncate">
+                                        {{ userType.description }}
+                                    </div>
+                                {% else %}
+                                    <span class="text-sm text-gray-500">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ userType.userCount }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ userType.attributes.count }}
+                                {% if userType.requiredAttributes.count > 0 %}
+                                    <span class="text-gray-400">({{ userType.requiredAttributes.count }} requis)</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                    <div class="flex justify-end space-x-2">
+                                        <a href="{{ path('admin_userplus_user_type_attributes', {id: userType.id}) }}" class="text-blue-600 hover:text-blue-900" title="Attributs">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
-                                            Attributs
                                         </a>
-                                        <a href="{{ path('admin_userplus_user_types_edit', {id: userType.id}) }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                            <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <a href="{{ path('admin_userplus_user_types_edit', {id: userType.id}) }}" class="text-indigo-600 hover:text-indigo-900" title="Modifier">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                             </svg>
-                                            {{ 'actions.edit'|trans({}, 'admin') }}
                                         </a>
-                                    {% else %}
-                                        <span class="text-sm text-gray-400">{{ 'user_types.readonly'|trans({}, 'userplus') }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
+                                    </div>
+                                {% else %}
+                                    <span class="text-sm text-gray-400">Lecture seule</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     {% endif %}
 </div>

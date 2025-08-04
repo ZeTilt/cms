@@ -12,7 +12,7 @@ list:
   no_pages: "Aucune page trouvée"
   create_first: "Créer votre première page"
   get_started: "Commencez par créer votre première page ou article de blog."
-  
+
 header:
   title: "Titre"
   slug: "URL"
@@ -30,6 +30,7 @@ edit:
   title: "Modifier la Page"
   subtitle: "Modifiez le contenu de cette page"
   success: "La page a été modifiée avec succès"
+  prefix: "Modifier: "
 
 delete:
   confirm: "Êtes-vous sûr de vouloir supprimer cette page ?"
@@ -60,6 +61,13 @@ fields:
   menu_order_help: "Position de la page dans la navigation"
   show_in_menu: "Afficher dans le menu"
   show_in_menu_help: "Cochez pour inclure cette page dans la navigation principale"
+  template_path: "Template Path"
+  template_path_help: "Fichier template Twig pour cette page (créé automatiquement pour les nouvelles pages)"
+  basic_information: "Informations de base"
+  seo_settings: "Paramètres SEO"
+  additional_settings: "Paramètres supplémentaires"
+  tags: "Tags"
+  tags_help: "Séparez les tags par des virgules"
 
 status:
   draft: "Brouillon"
@@ -86,20 +94,23 @@ actions:
   publish: "Publier"
   unpublish: "Dépublier"
   schedule: "Programmer"
+  preview: "Aperçu"
+  cancel: "Annuler"
+  update_page: "Mettre à jour la Page"
 
 search:
   placeholder: "Rechercher des pages..."
   by_title: "Par titre"
   by_content: "Par contenu"
   by_status: "Par statut"
-  
+
 filters:
   all: "Toutes les pages"
   published: "Publiées"
   draft: "Brouillons"
   private: "Privées"
   scheduled: "Programmées"
-  
+
 bulk_actions:
   select_action: "Sélectionner une action"
   publish_selected: "Publier la sélection"
@@ -114,17 +125,42 @@ validation:
   slug_exists: "Cette URL est déjà utilisée"
   content_required: "Le contenu est obligatoire"
   template_required: "Veuillez sélectionner un modèle"
-  
+
 hierarchy:
   parent: "Page parente"
   children: "Pages enfants"
   no_parent: "Aucune page parente"
   move_up: "Monter"
   move_down: "Descendre"
-  
+
 seo:
   title: "Optimisation SEO"
   preview: "Aperçu des résultats de recherche"
   characters_left: "caractères restants"
   title_length: "Le titre SEO doit faire entre 50 et 60 caractères"
   description_length: "La description SEO doit faire entre 150 et 160 caractères"
+
+status_extra:
+  archived: "Archivé"
+
+developer:
+  title: "Pour les Développeurs"
+  content_explanation: "Le contenu des pages est maintenant géré via des templates Twig pour une meilleure séparation des responsabilités :"
+  template_control: "Éditez le fichier template directement dans votre IDE pour un contrôle total Twig/HTML"
+  template_location: "Les fichiers templates sont situés dans"
+  twig_features: "Utilisez la syntaxe Twig, les inclusions et toutes les fonctionnalités Symfony"
+  immediate_changes: "Les modifications des templates sont reflétées immédiatement (en mode dev)"
+  edit_template: "Éditer le template:"
+  template_preview: "Le template sera automatiquement créé à"
+  template_exists: "Le fichier template existe"
+  template_not_exists: "Le fichier template n'existe pas et sera créé"
+  slug_auto_generate: "Laissez vide pour générer automatiquement à partir du titre"
+  meta_title_leave_empty: "Laissez vide pour utiliser le titre de la page (recommandé sous 60 caractères)"
+  meta_description_recommended: "Recommandé sous 160 caractères"
+
+demo:
+  section_title: "Titre de section"
+  section_content: "Contenu de section..."
+  feature_1: "Fonctionnalité 1"
+  feature_2: "Fonctionnalité 2"
+  description: "Description..."

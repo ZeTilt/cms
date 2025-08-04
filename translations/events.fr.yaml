@@ -25,6 +25,23 @@ list:
   title: "Liste des Événements"
   no_events: "Aucun événement trouvé"
   create_first: "Créer votre premier événement"
+
+calendar:
+  title: "Calendrier des Événements - ZeTilt CMS"
+  page_title: "Calendrier des Événements"
+  subtitle: "Voir les événements au format calendrier"
+  list_view: "Vue liste"
+  month_view: "Vue mensuelle"
+  week_view: "Vue hebdomadaire"
+  day_view: "Vue quotidienne"
+  today: "Aujourd'hui"
+  month: "Mois"
+  week: "Semaine"
+  day: "Jour"
+  events_on: "Événements du"
+  no_events_today: "Aucun événement aujourd'hui"
+  legend_title: "Légende - Types d'événements"
+  event_type_other: "Autre"
   
 header:
   title: "Titre"
@@ -81,6 +98,13 @@ fields:
   is_public: "Événement public"
   is_featured: "Événement à la une"
   status: "Statut"
+  basic_information: "Informations de base"
+  slug: "Slug"
+  slug_help: "Version URL-friendly du titre"
+  short_description: "Description courte"
+  short_description_help: "Résumé bref pour les listes et aperçus"
+  event_date: "Date de l'événement"
+  end_date_optional: "Date de fin (optionnel)"
 
 status:
   draft: "Brouillon"
@@ -135,6 +159,15 @@ registration:
   registration_full: "Événement complet"
   registration_success: "Inscription réussie"
   unregistration_success: "Désinscription réussie"
+  form:
+    title: "S'inscrire à l'événement"
+    prerequisites_not_met: "Vous ne remplissez pas les prérequis nécessaires pour cet événement."
+    prerequisites_contact: "Contactez un responsable si vous pensez que c'est une erreur."
+    select_spots: "Sélectionnez le nombre de places que vous souhaitez réserver"
+    comments_placeholder: "Ajoutez un commentaire ou des informations spéciales..."
+    cancel: "Annuler"
+    confirm: "Confirmer l'inscription"
+    confirm_unregister: "Êtes-vous sûr de vouloir vous désinscrire de cet événement ?"
   
 participant:
   name: "Nom du participant"
@@ -146,18 +179,6 @@ participant:
   export_list: "Exporter la liste"
   send_email: "Envoyer un email"
 
-calendar:
-  title: "Calendrier des Événements"
-  month_view: "Vue mensuelle"
-  week_view: "Vue hebdomadaire"
-  day_view: "Vue quotidienne"
-  list_view: "Vue liste"
-  today: "Aujourd'hui"
-  month: "Mois"
-  week: "Semaine"
-  day: "Jour"
-  events_on: "Événements du"
-  no_events_today: "Aucun événement aujourd'hui"
   
 actions:
   create_event: "Créer un Événement"
@@ -255,5 +276,27 @@ attributes:
   current_value: "Valeur Actuelle"
   no_attributes: "Aucun attribut"
   no_attributes_help: "Cet événement n'a encore aucun attribut personnalisé. Ajoutez-en un ci-dessus pour commencer."
+  key_required: "La clé de l'attribut est obligatoire"
+  key_already_exists: "Un attribut avec cette clé existe déjà"
+  added_successfully: "Attribut ajouté avec succès"
+  deleted_successfully: "Attribut supprimé avec succès"
+
+errors:
+  module_not_active: "Le module Événements n'est pas actif"
+  event_not_found: "Événement non trouvé"
+  attribute_not_found: "Attribut non trouvé"
+  registration_not_found: "Inscription non trouvée"
+  user_not_found: "Utilisateur non trouvé"
+  user_already_registered: "L'utilisateur est déjà inscrit à cet événement"
+  event_no_registrations: "Cet événement n'accepte pas les inscriptions"
+  invalid_status: "Statut invalide"
+
+success:
+  event_saved: "Événement sauvegardé avec succès !"
+  event_deleted: "Événement supprimé avec succès !"
+  user_registered: "Utilisateur inscrit avec succès"
+  user_registered_waitlist: "Utilisateur inscrit sur la liste d'attente"
+  registration_status_updated: "Statut de l'inscription mis à jour de %old_status% à %new_status%"
+  registration_deleted: "Inscription de %username% supprimée avec succès"
 
 

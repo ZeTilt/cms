@@ -2,9 +2,9 @@
 
 {% block title %}
     {% if isEdit %}
-        Edit Event: {{ event.title }} - ZeTilt CMS
+        {{ 'edit.title'|trans({}, 'events') }}: {{ event.title }} - ZeTilt CMS
     {% else %}
-        New Event - ZeTilt CMS
+        {{ 'create.title'|trans({}, 'events') }} - ZeTilt CMS
     {% endif %}
 {% endblock %}
 
@@ -14,7 +14,7 @@
         <nav class="flex" aria-label="Breadcrumb">
             <ol role="list" class="flex items-center space-x-4">
                 <li>
-                    <a href="{{ path('admin_events_list') }}" class="text-gray-400 hover:text-gray-500">Events</a>
+                    <a href="{{ path('admin_events_list') }}" class="text-gray-400 hover:text-gray-500">{{ 'breadcrumb.events'|trans({}, 'events') }}</a>
                 </li>
                 <li>
                     <div class="flex items-center">
@@ -22,7 +22,7 @@
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
                         <span class="ml-4 text-sm font-medium text-gray-500">
-                            {% if isEdit %}Edit Event{% else %}New Event{% endif %}
+                            {% if isEdit %}{{ 'edit.title'|trans({}, 'events') }}{% else %}{{ 'create.title'|trans({}, 'events') }}{% endif %}
                         </span>
                     </div>
                 </li>
@@ -30,9 +30,9 @@
         </nav>
         <h1 class="mt-2 text-3xl font-bold text-gray-900">
             {% if isEdit %}
-                Edit Event: {{ event.title }}
+                {{ 'edit.title'|trans({}, 'events') }}: {{ event.title }}
             {% else %}
-                Create New Event
+                {{ 'create.title'|trans({}, 'events') }}
             {% endif %}
         </h1>
     </div>
@@ -45,11 +45,11 @@
         <!-- Basic Information -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Basic Information</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'fields.basic_information'|trans({}, 'events') }}</h3>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <label for="title" class="block text-sm font-medium text-gray-700">{{ 'fields.title'|trans({}, 'events') }}</label>
                     <input type="text" 
                            name="title" 
                            id="title" 
@@ -59,23 +59,23 @@
                 </div>
 
                 <div>
-                    <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
+                    <label for="slug" class="block text-sm font-medium text-gray-700">{{ 'fields.slug'|trans({}, 'events') }}</label>
                     <input type="text" 
                            name="slug" 
                            id="slug" 
                            value="{{ event.slug ?? '' }}"
                            required
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <p class="mt-2 text-sm text-gray-500">URL-friendly version of the title</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.slug_help'|trans({}, 'events') }}</p>
                 </div>
 
                 <div>
-                    <label for="short_description" class="block text-sm font-medium text-gray-700">Short Description</label>
+                    <label for="short_description" class="block text-sm font-medium text-gray-700">{{ 'fields.short_description'|trans({}, 'events') }}</label>
                     <textarea name="short_description" 
                               id="short_description" 
                               rows="3"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ event.shortDescription ?? '' }}</textarea>
-                    <p class="mt-2 text-sm text-gray-500">Brief summary for listings and previews</p>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'fields.short_description_help'|trans({}, 'events') }}</p>
                 </div>
 
                 <div>
@@ -88,30 +88,85 @@
             </div>
         </div>
 
-        <!-- Date and Time -->
+        <!-- Diving Schedule -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Date and Time</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ 'diving.schedule'|trans({}, 'events') }}</h3>
             </div>
             <div class="px-6 py-4 space-y-6">
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
-                        <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date & Time</label>
-                        <input type="datetime-local" 
+                        <label for="start_date" class="block text-sm font-medium text-gray-700">{{ 'fields.event_date'|trans({}, 'events') }}</label>
+                        <input type="date" 
                                name="start_date" 
                                id="start_date" 
-                               value="{{ event.startDate ? event.startDate.format('Y-m-d\\TH:i') : '' }}"
+                               value="{{ event.startDate ? event.startDate.format('Y-m-d') : '' }}"
+                               required
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </div>
 
                     <div>
-                        <label for="end_date" class="block text-sm font-medium text-gray-700">End Date & Time</label>
-                        <input type="datetime-local" 
+                        <label for="end_date" class="block text-sm font-medium text-gray-700">{{ 'fields.end_date_optional'|trans({}, 'events') }}</label>
+                        <input type="date" 
                                name="end_date" 
                                id="end_date" 
-                               value="{{ event.endDate ? event.endDate.format('Y-m-d\\TH:i') : '' }}"
+                               value="{{ event.endDate ? event.endDate.format('Y-m-d') : '' }}"
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label for="club_departure_time" class="block text-sm font-medium text-gray-700">{{ 'diving.club_departure'|trans({}, 'events') }}</label>
+                        <input type="time" 
+                               name="club_departure_time" 
+                               id="club_departure_time" 
+                               value="{{ event.clubDepartureTime ? event.clubDepartureTime.format('H:i') : '' }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <p class="mt-2 text-sm text-gray-500">{{ 'diving.club_departure_help'|trans({}, 'events') }}</p>
+                    </div>
+
+                    <div>
+                        <label for="dock_departure_time" class="block text-sm font-medium text-gray-700">{{ 'diving.dock_departure'|trans({}, 'events') }}</label>
+                        <input type="time" 
+                               name="dock_departure_time" 
+                               id="dock_departure_time" 
+                               value="{{ event.dockDepartureTime ? event.dockDepartureTime.format('H:i') : '' }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <p class="mt-2 text-sm text-gray-500">{{ 'diving.dock_departure_help'|trans({}, 'events') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diving Team -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">{{ 'diving.team'|trans({}, 'events') }}</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div>
+                    <label for="pilot" class="block text-sm font-medium text-gray-700">{{ 'diving.pilot'|trans({}, 'events') }}</label>
+                    <select name="pilot" 
+                            id="pilot" 
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <option value="">{{ 'diving.no_pilot'|trans({}, 'events') }}</option>
+                        {% for pilot in pilots %}
+                            <option value="{{ pilot.id }}" {{ event.pilot and event.pilot.id == pilot.id ? 'selected' : '' }}>
+                                {{ pilot.fullName }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'diving.pilot_help'|trans({}, 'events') }}</p>
+                </div>
+
+                <div>
+                    <label for="diving_comments" class="block text-sm font-medium text-gray-700">{{ 'diving.comments'|trans({}, 'events') }}</label>
+                    <textarea name="diving_comments" 
+                              id="diving_comments" 
+                              rows="4"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ event.divingComments ?? '' }}</textarea>
+                    <p class="mt-2 text-sm text-gray-500">{{ 'diving.comments_help'|trans({}, 'events') }}</p>
                 </div>
             </div>
         </div>
@@ -141,6 +196,368 @@
             </div>
         </div>
 
+        <!-- Registration Conditions -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Conditions d'inscription</h3>
+                <p class="mt-1 text-sm text-gray-600">Définir les conditions que les utilisateurs doivent remplir pour s'inscrire à cet événement</p>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div id="registration-conditions">
+                    {% set conditions = event.registrationConditions ?? [] %}
+                    {% for condition in conditions %}
+                        <div class="registration-condition border border-gray-200 rounded-lg p-4" data-index="{{ loop.index0 }}">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-sm font-medium text-gray-900">Condition {{ loop.index }}</h4>
+                                <button type="button" onclick="removeCondition(this)" class="remove-condition text-red-600 hover:text-red-800">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Entité</label>
+                                    <select name="registration_conditions[{{ loop.index0 }}][entity_type]" 
+                                            onchange="updateAttributesForEntity({{ loop.index0 }}, this.value)"
+                                            class="entity-select mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <option value="">{{ 'common.messages.choose_entity'|trans({}, 'admin') }}</option>
+                                        {% for entity_key, entity_label in available_entities %}
+                                            <option value="{{ entity_key }}" {{ condition.entity_type == entity_key ? 'selected' : '' }}>{{ entity_label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Attribut</label>
+                                    <select name="registration_conditions[{{ loop.index0 }}][attribute_key]" 
+                                            onchange="updateValueFieldForAttribute({{ loop.index0 }}, this.value)"
+                                            data-selected-value="{{ condition.attribute_key ?? '' }}"
+                                            class="attribute-select mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <option value="">{{ 'common.messages.choose_attribute'|trans({}, 'admin') }}</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Opérateur</label>
+                                    <select name="registration_conditions[{{ loop.index0 }}][operator]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <option value="">{{ 'common.messages.choose_operator'|trans({}, 'admin') }}</option>
+                                        {% for op_key, op_label in available_operators %}
+                                            <option value="{{ op_key }}" {{ condition.operator == op_key ? 'selected' : '' }}>{{ op_label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700">Valeur</label>
+                                <div class="value-field-container" data-index="{{ loop.index0 }}" data-current-value="{{ condition.value ?? '' }}">
+                                    <input type="text" name="registration_conditions[{{ loop.index0 }}][value]" 
+                                           value="{{ condition.value ?? '' }}"
+                                           placeholder="Valeur requise"
+                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700">Message d'erreur</label>
+                                <textarea name="registration_conditions[{{ loop.index0 }}][message]" 
+                                          rows="2"
+                                          placeholder="Message affiché si la condition n'est pas remplie"
+                                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ condition.message ?? '' }}</textarea>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex justify-between">
+                    <button type="button" id="add-condition" onclick="addRegistrationCondition()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Ajouter une condition
+                    </button>
+                </div>
+
+                <script>
+                // Gestion des conditions d'inscription - inline pour éviter les problèmes de timing
+                let conditionIndex = {{ (event.registrationConditions ?? [])|length }};
+
+                // Détails des attributs depuis le serveur
+                const attributesDetails = {{ attributes_details|json_encode|raw }};
+                const availableEntities = {{ available_entities|json_encode|raw }};
+                const availableOperators = {{ available_operators|json_encode|raw }};
+
+                function getConditionTemplate(index) {
+                    let entityOptions = '<option value="">{{ 'common.messages.choose_entity'|trans({}, 'admin') }}</option>';
+                    Object.keys(availableEntities).forEach(key => {
+                        entityOptions += `<option value="${key}">${availableEntities[key]}</option>`;
+                    });
+                    
+                    let operatorOptions = '<option value="">{{ 'common.messages.choose_operator'|trans({}, 'admin') }}</option>';
+                    Object.keys(availableOperators).forEach(key => {
+                        operatorOptions += `<option value="${key}">${availableOperators[key]}</option>`;
+                    });
+
+                    return `
+                        <div class="registration-condition border border-gray-200 rounded-lg p-4" data-index="${index}">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-sm font-medium text-gray-900">Condition ${index + 1}</h4>
+                                <button type="button" onclick="removeCondition(this)" class="remove-condition text-red-600 hover:text-red-800">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Entité</label>
+                                    <select name="registration_conditions[${index}][entity_type]" 
+                                            onchange="updateAttributesForEntity(${index}, this.value)"
+                                            class="entity-select mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        ${entityOptions}
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Attribut</label>
+                                    <select name="registration_conditions[${index}][attribute_key]" 
+                                            onchange="updateValueFieldForAttribute(${index}, this.value)"
+                                            class="attribute-select mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <option value="">{{ 'common.messages.choose_attribute'|trans({}, 'admin') }}</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Opérateur</label>
+                                    <select name="registration_conditions[${index}][operator]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        ${operatorOptions}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700">Valeur</label>
+                                <div class="value-field-container" data-index="${index}">
+                                    <input type="text" name="registration_conditions[${index}][value]" 
+                                           placeholder="Valeur requise"
+                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700">Message d'erreur</label>
+                                <textarea name="registration_conditions[${index}][message]" 
+                                          rows="2"
+                                          placeholder="Message affiché si la condition n'est pas remplie"
+                                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                async function updateAttributesForEntity(index, entityType) {
+                    const attributeSelect = document.querySelector(`select[name="registration_conditions[${index}][attribute_key]"]`);
+                    const valueContainer = document.querySelector(`.value-field-container[data-index="${index}"]`);
+                    const selectedValue = attributeSelect.getAttribute('data-selected-value');
+                    
+                    // Réinitialiser les sélecteurs
+                    attributeSelect.innerHTML = '<option value="">{{ 'common.messages.choose_attribute'|trans({}, 'admin') }}</option>';
+                    valueContainer.innerHTML = `
+                        <input type="text" name="registration_conditions[${index}][value]" 
+                               placeholder="Valeur requise"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    `;
+                    
+                    if (!entityType) return;
+                    
+                    try {
+                        const response = await fetch(`/admin/events/ajax/attributes/${entityType}`);
+                        const attributes = await response.json();
+                        
+                        Object.keys(attributes).forEach(key => {
+                            const option = document.createElement('option');
+                            option.value = key;
+                            option.textContent = attributes[key].label;
+                            // Pré-sélectionner la valeur existante
+                            if (selectedValue && key === selectedValue) {
+                                option.selected = true;
+                            }
+                            attributeSelect.appendChild(option);
+                        });
+                        
+                        // Stocker les détails des attributs pour cette entité
+                        window.currentEntityAttributes = window.currentEntityAttributes || {};
+                        window.currentEntityAttributes[entityType] = attributes;
+                        
+                        // Si une valeur était pré-sélectionnée, mettre à jour le champ de valeur
+                        if (selectedValue && attributeSelect.value === selectedValue) {
+                            updateValueFieldForAttribute(index, selectedValue);
+                        }
+                        
+                    } catch (error) {
+                        console.error('Erreur lors du chargement des attributs:', error);
+                    }
+                }
+
+                function updateValueFieldForAttribute(index, attributeKey) {
+                    const conditionDiv = document.querySelector(`.registration-condition[data-index="${index}"]`);
+                    const entityType = conditionDiv.querySelector('select[name*="[entity_type]"]').value;
+                    const container = document.querySelector(`.value-field-container[data-index="${index}"]`);
+                    
+                    if (!container || !attributeKey || !entityType) return;
+
+                    // Récupérer la valeur actuelle depuis l'attribut data ou l'input existant
+                    const currentValue = container.getAttribute('data-current-value') || 
+                                       (container.querySelector('input[name*="[value]"], select[name*="[value]"]')?.value) || '';
+
+                    // Récupérer les détails de l'attribut
+                    const attributes = window.currentEntityAttributes?.[entityType];
+                    const attributeDetails = attributes?.[attributeKey];
+                    
+                    if (!attributeDetails || !attributeDetails.details) {
+                        // Champ texte par défaut
+                        container.innerHTML = `
+                            <input type="text" name="registration_conditions[${index}][value]" 
+                                   value="${currentValue}"
+                                   onchange="updateCurrentValue(${index}, this.value)"
+                                   placeholder="Valeur requise"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        `;
+                        return;
+                    }
+
+                    const details = attributeDetails.details;
+                    
+                    if (details.type === 'select' && details.options && details.options.length > 0) {
+                        // Créer un select avec les options disponibles
+                        let selectOptions = '<option value="">{{ 'common.messages.choose_value'|trans({}, 'admin') }}</option>';
+                        details.options.forEach(option => {
+                            const selected = currentValue === option ? 'selected' : '';
+                            selectOptions += `<option value="${option}" ${selected}>${option}</option>`;
+                        });
+                        
+                        container.innerHTML = `
+                            <select name="registration_conditions[${index}][value]" 
+                                    onchange="updateCurrentValue(${index}, this.value)"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                ${selectOptions}
+                            </select>
+                        `;
+                    } else if (details.type === 'number' || details.type === 'integer') {
+                        // Champ numérique
+                        container.innerHTML = `
+                            <input type="number" name="registration_conditions[${index}][value]" 
+                                   value="${currentValue}"
+                                   onchange="updateCurrentValue(${index}, this.value)"
+                                   placeholder="{{ 'common.placeholders.numeric_value'|trans({}, 'admin') }}"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        `;
+                    } else if (details.type === 'date') {
+                        // Champ date
+                        container.innerHTML = `
+                            <input type="date" name="registration_conditions[${index}][value]" 
+                                   value="${currentValue}"
+                                   onchange="updateCurrentValue(${index}, this.value)"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        `;
+                    } else if (details.type === 'boolean') {
+                        // Select pour booléen
+                        const yesSelected = currentValue === '1' ? 'selected' : '';
+                        const noSelected = currentValue === '0' ? 'selected' : '';
+                        container.innerHTML = `
+                            <select name="registration_conditions[${index}][value]" 
+                                    onchange="updateCurrentValue(${index}, this.value)"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <option value="">{{ 'common.messages.choose_value'|trans({}, 'admin') }}</option>
+                                <option value="1" ${yesSelected}>{{ 'common.messages.yes'|trans({}, 'admin') }}</option>
+                                <option value="0" ${noSelected}>{{ 'common.messages.no'|trans({}, 'admin') }}</option>
+                            </select>
+                        `;
+                    } else {
+                        // Champ texte par défaut
+                        container.innerHTML = `
+                            <input type="text" name="registration_conditions[${index}][value]" 
+                                   value="${currentValue}"
+                                   onchange="updateCurrentValue(${index}, this.value)"
+                                   placeholder="Valeur requise"
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        `;
+                    }
+                }
+
+                function updateCurrentValue(index, value) {
+                    const container = document.querySelector(`.value-field-container[data-index="${index}"]`);
+                    if (container) {
+                        container.setAttribute('data-current-value', value);
+                    }
+                }
+
+                function addRegistrationCondition() {
+                    const container = document.getElementById('registration-conditions');
+                    if (container) {
+                        const newCondition = document.createElement('div');
+                        newCondition.innerHTML = getConditionTemplate(conditionIndex);
+                        container.appendChild(newCondition.firstElementChild);
+                        conditionIndex++;
+                        updateConditionNumbers();
+                    }
+                }
+
+                function removeCondition(button) {
+                    const condition = button.closest('.registration-condition');
+                    condition.remove();
+                    updateConditionNumbers();
+                }
+
+                function updateConditionNumbers() {
+                    const conditions = document.querySelectorAll('.registration-condition');
+                    conditions.forEach((condition, index) => {
+                        const title = condition.querySelector('h4');
+                        title.textContent = `Condition ${index + 1}`;
+                        condition.setAttribute('data-index', index);
+                        
+                        // Mettre à jour les noms des champs
+                        const inputs = condition.querySelectorAll('input, select, textarea');
+                        inputs.forEach(input => {
+                            const name = input.getAttribute('name');
+                            if (name && name.includes('registration_conditions[')) {
+                                const newName = name.replace(/registration_conditions\[\d+\]/, `registration_conditions[${index}]`);
+                                input.setAttribute('name', newName);
+                            }
+                        });
+                        
+                        // Mettre à jour les onchange handlers
+                        const entitySelect = condition.querySelector('select[name*="[entity_type]"]');
+                        const attributeSelect = condition.querySelector('select[name*="[attribute_key]"]');
+                        
+                        if (entitySelect) {
+                            entitySelect.setAttribute('onchange', `updateAttributesForEntity(${index}, this.value)`);
+                        }
+                        if (attributeSelect) {
+                            attributeSelect.setAttribute('onchange', `updateValueFieldForAttribute(${index}, this.value)`);
+                        }
+                    });
+                }
+
+                // Initialiser les conditions existantes
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.querySelectorAll('.registration-condition').forEach((condition, index) => {
+                        const entitySelect = condition.querySelector('select[name*="[entity_type]"]');
+                        const attributeSelect = condition.querySelector('select[name*="[attribute_key]"]');
+                        
+                        if (entitySelect && entitySelect.value) {
+                            // Charger les attributs pour cette entité
+                            updateAttributesForEntity(index, entitySelect.value);
+                        }
+                    });
+                });
+                </script>
+            </div>
+        </div>
+
         <!-- Settings -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
@@ -164,10 +581,12 @@
                         <select name="type" 
                                 id="type" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option value="event" {{ (event.type ?? 'event') == 'event' ? 'selected' : '' }}>Event</option>
-                            <option value="meeting" {{ (event.type ?? '') == 'meeting' ? 'selected' : '' }}>Meeting</option>
-                            <option value="conference" {{ (event.type ?? '') == 'conference' ? 'selected' : '' }}>Conference</option>
-                            <option value="workshop" {{ (event.type ?? '') == 'workshop' ? 'selected' : '' }}>Workshop</option>
+                            {% for eventType in eventTypes %}
+                                <option value="{{ eventType.slug }}" 
+                                        {{ (event.type ?? (loop.first ? eventType.slug : '')) == eventType.slug ? 'selected' : '' }}>
+                                    {{ eventType.name }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -299,5 +718,89 @@ document.getElementById('title').addEventListener('input', function() {
         .replace(/^-+|-+$/g, '');
     document.getElementById('slug').value = slug;
 });
+
+// Handle verification checkbox
+document.getElementById('requires_verification').addEventListener('change', function() {
+    const verificationSettings = document.getElementById('verification_settings');
+    verificationSettings.style.display = this.checked ? 'block' : 'none';
+});
+
+// Handle attribute selection and populate values
+document.getElementById('required_attribute').addEventListener('change', function() {
+    const requiredValueSelect = document.getElementById('required_value');
+    const selectedAttribute = this.value;
+    
+    // Clear existing options
+    requiredValueSelect.innerHTML = '<option value="">{{ 'common.messages.choose_value'|trans({}, 'admin') }}</option>';
+    
+    // Define attribute options
+    const attributeOptions = {
+        'niveau_plongee': [
+            { value: 'debutant', text: 'Débutant' },
+            { value: 'niveau1', text: 'Niveau 1' },
+            { value: 'niveau2', text: 'Niveau 2' },
+            { value: 'niveau3', text: 'Niveau 3' },
+            { value: 'niveau4', text: 'Niveau 4' },
+            { value: 'niveau5', text: 'Niveau 5' },
+            { value: 'instructeur', text: 'Instructeur' },
+            { value: 'moniteur', text: 'Moniteur' }
+        ],
+        'certificat_medical': [
+            { value: 'oui', text: 'Oui' },
+            { value: 'non', text: 'Non' }
+        ],
+        'assurance': [
+            { value: 'oui', text: 'Oui' },
+            { value: 'non', text: 'Non' }
+        ],
+        'experience_plongee': [
+            { value: '0-10', text: '0-10 plongées' },
+            { value: '11-50', text: '11-50 plongées' },
+            { value: '51-100', text: '51-100 plongées' },
+            { value: '100+', text: '100+ plongées' }
+        ]
+    };
+    
+    // Populate options based on selected attribute
+    if (selectedAttribute && attributeOptions[selectedAttribute]) {
+        attributeOptions[selectedAttribute].forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.value;
+            optionElement.textContent = option.text;
+            {% if event.requiredValue is defined %}
+            if (option.value === '{{ event.requiredValue ?? "" }}') {
+                optionElement.selected = true;
+            }
+            {% endif %}
+            requiredValueSelect.appendChild(optionElement);
+        });
+    }
+});
+
+// Handle automatic date/time filling
+document.getElementById('start_date').addEventListener('change', function() {
+    const endDateField = document.getElementById('end_date');
+    // If end date is empty, set it to same as start date
+    if (!endDateField.value) {
+        endDateField.value = this.value;
+    }
+});
+
+document.getElementById('club_departure_time').addEventListener('change', function() {
+    const dockTimeField = document.getElementById('dock_departure_time');
+    // If dock time is empty, set it to club time + 1 hour
+    if (!dockTimeField.value && this.value) {
+        const clubTime = this.value.split(':');
+        const clubHour = parseInt(clubTime[0]);
+        const clubMinute = parseInt(clubTime[1]);
+        
+        let dockHour = clubHour + 1;
+        if (dockHour >= 24) dockHour = 0;
+        
+        const dockTime = String(dockHour).padStart(2, '0') + ':' + String(clubMinute).padStart(2, '0');
+        dockTimeField.value = dockTime;
+    }
+});
+
 </script>
 {% endblock %}

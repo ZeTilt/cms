@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/articles')]
 #[IsGranted('ROLE_ADMIN')]
@@ -23,7 +24,8 @@ class ArticleController extends AbstractController
         private ArticleRepository $articleRepository,
         private ModuleManager $moduleManager,
         private SluggerInterface $slugger,
-        private ContentSanitizer $contentSanitizer
+        private ContentSanitizer $contentSanitizer,
+        private TranslatorInterface $translator
     ) {}
 
     #[Route('', name: 'admin_articles_list', methods: ['GET'])]
@@ -37,8 +39,9 @@ class ArticleController extends AbstractController
         $limit = 10; // Articles per page in admin
         $offset = ($page - 1) * $limit;
 
-        $articles = $this->articleRepository->findByAuthor($this->getUser(), ['created_at' => 'DESC'], $limit, $offset);
-        $totalArticles = $this->articleRepository->countByAuthor($this->getUser());
+        // Show all articles for admins, not just their own
+        $articles = $this->articleRepository->findAllForAdmin(['created_at' => 'DESC'], $limit, $offset);
+        $totalArticles = $this->articleRepository->countAllForAdmin();
         $totalPages = (int) ceil($totalArticles / $limit);
 
         return $this->render('admin/articles/index.html.twig', [
@@ -112,9 +115,9 @@ class ArticleController extends AbstractController
             $this->entityManager->remove($article);
             $this->entityManager->flush();
             
-            $this->addFlash('success', 'Article deleted successfully!');
+            $this->addFlash('success', $this->translator->trans('delete.success', [], 'articles'));
         } else {
-            $this->addFlash('error', 'Invalid security token.');
+            $this->addFlash('error', $this->translator->trans('errors.invalid_token', [], 'base'));
         }
 
         return $this->redirectToRoute('admin_articles_list');
@@ -130,15 +133,15 @@ class ArticleController extends AbstractController
         if ($this->isCsrfTokenValid('toggle_status', $request->request->get('_token'))) {
             if ($article->isDraft()) {
                 $article->publish();
-                $this->addFlash('success', 'Article published successfully!');
+                $this->addFlash('success', $this->translator->trans('success.published', [], 'articles'));
             } else {
                 $article->unpublish();
-                $this->addFlash('success', 'Article unpublished successfully!');
+                $this->addFlash('success', $this->translator->trans('success.unpublished', [], 'articles'));
             }
             
             $this->entityManager->flush();
         } else {
-            $this->addFlash('error', 'Invalid security token.');
+            $this->addFlash('error', $this->translator->trans('errors.invalid_token', [], 'base'));
         }
 
         return $this->redirectToRoute('admin_articles_show', ['id' => $article->getId()]);
@@ -156,17 +159,17 @@ class ArticleController extends AbstractController
         
         $title = trim($request->request->get('title', ''));
         if (empty($title)) {
-            $errors[] = 'Title is required.';
+            $errors[] = $this->translator->trans('validation.title_required', [], 'articles');
         }
 
         $content = trim($request->request->get('content', ''));
         if (empty($content)) {
-            $errors[] = 'Content is required.';
+            $errors[] = $this->translator->trans('validation.content_required', [], 'articles');
         }
 
         $status = $request->request->get('status', 'draft');
         if (!in_array($status, ['draft', 'published'])) {
-            $errors[] = 'Invalid status.';
+            $errors[] = $this->translator->trans('validation.invalid_status', [], 'articles');
         }
 
         if (!empty($errors)) {
@@ -219,8 +222,53 @@ class ArticleController extends AbstractController
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        $this->addFlash('success', ($isEdit ? 'Article updated' : 'Article created') . ' successfully!');
+        $this->addFlash('success', $this->translator->trans(
+            $isEdit ? 'edit.success' : 'create.success',
+            [],
+            'articles'
+        ));
         
         return $this->redirectToRoute('admin_articles_show', ['id' => $article->getId()]);
+    }
+
+    #[Route('/upload-image', name: 'admin_articles_upload_image', methods: ['POST'])]
+    public function uploadImage(Request $request): Response
+    {
+        $uploadedFile = $request->files->get('image');
+        
+        if (!$uploadedFile) {
+            return $this->json(['error' => 'No file uploaded'], 400);
+        }
+
+        // Validate file type
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($uploadedFile->getMimeType(), $allowedTypes)) {
+            return $this->json(['error' => 'Invalid file type. Only JPEG, PNG, GIF and WebP are allowed.'], 400);
+        }
+
+        // Validate file size (max 5MB)
+        if ($uploadedFile->getSize() > 5 * 1024 * 1024) {
+            return $this->json(['error' => 'File too large. Maximum size is 5MB.'], 400);
+        }
+
+        try {
+            // Create uploads directory if it doesn't exist
+            $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/articles';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            // Generate unique filename
+            $filename = uniqid() . '.' . $uploadedFile->guessExtension();
+            $uploadedFile->move($uploadDir, $filename);
+
+            // Return the URL for the uploaded image
+            $imageUrl = '/uploads/articles/' . $filename;
+            
+            return $this->json(['url' => $imageUrl]);
+            
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Upload failed: ' . $e->getMessage()], 500);
+        }
     }
 }

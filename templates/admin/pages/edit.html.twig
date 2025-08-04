@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}{{ page ? 'Edit Page' : 'New Page' }} - Admin{% endblock %}
+{% block title %}{{ page ? 'edit.title'|trans({}, 'pages') : 'create.title'|trans({}, 'pages') }} - Admin{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -8,7 +8,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <a href="{{ path('admin_pages_list') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Pages</a>
+            <a href="{{ path('admin_pages_list') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">{{ 'breadcrumb.pages'|trans({}, 'pages') }}</a>
         </div>
     </li>
     <li>
@@ -16,7 +16,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ page ? 'Edit: ' ~ page.title : 'New Page' }}</span>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ page ? ('edit.prefix'|trans({}, 'pages') ~ page.title) : 'create.title'|trans({}, 'pages') }}</span>
         </div>
     </li>
 {% endblock %}
@@ -32,7 +32,7 @@
                 </svg>
             </a>
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                {{ page ? 'Edit Page' : 'New Page' }}
+                {{ page ? 'edit.title'|trans({}, 'pages') : 'create.title'|trans({}, 'pages') }}
             </h1>
         </div>
     </div>
@@ -43,12 +43,12 @@
     <form method="post" class="space-y-6">
         <!-- Basic Information -->
         <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h2>
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ 'fields.basic_information'|trans({}, 'pages') }}</h2>
             
             <div class="grid grid-cols-1 gap-6">
                 <!-- Title -->
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+                    <label for="title" class="block text-sm font-medium text-gray-700">{{ 'fields.title'|trans({}, 'pages') }} *</label>
                     <input type="text" id="title" name="title" value="{{ page ? page.title : '' }}" 
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
                            required maxlength="255" onkeyup="updateSlug()">
@@ -56,21 +56,21 @@
 
                 <!-- Slug -->
                 <div>
-                    <label for="slug" class="block text-sm font-medium text-gray-700">URL Slug</label>
+                    <label for="slug" class="block text-sm font-medium text-gray-700">{{ 'fields.slug'|trans({}, 'pages') }}</label>
                     <div class="mt-1 flex rounded-md shadow-sm">
                         <span class="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                             {{ app.request.schemeAndHttpHost }}/
                         </span>
                         <input type="text" id="slug" name="slug" value="{{ page ? page.slug : '' }}" 
-                               class="flex-1 block w-full rounded-none rounded-r-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" 
-                               maxlength="255">
+                               class="flex-1 block w-full rounded-none rounded-r-md border-gray-300 bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500" 
+                               maxlength="255" readonly>
                     </div>
-                    <p class="mt-1 text-sm text-gray-500">Leave empty to auto-generate from title</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'developer.slug_auto_generate'|trans({}, 'pages') }}</p>
                 </div>
 
                 <!-- Template Path -->
                 <div>
-                    <label for="template_path" class="block text-sm font-medium text-gray-700">Template Path</label>
+                    <label for="template_path" class="block text-sm font-medium text-gray-700">{{ 'fields.template_path'|trans({}, 'pages') }}</label>
                     {% if page %}
                         <div class="mt-1 flex rounded-md shadow-sm">
                             <span class="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -81,9 +81,9 @@
                                    maxlength="255">
                         </div>
                         {% if template_exists is defined and not template_exists %}
-                            <p class="mt-1 text-sm text-orange-600">⚠️ Template file does not exist and will be created</p>
+                            <p class="mt-1 text-sm text-orange-600">⚠️ {{ 'developer.template_not_exists'|trans({}, 'pages') }}</p>
                         {% else %}
-                            <p class="mt-1 text-sm text-green-600">✓ Template file exists</p>
+                            <p class="mt-1 text-sm text-green-600">✓ {{ 'developer.template_exists'|trans({}, 'pages') }}</p>
                         {% endif %}
                     {% else %}
                         <div class="mt-1 p-3 bg-blue-50 border border-blue-200 rounded-md">
@@ -91,19 +91,19 @@
                                 <svg class="inline h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                Template will be automatically created at <code>templates/pages/<span id="template-preview">[slug]</span>.html.twig</code>
+                                {{ 'developer.template_preview'|trans({}, 'pages') }} <code>templates/pages/<span id="template-preview">[slug]</span>.html.twig</code>
                             </p>
                         </div>
                     {% endif %}
-                    <p class="mt-1 text-sm text-gray-500">Twig template file for this page (auto-created for new pages)</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'fields.template_path_help'|trans({}, 'pages') }}</p>
                 </div>
 
                 <!-- Excerpt -->
                 <div>
-                    <label for="excerpt" class="block text-sm font-medium text-gray-700">Excerpt</label>
+                    <label for="excerpt" class="block text-sm font-medium text-gray-700">{{ 'fields.excerpt'|trans({}, 'pages') }}</label>
                     <textarea id="excerpt" name="excerpt" rows="3" 
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page ? page.excerpt : '' }}</textarea>
-                    <p class="mt-1 text-sm text-gray-500">Short description for listings and SEO</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'fields.excerpt_help'|trans({}, 'pages') }}</p>
                 </div>
             </div>
         </div>
@@ -117,18 +117,18 @@
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">For Developers</h3>
+                    <h3 class="text-sm font-medium text-blue-800">{{ 'developer.title'|trans({}, 'pages') }}</h3>
                     <div class="mt-2 text-sm text-blue-700">
-                        <p>Page content is now managed via Twig templates for better separation of concerns:</p>
+                        <p>{{ 'developer.content_explanation'|trans({}, 'pages') }}</p>
                         <ul class="list-disc list-inside mt-2 space-y-1">
-                            <li>Edit the template file directly in your IDE for full Twig/HTML control</li>
-                            <li>Template files are located in <code>templates/pages/</code></li>
-                            <li>Use Twig syntax, includes, and all Symfony features</li>
-                            <li>Changes to templates are reflected immediately (in dev mode)</li>
+                            <li>{{ 'developer.template_control'|trans({}, 'pages') }}</li>
+                            <li>{{ 'developer.template_location'|trans({}, 'pages') }} <code>templates/pages/</code></li>
+                            <li>{{ 'developer.twig_features'|trans({}, 'pages') }}</li>
+                            <li>{{ 'developer.immediate_changes'|trans({}, 'pages') }}</li>
                         </ul>
                         {% if page and page.templatePath %}
                             <p class="mt-3 font-medium">
-                                Edit template: <code class="bg-white px-2 py-1 rounded">templates/pages/{{ page.templatePath }}</code>
+                                {{ 'developer.edit_template'|trans({}, 'pages') }} <code class="bg-white px-2 py-1 rounded">templates/pages/{{ page.templatePath }}</code>
                             </p>
                         {% endif %}
                     </div>
@@ -138,50 +138,50 @@
 
         <!-- SEO Settings -->
         <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">SEO Settings</h2>
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ 'fields.seo_settings'|trans({}, 'pages') }}</h2>
             
             <div class="grid grid-cols-1 gap-6">
                 <!-- Meta Title -->
                 <div>
-                    <label for="meta_title" class="block text-sm font-medium text-gray-700">Meta Title</label>
+                    <label for="meta_title" class="block text-sm font-medium text-gray-700">{{ 'fields.meta_title'|trans({}, 'pages') }}</label>
                     <input type="text" id="meta_title" name="meta_title" value="{{ page ? page.metaTitle : '' }}" 
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
                            maxlength="60">
-                    <p class="mt-1 text-sm text-gray-500">Leave empty to use page title (recommended under 60 characters)</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'developer.meta_title_leave_empty'|trans({}, 'pages') }}</p>
                 </div>
 
                 <!-- Meta Description -->
                 <div>
-                    <label for="meta_description" class="block text-sm font-medium text-gray-700">Meta Description</label>
+                    <label for="meta_description" class="block text-sm font-medium text-gray-700">{{ 'fields.meta_description'|trans({}, 'pages') }}</label>
                     <textarea id="meta_description" name="meta_description" rows="3" 
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
                               maxlength="160">{{ page ? page.metaDescription : '' }}</textarea>
-                    <p class="mt-1 text-sm text-gray-500">Recommended under 160 characters</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'developer.meta_description_recommended'|trans({}, 'pages') }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Additional Settings -->
         <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Additional Settings</h2>
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ 'fields.additional_settings'|trans({}, 'pages') }}</h2>
             
             <div class="grid grid-cols-1 gap-6">
                 <!-- Tags -->
                 <div>
-                    <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
+                    <label for="tags" class="block text-sm font-medium text-gray-700">{{ 'fields.tags'|trans({}, 'pages') }}</label>
                     <input type="text" id="tags" name="tags" value="{{ page and page.tags ? page.tags|join(', ') : '' }}" 
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    <p class="mt-1 text-sm text-gray-500">Separate tags with commas</p>
+                    <p class="mt-1 text-sm text-gray-500">{{ 'fields.tags_help'|trans({}, 'pages') }}</p>
                 </div>
 
                 <!-- Status -->
                 <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <label for="status" class="block text-sm font-medium text-gray-700">{{ 'fields.status'|trans({}, 'pages') }}</label>
                     <select id="status" name="status" 
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="draft" {{ page ? (page.status == 'draft' ? 'selected' : '') : 'selected' }}>Draft</option>
-                        <option value="published" {{ page ? (page.status == 'published' ? 'selected' : '') : '' }}>Published</option>
-                        <option value="archived" {{ page ? (page.status == 'archived' ? 'selected' : '') : '' }}>Archived</option>
+                        <option value="draft" {{ page ? (page.status == 'draft' ? 'selected' : '') : 'selected' }}>{{ 'status.draft'|trans({}, 'pages') }}</option>
+                        <option value="published" {{ page ? (page.status == 'published' ? 'selected' : '') : '' }}>{{ 'status.published'|trans({}, 'pages') }}</option>
+                        <option value="archived" {{ page ? (page.status == 'archived' ? 'selected' : '') : '' }}>{{ 'status_extra.archived'|trans({}, 'pages') }}</option>
                     </select>
                 </div>
             </div>
@@ -190,7 +190,7 @@
         <!-- Form Actions -->
         <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
             <a href="{{ path('admin_pages_list') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 text-center">
-                Cancel
+                {{ 'actions.cancel'|trans({}, 'pages') }}
             </a>
             {% if page %}
                 <a href="{{ path('admin_pages_preview', {id: page.id}) }}" target="_blank" class="bg-gray-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-gray-700 flex items-center justify-center">
@@ -198,42 +198,67 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
-                    Preview
+                    {{ 'actions.preview'|trans({}, 'pages') }}
                 </a>
             {% endif %}
             <button type="submit" class="bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700">
-                {{ page ? 'Update Page' : 'Create Page' }}
+                {{ page ? 'actions.update_page'|trans({}, 'pages') : 'actions.create_page'|trans({}, 'pages') }}
             </button>
         </div>
     </form>
 </div>
 
 <script>
+function slugify(text) {
+    // Normaliser les caractères accentués
+    const accents = {
+        'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a',
+        'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e',
+        'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
+        'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o',
+        'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u',
+        'ç': 'c', 'ñ': 'n',
+        'À': 'A', 'Á': 'A', 'Â': 'A', 'Ã': 'A', 'Ä': 'A', 'Å': 'A',
+        'È': 'E', 'É': 'E', 'Ê': 'E', 'Ë': 'E',
+        'Ì': 'I', 'Í': 'I', 'Î': 'I', 'Ï': 'I',
+        'Ò': 'O', 'Ó': 'O', 'Ô': 'O', 'Õ': 'O', 'Ö': 'O',
+        'Ù': 'U', 'Ú': 'U', 'Û': 'U', 'Ü': 'U',
+        'Ç': 'C', 'Ñ': 'N'
+    };
+    
+    return text
+        .split('').map(char => accents[char] || char).join('')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[\s-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 function updateSlug() {
     const title = document.getElementById('title').value;
     const slugField = document.getElementById('slug');
     const templatePreview = document.getElementById('template-preview');
     
-    if (title && !slugField.value) {
-        const slug = title
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/[\s-]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-        
+    if (title) {
+        const slug = slugify(title);
         slugField.value = slug;
         
         if (templatePreview) {
             templatePreview.textContent = slug || '[slug]';
         }
+    } else {
+        slugField.value = '';
+        if (templatePreview) {
+            templatePreview.textContent = '[slug]';
+        }
     }
 }
 
-// Update template preview on slug change
-document.getElementById('slug')?.addEventListener('input', function() {
-    const templatePreview = document.getElementById('template-preview');
-    if (templatePreview) {
-        templatePreview.textContent = this.value || '[slug]';
+// Initialize slug on page load if title exists
+document.addEventListener('DOMContentLoaded', function() {
+    const titleField = document.getElementById('title');
+    if (titleField && titleField.value && !document.getElementById('slug').value) {
+        updateSlug();
     }
 });
 </script>

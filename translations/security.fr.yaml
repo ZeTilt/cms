@@ -1,11 +1,22 @@
 # Module Sécurité/Système - Français
+title: "Connexion - ZeTilt CMS"
+app_title: "ZeTilt CMS"
+subtitle: "Connectez-vous à votre compte"
+
 login:
   title: "Connexion"
+  subtitle: "Connectez-vous à votre compte"
   email: "Adresse email"
+  email_placeholder: "Adresse email"
   password: "Mot de passe"
+  password_placeholder: "Mot de passe"
   remember_me: "Se souvenir de moi"
   submit: "Se connecter"
+  sign_in: "Se connecter"
   forgot_password: "Mot de passe oublié ?"
+  default_credentials: "Par défaut : admin@zetilt.cms / admin123"
+  no_account: "Vous n'avez pas de compte ?"
+  create_account: "Créer un compte"
   
 logout:
   title: "Déconnexion"

@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}{{ isEdit ? 'Edit Article' : 'New Article' }} - Admin{% endblock %}
+{% block title %}{{ isEdit ? 'edit.title'|trans({}, 'articles') : 'create.title'|trans({}, 'articles') }} - Admin{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -13,7 +13,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <a href="{{ path('admin_articles_list') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Articles</a>
+            <a href="{{ path('admin_articles_list') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">{{ 'title'|trans({}, 'articles') }}</a>
         </div>
     </li>
     <li>
@@ -21,7 +21,7 @@
             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ isEdit ? 'Edit' : 'New' }}</span>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ isEdit ? 'breadcrumb.edit'|trans({}, 'articles') : 'breadcrumb.create'|trans({}, 'articles') }}</span>
         </div>
     </li>
 {% endblock %}
@@ -29,11 +29,11 @@
 {% block content %}
 <!-- Header -->
 <div class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+    <div class="w-[95%] mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2 sm:space-x-4">
                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                    {{ isEdit ? 'Edit Article' : 'New Article' }}
+                    {{ isEdit ? 'edit.title'|trans({}, 'articles') : 'create.title'|trans({}, 'articles') }}
                 </h1>
             </div>
             <div class="flex items-center space-x-4">
@@ -41,7 +41,7 @@
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Back to Articles
+                    {{ 'navigation.back_to_blog'|trans({}, 'articles') }}
                 </a>
             </div>
         </div>
@@ -49,7 +49,7 @@
 </div>
 
 <!-- Content -->
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="w-[95%] mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <form method="POST" class="space-y-8 divide-y divide-gray-200">
         <div class="space-y-8 divide-y divide-gray-200">
             <div>
@@ -57,7 +57,7 @@
                     <!-- Title -->
                     <div class="sm:col-span-8">
                         <label for="title" class="block text-sm font-medium text-gray-700">
-                            Title *
+                            {{ 'fields.title'|trans({}, 'articles') }} *
                         </label>
                         <div class="mt-1">
                             <input 
@@ -67,7 +67,7 @@
                                 value="{{ article.title }}"
                                 required
                                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="Enter article title..."
+                                placeholder="{{ 'fields.title_placeholder'|trans({}, 'articles') }}"
                             >
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                     <!-- Status -->
                     <div class="sm:col-span-4">
                         <label for="status" class="block text-sm font-medium text-gray-700">
-                            Status
+                            {{ 'fields.status'|trans({}, 'articles') }}
                         </label>
                         <div class="mt-1">
                             <select 
@@ -83,8 +83,8 @@
                                 id="status"
                                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                             >
-                                <option value="draft" {{ article.status == 'draft' ? 'selected' : '' }}>Draft</option>
-                                <option value="published" {{ article.status == 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="draft" {{ article.status == 'draft' ? 'selected' : '' }}>{{ 'status.draft'|trans({}, 'articles') }}</option>
+                                <option value="published" {{ article.status == 'published' ? 'selected' : '' }}>{{ 'status.published'|trans({}, 'articles') }}</option>
                             </select>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
                     <!-- Excerpt -->
                     <div class="sm:col-span-12">
                         <label for="excerpt" class="block text-sm font-medium text-gray-700">
-                            Excerpt
+                            {{ 'fields.excerpt'|trans({}, 'articles') }}
                         </label>
                         <div class="mt-1">
                             <textarea 
@@ -100,16 +100,16 @@
                                 id="excerpt" 
                                 rows="3"
                                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="Brief description of the article (optional)..."
+                                placeholder="{{ 'fields.excerpt_placeholder'|trans({}, 'articles') }}"
                             >{{ article.excerpt }}</textarea>
                         </div>
-                        <p class="mt-2 text-sm text-gray-500">Brief description that will be shown in article listings.</p>
+                        <p class="mt-2 text-sm text-gray-500">{{ 'fields.excerpt_help'|trans({}, 'articles') }}</p>
                     </div>
 
                     <!-- Content -->
                     <div class="sm:col-span-12">
                         <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
-                            Content *
+                            {{ 'fields.content'|trans({}, 'articles') }} *
                         </label>
                         
                         <!-- Quill Editor -->
@@ -120,7 +120,7 @@
                     <!-- Category -->
                     <div class="sm:col-span-6">
                         <label for="category" class="block text-sm font-medium text-gray-700">
-                            Category
+                            {{ 'fields.category'|trans({}, 'articles') }}
                         </label>
                         <div class="mt-1">
                             <input 
@@ -129,7 +129,7 @@
                                 id="category" 
                                 value="{{ article.category }}"
                                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="e.g. Technology, Travel, Lifestyle..."
+                                placeholder="{{ 'fields.category_placeholder'|trans({}, 'articles') }}"
                             >
                         </div>
                     </div>
@@ -137,7 +137,7 @@
                     <!-- Tags -->
                     <div class="sm:col-span-6">
                         <label for="tags" class="block text-sm font-medium text-gray-700">
-                            Tags
+                            {{ 'fields.tags'|trans({}, 'articles') }}
                         </label>
                         <div class="mt-1">
                             <input 
@@ -146,10 +146,10 @@
                                 id="tags" 
                                 value="{{ article.tags ? article.tags|join(', ') : '' }}"
                                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="tag1, tag2, tag3..."
+                                placeholder="{{ 'fields.tags_placeholder'|trans({}, 'articles') }}"
                             >
                         </div>
-                        <p class="mt-2 text-sm text-gray-500">Separate tags with commas.</p>
+                        <p class="mt-2 text-sm text-gray-500">{{ 'fields.tags_help'|trans({}, 'articles') }}</p>
                     </div>
                 </div>
             </div>
@@ -158,10 +158,10 @@
         <div class="pt-5">
             <div class="flex justify-end space-x-3">
                 <a href="{{ path('admin_articles_list') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    Cancel
+                    {{ 'common.cancel'|trans({}, 'base') }}
                 </a>
                 <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    {{ isEdit ? 'Update Article' : 'Create Article' }}
+                    {{ isEdit ? 'actions.edit_article'|trans({}, 'articles') : 'actions.create_article'|trans({}, 'articles') }}
                 </button>
             </div>
         </div>
@@ -175,19 +175,72 @@ document.addEventListener('DOMContentLoaded', function() {
     const quill = new Quill('#quill-editor', {
         theme: 'snow',
         modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                [{ 'align': [] }],
-                ['link', 'image'],
-                ['blockquote', 'code-block'],
-                ['clean']
-            ]
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'align': [] }],
+                    ['link', 'image'],
+                    ['blockquote', 'code-block'],
+                    ['clean']
+                ],
+                handlers: {
+                    image: imageHandler
+                }
+            }
         }
     });
+
+    // Custom image handler
+    function imageHandler() {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = () => {
+            const file = input.files[0];
+            if (file) {
+                uploadImageToServer(file);
+            }
+        };
+    }
+
+    // Upload image to server
+    function uploadImageToServer(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        // Show loading indicator
+        const range = quill.getSelection();
+        quill.insertText(range.index, 'Uploading image...', 'italic', true);
+
+        fetch('{{ path('admin_articles_upload_image') }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Remove loading text
+            quill.deleteText(range.index, 'Uploading image...'.length);
+            
+            if (data.url) {
+                // Insert the uploaded image
+                quill.insertEmbed(range.index, 'image', data.url);
+                quill.setSelection(range.index + 1);
+            } else {
+                alert('Upload failed: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            // Remove loading text
+            quill.deleteText(range.index, 'Uploading image...'.length);
+            alert('Upload failed: ' + error.message);
+        });
+    }
 
     // Update hidden textarea when form is submitted
     const form = document.querySelector('form');

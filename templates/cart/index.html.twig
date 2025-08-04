@@ -1,0 +1,199 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'cart.title'|trans({}, 'cart') }} - ZeTilt CMS{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">{{ 'cart.title'|trans({}, 'cart') }}</h1>
+        <p class="mt-1 text-sm text-gray-500">{{ 'cart.subtitle'|trans({}, 'cart') }}</p>
+    </div>
+
+    {% if cart_items is empty %}
+        <!-- Panier vide -->
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 5M7 13h10m-10 0l-1.5 5M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ 'cart.empty.title'|trans({}, 'cart') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ 'cart.empty.message'|trans({}, 'cart') }}</p>
+            <div class="mt-6">
+                <a href="{{ path('public_galleries_index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    {{ 'cart.empty.browse_galleries'|trans({}, 'cart') }}
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <!-- Contenu du panier -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flow-root">
+                    <ul role="list" class="-my-6 divide-y divide-gray-200">
+                        {% for item_key, item in cart_items %}
+                            <li class="flex py-6" data-item-key="{{ item_key }}">
+                                <div class="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
+                                    {% if item.item_type == 'gallery_access' %}
+                                        <svg class="w-full h-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    {% else %}
+                                        <svg class="w-full h-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4h3a1 1 0 011 1v11a3 3 0 01-3 3H7a3 3 0 01-3-3V8a1 1 0 011-1h3zM6 9v10a1 1 0 001 1h10a1 1 0 001-1V9H6zm4-2h4V3h-4v4z"></path>
+                                        </svg>
+                                    {% endif %}
+                                </div>
+
+                                <div class="ml-4 flex-1 flex flex-col">
+                                    <div>
+                                        <div class="flex justify-between text-base font-medium text-gray-900">
+                                            <h3>{{ item.item_name }}</h3>
+                                            <p class="ml-4">{{ item.total_price }} €</p>
+                                        </div>
+                                        <p class="mt-1 text-sm text-gray-500">
+                                            {% if item.item_type == 'gallery_access' %}
+                                                {{ 'cart.item.gallery_access'|trans({}, 'cart') }}
+                                            {% elseif item.item_type == 'event_registration' %}
+                                                {{ 'cart.item.event_registration'|trans({}, 'cart') }}
+                                            {% endif %}
+                                        </p>
+                                        {% if item.metadata %}
+                                            <p class="mt-1 text-xs text-gray-400">
+                                                {% for key, value in item.metadata %}
+                                                    {% if key == 'event_date' %}
+                                                        {{ 'cart.metadata.event_date'|trans({}, 'cart') }}: {{ value }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-1 flex items-end justify-between text-sm">
+                                        <div class="flex items-center">
+                                            <label for="quantity-{{ item_key }}" class="sr-only">{{ 'cart.quantity'|trans({}, 'cart') }}</label>
+                                            <select id="quantity-{{ item_key }}" name="quantity" class="max-w-full rounded-md border border-gray-300 py-1.5 text-base leading-5 font-medium text-gray-700 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" onchange="updateQuantity('{{ item.item_type }}', {{ item.item_id }}, this.value)">
+                                                {% for i in 1..10 %}
+                                                    <option value="{{ i }}" {% if i == item.quantity %}selected{% endif %}>{{ i }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <span class="ml-2 text-gray-500">{{ 'cart.quantity'|trans({}, 'cart') }}</span>
+                                        </div>
+
+                                        <div class="flex">
+                                            <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500" onclick="removeFromCart('{{ item.item_type }}', {{ item.item_id }})">
+                                                {{ 'cart.remove'|trans({}, 'cart') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Résumé et actions -->
+        <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex justify-between items-center">
+                    <div class="text-base font-medium text-gray-900">
+                        {{ 'cart.total'|trans({}, 'cart') }}
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900">
+                        {{ total_amount }} €
+                    </div>
+                </div>
+                <p class="mt-0.5 text-sm text-gray-500">
+                    {{ 'cart.total_items'|trans({'%count%': item_count}, 'cart') }}
+                </p>
+                
+                <div class="mt-6 flex space-x-4">
+                    <a href="{{ path('public_galleries_index') }}" class="flex-1 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-center">
+                        {{ 'cart.continue_shopping'|trans({}, 'cart') }}
+                    </a>
+                    <a href="{{ path('cart_checkout') }}" class="flex-1 bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-center">
+                        {{ 'checkout_button'|trans({}, 'cart') }}
+                    </a>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <button type="button" onclick="clearCart()" class="text-sm text-gray-500 hover:text-gray-700">
+                        {{ 'cart.clear_cart'|trans({}, 'cart') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function updateQuantity(itemType, itemId, quantity) {
+    fetch(`/cart/update/${itemType}/${itemId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erreur lors de la mise à jour');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors de la mise à jour');
+    });
+}
+
+function removeFromCart(itemType, itemId) {
+    if (confirm('{{ 'cart.confirm_remove'|trans({}, 'cart') }}')) {
+        fetch(`/cart/remove/${itemType}/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la suppression');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la suppression');
+        });
+    }
+}
+
+function clearCart() {
+    if (confirm('{{ 'cart.confirm_clear'|trans({}, 'cart') }}')) {
+        fetch('/cart/clear', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la suppression');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la suppression');
+        });
+    }
+}
+</script>
+{% endblock %}

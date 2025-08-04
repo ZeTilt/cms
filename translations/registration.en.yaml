@@ -38,17 +38,34 @@ actions:
   reason_rejection_placeholder: "Provide a reason for rejection..."
   reject_user: "Reject User"
 
+# Page titles
+title_page: "Register - ZeTilt CMS"
+disabled_title_page: "Registration Disabled - ZeTilt CMS"
+
 form:
-  title: "Create account"
-  first_name: "First name"
-  last_name: "Last name"
-  email: "Email address"
+  title: "Create your account"
+  first_name: "First Name"
+  last_name: "Last Name"
+  email: "Email Address"
+  email_placeholder: "your@email.com"
+  account_type: "Account Type"
+  account_type_optional: "Select account type (optional)"
   password: "Password"
-  confirm_password: "Confirm password"
+  password_placeholder: "Minimum 8 characters"
+  confirm_password: "Confirm Password"
+  confirm_password_placeholder: "Repeat your password"
+  terms_agree: "I agree to the"
+  terms_conditions: "Terms and Conditions"
   phone: "Phone"
-  terms: "I accept the terms of service"
   newsletter: "I want to receive the newsletter"
-  submit: "Register"
+  submit: "Create Account"
+  already_account: "Already have an account?"
+  sign_in_here: "Sign in here"
+
+disabled:
+  title: "Registration Disabled"
+  message: "New account registration is currently disabled. Please contact an administrator if you need access."
+  back_to_login: "Back to Login"
 
 messages:
   success: "Registration successful! Check your email."
