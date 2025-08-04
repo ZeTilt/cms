@@ -571,13 +571,59 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <div class="space-y-4">
                 <div>
-                    <label for="print-format" class="block text-sm font-medium text-gray-700">Format</label>
+                    <label for="print-format" class="block text-sm font-medium text-gray-700">Produit</label>
                     <select id="print-format" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="calculatePrintPrice()">
-                        <option value="10x15">10x15 cm - 0,19 €</option>
-                        <option value="13x18">13x18 cm - 0,29 €</option>
-                        <option value="15x21">15x21 cm (A5) - 0,49 €</option>
-                        <option value="20x30">20x30 cm - 1,99 €</option>
-                        <option value="30x40">30x40 cm - 4,99 €</option>
+                        <optgroup label="Tirages Photo">
+                            <option value="9x13">9x13 cm - 0,15 €</option>
+                            <option value="10x15">10x15 cm - 0,19 €</option>
+                            <option value="13x18">13x18 cm - 0,29 €</option>
+                            <option value="15x21">15x21 cm (A5) - 0,49 €</option>
+                            <option value="20x30">20x30 cm - 1,99 €</option>
+                        </optgroup>
+                        <optgroup label="Grands Formats">
+                            <option value="30x40">30x40 cm - 4,99 €</option>
+                            <option value="30x45">30x45 cm - 5,99 €</option>
+                            <option value="40x60">40x60 cm - 9,99 €</option>
+                            <option value="50x75">50x75 cm - 14,99 €</option>
+                        </optgroup>
+                        <optgroup label="Puzzles Photo">
+                            <option value="puzzle_120">Puzzle 120 pièces - 19,99 €</option>
+                            <option value="puzzle_252">Puzzle 252 pièces - 24,99 €</option>
+                            <option value="puzzle_500">Puzzle 500 pièces - 29,99 €</option>
+                            <option value="puzzle_1000">Puzzle 1000 pièces - 34,99 €</option>
+                        </optgroup>
+                        <optgroup label="Cadeaux Personnalisés">
+                            <option value="mug_standard">Mug Photo - 12,99 €</option>
+                            <option value="mug_magique">Mug Magique - 16,99 €</option>
+                            <option value="coussin_40x40">Coussin 40x40 cm - 24,99 €</option>
+                            <option value="coussin_35x35">Coussin 35x35 cm - 21,99 €</option>
+                            <option value="tshirt_homme">T-shirt Homme - 19,99 €</option>
+                            <option value="tshirt_femme">T-shirt Femme - 19,99 €</option>
+                            <option value="tote_bag">Tote Bag - 14,99 €</option>
+                        </optgroup>
+                        <optgroup label="Décoration">
+                            <option value="tableau_alu">Tableau Alu-Dibond - 24,99 €</option>
+                            <option value="tableau_plexi">Tableau Plexiglas - 29,99 €</option>
+                            <option value="toile_chassis">Toile sur Châssis - 19,99 €</option>
+                            <option value="cadre_bois">Cadre Bois - 15,99 €</option>
+                            <option value="cadre_metal">Cadre Métal - 18,99 €</option>
+                        </optgroup>
+                        <optgroup label="Calendriers">
+                            <option value="calendrier_mural">Calendrier Mural A4 - 14,99 €</option>
+                            <option value="calendrier_bureau">Calendrier de Bureau - 9,99 €</option>
+                            <option value="calendrier_chevalet">Calendrier Chevalet - 12,99 €</option>
+                        </optgroup>
+                        <optgroup label="Livres Photo">
+                            <option value="livre_photo_a4">Livre Photo A4 - 19,99 €</option>
+                            <option value="livre_photo_a5">Livre Photo A5 - 14,99 €</option>
+                            <option value="livre_premium">Livre Photo Premium - 29,99 €</option>
+                        </optgroup>
+                        <optgroup label="Cartes & Faire-part">
+                            <option value="carte_simple">Carte Simple - 2,99 €</option>
+                            <option value="carte_double">Carte Double - 3,99 €</option>
+                            <option value="faire_part">Faire-part - 4,99 €</option>
+                            <option value="invitations">Invitations - 3,49 €</option>
+                        </optgroup>
                     </select>
                 </div>
                 
@@ -671,13 +717,59 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <div class="space-y-4">
                 <div>
-                    <label for="bulk-print-format" class="block text-sm font-medium text-gray-700">Format</label>
+                    <label for="bulk-print-format" class="block text-sm font-medium text-gray-700">Produit</label>
                     <select id="bulk-print-format" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="calculateBulkPrintPrice()">
-                        <option value="10x15">10x15 cm - 0,19 €</option>
-                        <option value="13x18">13x18 cm - 0,29 €</option>
-                        <option value="15x21">15x21 cm (A5) - 0,49 €</option>
-                        <option value="20x30">20x30 cm - 1,99 €</option>
-                        <option value="30x40">30x40 cm - 4,99 €</option>
+                        <optgroup label="Tirages Photo">
+                            <option value="9x13">9x13 cm - 0,15 €</option>
+                            <option value="10x15">10x15 cm - 0,19 €</option>
+                            <option value="13x18">13x18 cm - 0,29 €</option>
+                            <option value="15x21">15x21 cm (A5) - 0,49 €</option>
+                            <option value="20x30">20x30 cm - 1,99 €</option>
+                        </optgroup>
+                        <optgroup label="Grands Formats">
+                            <option value="30x40">30x40 cm - 4,99 €</option>
+                            <option value="30x45">30x45 cm - 5,99 €</option>
+                            <option value="40x60">40x60 cm - 9,99 €</option>
+                            <option value="50x75">50x75 cm - 14,99 €</option>
+                        </optgroup>
+                        <optgroup label="Puzzles Photo">
+                            <option value="puzzle_120">Puzzle 120 pièces - 19,99 €</option>
+                            <option value="puzzle_252">Puzzle 252 pièces - 24,99 €</option>
+                            <option value="puzzle_500">Puzzle 500 pièces - 29,99 €</option>
+                            <option value="puzzle_1000">Puzzle 1000 pièces - 34,99 €</option>
+                        </optgroup>
+                        <optgroup label="Cadeaux Personnalisés">
+                            <option value="mug_standard">Mug Photo - 12,99 €</option>
+                            <option value="mug_magique">Mug Magique - 16,99 €</option>
+                            <option value="coussin_40x40">Coussin 40x40 cm - 24,99 €</option>
+                            <option value="coussin_35x35">Coussin 35x35 cm - 21,99 €</option>
+                            <option value="tshirt_homme">T-shirt Homme - 19,99 €</option>
+                            <option value="tshirt_femme">T-shirt Femme - 19,99 €</option>
+                            <option value="tote_bag">Tote Bag - 14,99 €</option>
+                        </optgroup>
+                        <optgroup label="Décoration">
+                            <option value="tableau_alu">Tableau Alu-Dibond - 24,99 €</option>
+                            <option value="tableau_plexi">Tableau Plexiglas - 29,99 €</option>
+                            <option value="toile_chassis">Toile sur Châssis - 19,99 €</option>
+                            <option value="cadre_bois">Cadre Bois - 15,99 €</option>
+                            <option value="cadre_metal">Cadre Métal - 18,99 €</option>
+                        </optgroup>
+                        <optgroup label="Calendriers">
+                            <option value="calendrier_mural">Calendrier Mural A4 - 14,99 €</option>
+                            <option value="calendrier_bureau">Calendrier de Bureau - 9,99 €</option>
+                            <option value="calendrier_chevalet">Calendrier Chevalet - 12,99 €</option>
+                        </optgroup>
+                        <optgroup label="Livres Photo">
+                            <option value="livre_photo_a4">Livre Photo A4 - 19,99 €</option>
+                            <option value="livre_photo_a5">Livre Photo A5 - 14,99 €</option>
+                            <option value="livre_premium">Livre Photo Premium - 29,99 €</option>
+                        </optgroup>
+                        <optgroup label="Cartes & Faire-part">
+                            <option value="carte_simple">Carte Simple - 2,99 €</option>
+                            <option value="carte_double">Carte Double - 3,99 €</option>
+                            <option value="faire_part">Faire-part - 4,99 €</option>
+                            <option value="invitations">Invitations - 3,49 €</option>
+                        </optgroup>
                     </select>
                 </div>
                 

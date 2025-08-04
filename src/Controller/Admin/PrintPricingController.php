@@ -25,6 +25,8 @@ class PrintPricingController extends AbstractController
     {
         // Get current pricing configuration
         $formats = $this->ceweApiService->getAvailableFormats();
+        $formatsByCategory = $this->ceweApiService->getFormatsByCategory();
+        $categories = $this->ceweApiService->getProductCategories();
         $paperTypes = $this->ceweApiService->getAvailablePaperTypes();
         
         // Get custom margins from database (we'll store these in a configuration table)
@@ -32,6 +34,8 @@ class PrintPricingController extends AbstractController
 
         return $this->render('admin/print_pricing/index.html.twig', [
             'formats' => $formats,
+            'formats_by_category' => $formatsByCategory,
+            'categories' => $categories,
             'paper_types' => $paperTypes,
             'custom_margins' => $customMargins
         ]);
