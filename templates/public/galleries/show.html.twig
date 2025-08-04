@@ -48,6 +48,32 @@
             <div class="mt-4 text-sm text-gray-500">
                 {{ gallery.images|length }} photos • Updated {{ gallery.updatedAt|date('F j, Y') }}
             </div>
+            
+            <!-- Print Orders Information -->
+            <div class="mt-6 max-w-2xl mx-auto">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="text-center">
+                        <h3 class="text-lg font-medium text-blue-900">📸 Commandez vos tirages photo</h3>
+                        <p class="text-sm text-blue-600 mt-2">Sélectionnez vos photos préférées et commandez des tirages professionnels</p>
+                        <p class="text-xs text-blue-500 mt-1">Partenariat CEWE - Qualité professionnelle garantie</p>
+                        
+                        {% if app.user %}
+                            <div class="mt-4 flex justify-center space-x-3">
+                                <button onclick="togglePrintMode()" id="print-mode-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                    🖨️ Mode Tirage
+                                </button>
+                                <button onclick="openCartModal()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                                    🛒 Voir Panier (<span id="cart-count">0</span>)
+                                </button>
+                            </div>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                Connectez-vous pour commander
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Images Grid -->
@@ -62,13 +88,27 @@
         {% else %}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="gallery-grid">
                 {% for image in gallery.images %}
-                    <div class="group cursor-pointer" onclick="openLightbox({{ loop.index0 }})">
-                        <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                            <img src="{{ image.thumbnailUrl }}" 
+                    <div class="group relative" data-image-id="{{ image.id }}">
+                        <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer" onclick="openLightbox({{ loop.index0 }})">
+                            <img src="{{ path('secure_gallery_thumbnail', {galleryId: gallery.id, filename: image.filename}) }}" 
                                  alt="{{ image.alt }}" 
                                  class="w-full h-full object-cover group-hover:opacity-75 transition-opacity"
                                  loading="lazy">
                         </div>
+                        
+                        <!-- Print Mode Overlay -->
+                        <div class="print-mode-overlay hidden absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                            <button onclick="openPrintModal({{ image.id }})" class="bg-white text-gray-900 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors">
+                                🖨️ Commander
+                            </button>
+                        </div>
+                        
+                        <!-- Selection Checkbox (for print mode) -->
+                        <div class="print-mode-checkbox hidden absolute top-2 left-2">
+                            <input type="checkbox" class="w-5 h-5 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500" 
+                                   onchange="toggleImageSelection({{ image.id }}, this.checked)">
+                        </div>
+                        
                         {% if image.caption %}
                             <p class="mt-2 text-sm text-gray-600 truncate">{{ image.caption }}</p>
                         {% endif %}
@@ -124,10 +164,36 @@
 </div>
 
 <script>
+// Function to add gallery to cart
+function addToCart() {
+    fetch('{{ path('cart_add', {type: 'gallery', id: gallery.id}) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'quantity=1'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Galerie ajoutée au panier !');
+            // Optionally redirect to cart
+            window.location.href = '{{ path('cart_index') }}';
+        } else {
+            alert('Erreur : ' + (data.error || 'Impossible d\'ajouter au panier'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors de l\'ajout au panier');
+    });
+}
+
 const images = [
     {% for image in gallery.images %}
         {
-            url: '{{ image.url }}',
+            url: '{{ path('secure_gallery_image', {galleryId: gallery.id, filename: image.filename}) }}',
             alt: '{{ image.alt|e('js') }}',
             caption: '{{ image.caption|e('js') }}',
             originalName: '{{ image.originalName|e('js') }}'
@@ -190,5 +256,279 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
         closeLightbox();
     }
 });
+
+// Print ordering functionality
+let printModeActive = false;
+let selectedImages = new Set();
+let cartItems = 0;
+
+function togglePrintMode() {
+    printModeActive = !printModeActive;
+    const btn = document.getElementById('print-mode-btn');
+    const overlays = document.querySelectorAll('.print-mode-overlay');
+    const checkboxes = document.querySelectorAll('.print-mode-checkbox');
+    
+    if (printModeActive) {
+        btn.textContent = '❌ Quitter Mode Tirage';
+        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        btn.classList.add('bg-red-600', 'hover:bg-red-700');
+        overlays.forEach(overlay => overlay.classList.remove('hidden'));
+        checkboxes.forEach(checkbox => checkbox.classList.remove('hidden'));
+    } else {
+        btn.textContent = '🖨️ Mode Tirage';
+        btn.classList.remove('bg-red-600', 'hover:bg-red-700');
+        btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+        overlays.forEach(overlay => overlay.classList.add('hidden'));
+        checkboxes.forEach(checkbox => checkbox.classList.add('hidden'));
+    }
+}
+
+function openPrintModal(imageId) {
+    // Ouvrir le modal de configuration de tirage
+    const modal = document.getElementById('print-modal');
+    document.getElementById('print-image-id').value = imageId;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePrintModal() {
+    document.getElementById('print-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function toggleImageSelection(imageId, selected) {
+    if (selected) {
+        selectedImages.add(imageId);
+    } else {
+        selectedImages.delete(imageId);
+    }
+}
+
+function addPrintToCart() {
+    const imageId = document.getElementById('print-image-id').value;
+    const format = document.getElementById('print-format').value;
+    const paperType = document.getElementById('paper-type').value;
+    const quantity = document.getElementById('print-quantity').value;
+    
+    fetch('{{ path('add_print_to_cart') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `image_id=${imageId}&format=${format}&paper_type=${paperType}&quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            cartItems++;
+            document.getElementById('cart-count').textContent = cartItems;
+            closePrintModal();
+            alert('Tirage ajouté au panier !');
+        } else {
+            alert('Erreur : ' + (data.error || 'Impossible d\'ajouter au panier'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors de l\'ajout au panier');
+    });
+}
+
+function openCartModal() {
+    // Ouvrir le modal du panier
+    const modal = document.getElementById('cart-modal');
+    loadCartContents();
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCartModal() {
+    document.getElementById('cart-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function loadCartContents() {
+    fetch('{{ path('cart_contents') }}')
+    .then(response => response.json())
+    .then(data => {
+        const container = document.getElementById('cart-contents');
+        container.innerHTML = '';
+        
+        if (data.items.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center py-4">Votre panier est vide</p>';
+            return;
+        }
+        
+        data.items.forEach(item => {
+            if (item.item_type === 'print_order') {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'flex justify-between items-center p-3 border-b';
+                itemDiv.innerHTML = `
+                    <div>
+                        <p class="font-medium">${item.item_name}</p>
+                        <p class="text-sm text-gray-600">Quantité: ${item.quantity}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium">${item.total_price} €</p>
+                        <button onclick="removeFromCart('${item.item_type}', ${item.item_id})" class="text-red-600 text-sm hover:text-red-800">
+                            Supprimer
+                        </button>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            }
+        });
+        
+        // Ajouter le total
+        const totalDiv = document.createElement('div');
+        totalDiv.className = 'p-3 bg-gray-50 font-bold text-right';
+        totalDiv.innerHTML = `Total: ${data.total} €`;
+        container.appendChild(totalDiv);
+    });
+}
+
+function removeFromCart(itemType, itemId) {
+    fetch('{{ path('cart_remove') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `item_type=${itemType}&item_id=${itemId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadCartContents();
+            cartItems = data.cart_count || 0;
+            document.getElementById('cart-count').textContent = cartItems;
+        }
+    });
+}
+
+function calculatePrintPrice() {
+    const format = document.getElementById('print-format').value;
+    const paperType = document.getElementById('paper-type').value;
+    const quantity = document.getElementById('print-quantity').value;
+    
+    fetch('{{ path('calculate_print_price') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `format=${format}&paper_type=${paperType}&quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('print-price-display').textContent = data.price + ' €';
+        }
+    });
+}
+
+// Initialize cart count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{{ path('cart_count') }}')
+    .then(response => response.json())
+    .then(data => {
+        cartItems = data.count || 0;
+        document.getElementById('cart-count').textContent = cartItems;
+    });
+});
 </script>
+
+<!-- Print Order Modal -->
+<div id="print-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Commander un tirage</h3>
+                <button onclick="closePrintModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <input type="hidden" id="print-image-id">
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="print-format" class="block text-sm font-medium text-gray-700">Format</label>
+                    <select id="print-format" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="calculatePrintPrice()">
+                        <option value="10x15">10x15 cm - 0,19 €</option>
+                        <option value="13x18">13x18 cm - 0,29 €</option>
+                        <option value="15x21">15x21 cm (A5) - 0,49 €</option>
+                        <option value="20x30">20x30 cm - 1,99 €</option>
+                        <option value="30x40">30x40 cm - 4,99 €</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="paper-type" class="block text-sm font-medium text-gray-700">Type de papier</label>
+                    <select id="paper-type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" onchange="calculatePrintPrice()">
+                        <option value="standard">Standard (x1)</option>
+                        <option value="premium">Premium (x1.5)</option>
+                        <option value="canvas">Canvas (x3)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="print-quantity" class="block text-sm font-medium text-gray-700">Quantité</label>
+                    <input type="number" id="print-quantity" min="1" max="50" value="1" 
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                           onchange="calculatePrintPrice()">
+                </div>
+                
+                <div class="bg-gray-50 p-3 rounded">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">Prix total:</span>
+                        <span id="print-price-display" class="font-bold text-blue-600">0,19 €</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex space-x-3">
+                <button onclick="closePrintModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors">
+                    Annuler
+                </button>
+                <button onclick="addPrintToCart()" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                    Ajouter au panier
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Panier de tirages</h3>
+                    <button onclick="closeCartModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="cart-contents" class="space-y-2 mb-6">
+                    <!-- Cart contents will be loaded here -->
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button onclick="closeCartModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors">
+                        Continuer
+                    </button>
+                    <a href="{{ path('cart_checkout') }}" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors text-center">
+                        Procéder au paiement
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
