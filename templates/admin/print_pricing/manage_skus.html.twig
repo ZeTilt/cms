@@ -1,0 +1,515 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des SKUs - Prix Tirages{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Gestion des SKUs</h1>
+            <p class="text-gray-600 mt-1">Ajouter ou supprimer des produits Prodigi dans le cache</p>
+        </div>
+        <a href="{{ path('admin_print_pricing') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+            ← Retour aux Prix
+        </a>
+    </div>
+
+    <!-- Statistiques du cache -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <h3 class="text-lg font-semibold text-blue-800 mb-2">📊 Statistiques du Cache</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+                <span class="text-blue-600 font-medium">Total produits:</span>
+                <span class="ml-2 font-bold">{{ cache_stats.total_products }}</span>
+            </div>
+            <div>
+                <span class="text-green-600 font-medium">Disponibles:</span>
+                <span class="ml-2 font-bold">{{ cache_stats.available_products }}</span>
+            </div>
+            <div>
+                <span class="text-yellow-600 font-medium">Récents (&lt;24h):</span>
+                <span class="ml-2 font-bold">{{ cache_stats.recent_products }}</span>
+            </div>
+            <div>
+                <span class="text-red-600 font-medium">À rafraîchir (&gt;24h):</span>
+                <span class="ml-2 font-bold">{{ cache_stats.old_products }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Formulaire d'ajout de SKUs -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    ➕ Ajouter des SKUs
+                </h2>
+                
+                <form id="add-skus-form">
+                    <div class="mb-4">
+                        <label for="skus-input" class="block text-sm font-medium text-gray-700 mb-2">
+                            Liste des SKUs
+                        </label>
+                        <textarea 
+                            id="skus-input" 
+                            name="skus" 
+                            rows="8" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="GLOBAL-PAP-10X15&#10;GLOBAL-MUG-11OZ&#10;GLOBAL-CAN-20X30&#10;&#10;(Un SKU par ligne ou séparés par virgules)"
+                        ></textarea>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Formats acceptés: un SKU par ligne, ou séparés par virgules/espaces
+                        </p>
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
+                        id="add-skus-btn"
+                    >
+                        🔄 Ajouter les SKUs
+                    </button>
+                </form>
+                
+                <!-- Zone de résultats -->
+                <div id="add-results" class="mt-4 hidden">
+                    <!-- Rempli dynamiquement par JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des SKUs existants -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        📦 SKUs en Cache ({{ sku_list|length }})
+                    </h2>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Liste des produits actuellement disponibles
+                    </p>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors sortable" data-column="sku" data-type="string">
+                                    <div class="flex items-center space-x-1">
+                                        <span>SKU</span>
+                                        <svg class="w-3 h-3 sort-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors sortable" data-column="name" data-type="string">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Nom</span>
+                                        <svg class="w-3 h-3 sort-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors sortable" data-column="category" data-type="string">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Catégorie</span>
+                                        <svg class="w-3 h-3 sort-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors sortable" data-column="type" data-type="string">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Type</span>
+                                        <svg class="w-3 h-3 sort-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors sortable" data-column="price" data-type="number">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Prix Base</span>
+                                        <svg class="w-3 h-3 sort-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors sortable" data-column="updated" data-type="date">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Mis à jour</span>
+                                        <svg class="w-3 h-3 sort-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="sku-table-body">
+                            {% for sku_info in sku_list %}
+                            <tr class="hover:bg-gray-50" data-sku="{{ sku_info.sku }}">
+                                <td class="px-4 py-3 text-sm font-mono text-gray-900" data-value="{{ sku_info.sku }}">
+                                    {{ sku_info.sku }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-900" data-value="{{ sku_info.name }}">
+                                    <span title="{{ sku_info.name }}">
+                                        {{ sku_info.name|slice(0, 30) }}{% if sku_info.name|length > 30 %}...{% endif %}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600" data-value="{{ sku_info.category }}">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                        {% if sku_info.category == 'tirages' %}bg-blue-100 text-blue-800{% endif %}
+                                        {% if sku_info.category == 'grands_formats' %}bg-purple-100 text-purple-800{% endif %}
+                                        {% if sku_info.category == 'decoration' %}bg-green-100 text-green-800{% endif %}
+                                        {% if sku_info.category == 'cadeaux' %}bg-pink-100 text-pink-800{% endif %}
+                                        {% if sku_info.category not in ['tirages', 'grands_formats', 'decoration', 'cadeaux'] %}bg-gray-100 text-gray-800{% endif %}
+                                    ">
+                                        {{ sku_info.category|capitalize }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600" data-value="{{ sku_info.paper_type }}">
+                                    {{ sku_info.paper_type }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-900 font-medium" data-value="{{ sku_info.base_price }}">
+                                    {{ sku_info.base_price|number_format(2) }} €
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600" data-value="{{ sku_info.last_updated }}">
+                                    <div class="flex items-center">
+                                        {% if sku_info.is_recent %}
+                                            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                                        {% else %}
+                                            <div class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
+                                        {% endif %}
+                                        {{ sku_info.last_updated }}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    <button 
+                                        class="text-red-600 hover:text-red-800 font-medium delete-sku-btn"
+                                        data-sku="{{ sku_info.sku }}"
+                                        title="Supprimer ce SKU"
+                                    >
+                                        🗑️ Supprimer
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    {% if sku_list is empty %}
+                    <div class="text-center py-8 text-gray-500">
+                        <p>Aucun SKU en cache.</p>
+                        <p class="text-sm">Utilisez le formulaire à gauche pour ajouter des produits.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS pour le tri -->
+<style>
+.sortable {
+    user-select: none;
+}
+
+.sortable.sort-asc .sort-icon {
+    transform: rotate(180deg);
+}
+
+.sortable.sort-desc .sort-icon {
+    transform: rotate(0deg);
+}
+
+.sortable:not(.sort-asc):not(.sort-desc) .sort-icon {
+    opacity: 0.3;
+}
+
+.sort-icon {
+    transition: transform 0.2s, opacity 0.2s;
+}
+</style>
+
+<!-- JavaScript pour les interactions et le tri -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables globales
+    const tableBody = document.getElementById('sku-table-body');
+    const addForm = document.getElementById('add-skus-form');
+    const addBtn = document.getElementById('add-skus-btn');
+    const resultsDiv = document.getElementById('add-results');
+    
+    // ===== SYSTÈME DE TRI =====
+    let currentSort = { column: null, direction: null };
+    
+    // Gestionnaire de clic pour le tri des colonnes
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const column = this.dataset.column;
+            const type = this.dataset.type;
+            
+            // Déterminer la direction du tri
+            if (currentSort.column === column) {
+                if (currentSort.direction === 'asc') {
+                    currentSort.direction = 'desc';
+                } else if (currentSort.direction === 'desc') {
+                    currentSort.direction = null;
+                    currentSort.column = null;
+                } else {
+                    currentSort.direction = 'asc';
+                }
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            
+            // Mettre à jour l'apparence des headers
+            updateSortHeaders();
+            
+            // Effectuer le tri
+            if (currentSort.column) {
+                sortTable(column, currentSort.direction, type);
+            } else {
+                // Restaurer l'ordre original (tri par SKU)
+                sortTable('sku', 'asc', 'string');
+            }
+        });
+    });
+    
+    function updateSortHeaders() {
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.classList.remove('sort-asc', 'sort-desc');
+            
+            if (header.dataset.column === currentSort.column) {
+                if (currentSort.direction === 'asc') {
+                    header.classList.add('sort-asc');
+                } else if (currentSort.direction === 'desc') {
+                    header.classList.add('sort-desc');
+                }
+            }
+        });
+    }
+    
+    function sortTable(column, direction, type) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        
+        rows.sort((a, b) => {
+            const columnIndex = getColumnIndex(column);
+            let aValue = a.querySelector(`td:nth-child(${columnIndex})`).dataset.value;
+            let bValue = b.querySelector(`td:nth-child(${columnIndex})`).dataset.value;
+            
+            // Conversion selon le type
+            if (type === 'number') {
+                aValue = parseFloat(aValue) || 0;
+                bValue = parseFloat(bValue) || 0;
+            } else if (type === 'date') {
+                aValue = new Date(aValue);
+                bValue = new Date(bValue);
+            } else {
+                aValue = aValue ? aValue.toLowerCase() : '';
+                bValue = bValue ? bValue.toLowerCase() : '';
+            }
+            
+            let comparison = 0;
+            if (aValue > bValue) {
+                comparison = 1;
+            } else if (aValue < bValue) {
+                comparison = -1;
+            }
+            
+            return direction === 'desc' ? -comparison : comparison;
+        });
+        
+        // Réinsérer les lignes triées
+        rows.forEach(row => tableBody.appendChild(row));
+        
+        // Animation subtle
+        tableBody.style.opacity = '0.7';
+        setTimeout(() => {
+            tableBody.style.opacity = '1';
+        }, 100);
+    }
+    
+    function getColumnIndex(column) {
+        const columnMap = {
+            'sku': 1,
+            'name': 2,
+            'category': 3,
+            'type': 4,
+            'price': 5,
+            'updated': 6
+        };
+        return columnMap[column];
+    }
+    
+    // ===== FORMULAIRE D'AJOUT DE SKUs =====
+    addForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        addBtn.disabled = true;
+        addBtn.textContent = '⏳ Traitement...';
+        resultsDiv.classList.add('hidden');
+        
+        try {
+            const formData = new FormData(addForm);
+            const response = await fetch('{{ path('admin_print_pricing_add_skus') }}', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showResults(data.results, data.message);
+                // Recharger la page après 3 secondes pour voir les nouveaux SKUs
+                if (data.results.added.length > 0) {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                }
+            } else {
+                showError(data.error, data.debug);
+                // PAS de rechargement automatique en cas d'erreur
+            }
+        } catch (error) {
+            showError('Erreur de réseau: ' + error.message, {
+                file: 'manage_skus.html.twig',
+                line: 'JavaScript',
+                trace: 'Erreur de communication avec le serveur'
+            });
+        } finally {
+            addBtn.disabled = false;
+            addBtn.textContent = '🔄 Ajouter les SKUs';
+        }
+    });
+    
+    // ===== BOUTONS DE SUPPRESSION =====
+    document.addEventListener('click', async function(e) {
+        if (e.target.classList.contains('delete-sku-btn')) {
+            const sku = e.target.getAttribute('data-sku');
+            
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer le SKU ${sku} ?`)) {
+                return;
+            }
+            
+            e.target.disabled = true;
+            e.target.textContent = '⏳';
+            
+            try {
+                const response = await fetch(`{{ path('admin_print_pricing_remove_sku', {sku: 'SKU_PLACEHOLDER'}) }}`.replace('SKU_PLACEHOLDER', encodeURIComponent(sku)), {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Animation de suppression
+                    const row = e.target.closest('tr');
+                    row.style.opacity = '0.5';
+                    row.style.transform = 'translateX(-20px)';
+                    
+                    setTimeout(() => {
+                        row.remove();
+                        showSuccess(data.message);
+                    }, 200);
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('Erreur de réseau: ' + error.message);
+            } finally {
+                e.target.disabled = false;
+                e.target.textContent = '🗑️ Supprimer';
+            }
+        }
+    });
+    
+    // ===== FONCTIONS D'AFFICHAGE =====
+    function showResults(results, message) {
+        resultsDiv.innerHTML = `
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 relative">
+                <button 
+                    onclick="this.closest('.bg-green-50').parentElement.classList.add('hidden')" 
+                    class="absolute top-2 right-2 text-green-600 hover:text-green-800 font-bold text-lg"
+                    title="Fermer"
+                >×</button>
+                <h4 class="font-semibold text-green-800 pr-8">${message}</h4>
+                <div class="mt-2 text-sm text-green-700">
+                    ${results.added.length > 0 ? `<p>✅ Ajoutés: ${results.added.join(', ')}</p>` : ''}
+                    ${results.already_exists.length > 0 ? `<p>ℹ️ Déjà existants: ${results.already_exists.join(', ')}</p>` : ''}
+                    ${results.failed.length > 0 ? `<p>❌ Échecs: ${results.failed.map(f => f.sku + ' (' + f.reason + ')').join(', ')}</p>` : ''}
+                </div>
+                <div class="mt-3 text-xs text-green-600">
+                    💡 La page va se recharger automatiquement dans quelques secondes pour afficher les nouveaux SKUs.
+                </div>
+            </div>
+        `;
+        resultsDiv.classList.remove('hidden');
+    }
+    
+    function showError(message, debugInfo = null) {
+        let debugHtml = '';
+        if (debugInfo) {
+            debugHtml = `
+                <details class="mt-3">
+                    <summary class="text-red-600 cursor-pointer text-xs">📋 Détails techniques (cliquer pour voir)</summary>
+                    <div class="mt-2 text-xs text-red-600 bg-red-100 p-2 rounded">
+                        <p><strong>Fichier:</strong> ${debugInfo.file}</p>
+                        <p><strong>Ligne:</strong> ${debugInfo.line}</p>
+                        <p><strong>Trace:</strong> ${debugInfo.trace}</p>
+                    </div>
+                </details>
+            `;
+        }
+        
+        resultsDiv.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 relative">
+                <button 
+                    onclick="this.closest('.bg-red-50').parentElement.classList.add('hidden')" 
+                    class="absolute top-2 right-2 text-red-600 hover:text-red-800 font-bold text-lg"
+                    title="Fermer"
+                >×</button>
+                <p class="text-red-800 font-semibold pr-8">❌ Erreur</p>
+                <p class="text-red-700 text-sm mt-1">${message}</p>
+                ${debugHtml}
+                <div class="mt-3 text-xs text-red-600">
+                    ℹ️ Ce message restera affiché jusqu'à ce que vous le fermiez. Vous pouvez réessayer avec d'autres SKUs.
+                </div>
+            </div>
+        `;
+        resultsDiv.classList.remove('hidden');
+        
+        // Faire défiler vers le message d'erreur pour s'assurer qu'il est visible
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    function showSuccess(message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+        successDiv.textContent = message;
+        successDiv.style.transform = 'translateY(-20px)';
+        successDiv.style.opacity = '0';
+        
+        document.body.appendChild(successDiv);
+        
+        // Animation d'entrée
+        setTimeout(() => {
+            successDiv.style.transform = 'translateY(0)';
+            successDiv.style.opacity = '1';
+        }, 10);
+        
+        // Animation de sortie
+        setTimeout(() => {
+            successDiv.style.transform = 'translateY(-20px)';
+            successDiv.style.opacity = '0';
+            setTimeout(() => successDiv.remove(), 300);
+        }, 2700);
+    }
+});
+</script>
+{% endblock %}

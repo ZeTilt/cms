@@ -7,8 +7,8 @@ parameters:
     locale: '%env(LOCALE)%'
     uploads_directory: '%kernel.project_dir%/public/uploads/images'
     thumbnails_directory: '%kernel.project_dir%/public/uploads/thumbnails'
-    cewe_api_key_default: 'demo-key'
-    cewe_partner_id_default: 'demo-partner'
+    prodigi_api_key_default: 'demo-key'
+    prodigi_sandbox_default: true
 
 services:
     # default configuration for services in *this* file
@@ -82,11 +82,11 @@ services:
             $projectDir: '%kernel.project_dir%'
             $moduleManager: '@App\Service\ModuleManager'
 
-    # CEWE API Service
-    App\Service\CeweApiService:
+    # Prodigi API Service
+    App\Service\ProdigiApiService:
         arguments:
-            $ceweApiKey: '%env(default:cewe_api_key_default:CEWE_API_KEY)%'
-            $cewePartnerId: '%env(default:cewe_partner_id_default:CEWE_PARTNER_ID)%'
+            $prodigiApiKey: '%env(default:prodigi_api_key_default:PRODIGI_API_KEY)%'
+            $prodigiSandbox: '%env(bool:default:prodigi_sandbox_default:PRODIGI_SANDBOX)%'
 
     # Print Order Service
     App\Service\PrintOrderService:

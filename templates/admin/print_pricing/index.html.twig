@@ -1,4 +1,4 @@
-{% extends 'admin/base_sidebar.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% block title %}Configuration des Prix de Tirage{% endblock %}
 
@@ -15,137 +15,231 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Configuration des Prix de Tirage</h1>
-        <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2" onclick="syncWithCewe()">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
-            <span>Synchroniser avec CEWE</span>
-        </button>
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Configuration des Prix de Tirage</h1>
+            <div class="mt-2 flex items-center space-x-3">
+                <div class="flex items-center space-x-2">
+                    {% if api_status.connected %}
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="text-sm text-green-700">API Prodigi connectée</span>
+                    {% else %}
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span class="text-sm text-red-700">API Prodigi indisponible</span>
+                    {% endif %}
+                </div>
+                <div class="text-xs text-gray-500">
+                    Dernière vérification: {{ api_status.last_check.format('H:i:s') }}
+                </div>
+                {% if api_status.environment is defined and api_status.environment %}
+                    <div class="text-xs text-gray-500">
+                        Environnement: {{ api_status.environment }}
+                    </div>
+                {% endif %}
+                {% if api_status.fallback_mode is defined and api_status.fallback_mode %}
+                    <div class="text-xs text-orange-600 font-medium">
+                        Mode: Produits réels uniquement
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ path('admin_print_pricing_manage_skus') }}" 
+               class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span>Gérer les SKUs</span>
+            </a>
+            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2" onclick="syncWithProdigi()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <span>Synchroniser avec Prodigi</span>
+            </button>
+        </div>
     </div>
+    
+    {% if formats is empty %}
+        <!-- Message quand aucun produit n'est disponible -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.498 0L4.316 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">Aucun produit Prodigi disponible</h3>
+                    <div class="mt-2 text-sm text-yellow-700">
+                        <p>L'API Prodigi n'est pas accessible actuellement. Pour configurer les prix de tirage :</p>
+                        <ol class="list-decimal list-inside mt-2 space-y-1">
+                            <li>Vérifiez votre clé API dans la <a href="{{ path('admin_api_config_index') }}" class="underline">configuration API</a></li>
+                            <li>Assurez-vous que votre compte Prodigi est actif</li>
+                            <li>Testez la connexion et synchronisez les produits</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
+    {% if formats is not empty %}
     <!-- Pricing Calculator -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Calculateur de Prix -->
         <div class="bg-white rounded-lg shadow border">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">Calculateur de Prix</h3>
             </div>
             <div class="p-6">
-                    <form id="price-calculator" class="space-y-4">
-                        <div>
-                            <label for="calc-format" class="block text-sm font-medium text-gray-700">Format</label>
-                            <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="calc-format" name="format" required>
-                                <option value="">Choisir un produit</option>
-                                {% for category_key, category_formats in formats_by_category %}
-                                    <optgroup label="{{ categories[category_key].name }}">
-                                        {% for key, format in category_formats %}
-                                            <option value="{{ key }}" data-base-price="{{ format.base_price }}">
-                                                {{ format.name }} - {{ format.base_price }}€
-                                            </option>
-                                        {% endfor %}
-                                    </optgroup>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div>
-                            <label for="calc-paper-type" class="block text-sm font-medium text-gray-700">Type de Papier</label>
-                            <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="calc-paper-type" name="paper_type" required>
-                                <option value="">Choisir un type</option>
-                                {% for key, paper in paper_types %}
-                                    <option value="{{ key }}" data-multiplier="{{ paper.price_multiplier }}">
-                                        {{ paper.name }} (×{{ paper.price_multiplier }})
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div>
-                            <label for="calc-quantity" class="block text-sm font-medium text-gray-700">Quantité</label>
-                            <input type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="calc-quantity" name="quantity" value="1" min="1">
-                        </div>
-                        <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors" onclick="calculatePrice()">
-                            Calculer le Prix
-                        </button>
-                    </form>
-                    
-                    <div id="price-result" class="mt-4 hidden">
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">Résultats du Calcul:</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between text-sm">
-                                    <span>Prix CEWE:</span>
-                                    <span><span id="cewe-price"></span>€</span>
-                                </div>
-                                <div class="flex justify-between text-sm">
-                                    <span>Marge:</span>
-                                    <span><span id="margin-percent"></span>% (+<span id="margin-amount"></span>€)</span>
-                                </div>
-                                <div class="flex justify-between text-sm font-medium border-t pt-2">
-                                    <span>Prix Client:</span>
-                                    <span><span id="customer-price"></span>€</span>
-                                </div>
-                                <div class="flex justify-between text-sm font-bold">
-                                    <span>Total (×<span id="result-quantity"></span>):</span>
-                                    <span><span id="total-price"></span>€</span>
-                                </div>
+                <form id="price-calculator" class="space-y-4">
+                    <div>
+                        <label for="calc-format" class="block text-sm font-medium text-gray-700">Format</label>
+                        <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="calc-format" name="format" required>
+                            <option value="">Choisir un produit</option>
+                            {% for category_key, category_formats in formats_by_category %}
+                                <optgroup label="{{ categories[category_key].name }}">
+                                    {% for key, format in category_formats %}
+                                        <option value="{{ key }}" data-base-price="{{ format.base_price }}">
+                                            {{ format.name }} - {{ format.base_price }}€
+                                        </option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="calc-paper-type" class="block text-sm font-medium text-gray-700">Type de Papier</label>
+                        <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="calc-paper-type" name="paper_type" required>
+                            <option value="">Choisir un type</option>
+                            {% for key, paper in paper_types %}
+                                <option value="{{ key }}" data-multiplier="{{ paper.price_multiplier }}">
+                                    {{ paper.name }} (×{{ paper.price_multiplier }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="calc-quantity" class="block text-sm font-medium text-gray-700">Quantité</label>
+                        <input type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="calc-quantity" name="quantity" value="1" min="1">
+                    </div>
+                    <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors" onclick="calculatePrice()">
+                        Calculer le Prix
+                    </button>
+                </form>
+                
+                <div id="price-result" class="mt-4 hidden">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-gray-900 mb-3">Résultats du Calcul:</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span>Prix Prodigi:</span>
+                                <span><span id="prodigi-price"></span>€</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Marge:</span>
+                                <span><span id="margin-percent"></span>% (+<span id="margin-amount"></span>€)</span>
+                            </div>
+                            <div class="flex justify-between text-sm font-medium border-t pt-2">
+                                <span>Prix Client:</span>
+                                <span><span id="customer-price"></span>€</span>
+                            </div>
+                            <div class="flex justify-between text-sm font-bold">
+                                <span>Total (×<span id="result-quantity"></span>):</span>
+                                <span><span id="total-price"></span>€</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Configuration des Marges -->
         <div class="bg-white rounded-lg shadow border">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">Configuration des Marges</h3>
             </div>
             <div class="p-6">
-                    <form id="margins-form" class="space-y-4">
-                        <div>
-                            <label for="default-margin" class="block text-sm font-medium text-gray-700">Marge par Défaut (%)</label>
-                            <input type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
-                                   id="default-margin" name="margins[default]" 
-                                   value="{{ custom_margins.default ?? 50 }}" min="0" step="0.1">
-                            <p class="mt-1 text-sm text-gray-500">Marge appliquée si aucune marge spécifique n'est définie</p>
-                        </div>
-                        
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">Marges Spécifiques par Format/Papier:</h4>
-                            <div id="specific-margins" class="space-y-2">
-                                {% for format_key, format in formats %}
-                                    {% for paper_key, paper in paper_types %}
-                                        {% set margin_key = format_key ~ '_' ~ paper_key %}
-                                        <div class="flex items-center space-x-3">
-                                            <div class="flex-1 text-sm text-gray-600">
-                                                {{ format.name }} - {{ paper.name }}:
-                                            </div>
-                                            <div class="w-24">
-                                                <input type="number" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm" 
-                                                       name="margins[{{ margin_key }}]" 
-                                                       value="{{ custom_margins[margin_key] ?? '' }}" 
-                                                       min="0" step="0.1" placeholder="Défaut">
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                {% endfor %}
+                <form id="margins-form" class="space-y-4">
+                    <div>
+                        <label for="default-margin" class="block text-sm font-medium text-gray-700">Marge par Défaut (%)</label>
+                        <input type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+                               id="default-margin" name="margins[default]" 
+                               value="{{ custom_margins.default ?? 50 }}" min="0" step="0.1">
+                        <p class="mt-1 text-sm text-gray-500">Marge appliquée si aucune marge spécifique n'est définie</p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-sm font-medium text-gray-900">Marges par Catégorie de Produit:</h4>
+                            <div class="flex space-x-2">
+                                <button type="button" onclick="resetToDefaults()" class="text-xs bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded">
+                                    Remettre aux défauts
+                                </button>
+                                <button type="button" onclick="applyGlobalMargin()" class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded">
+                                    Appliquer marge globale
+                                </button>
                             </div>
                         </div>
-                        
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-                            </svg>
-                            <span>Sauvegarder les Marges</span>
-                        </button>
-                    </form>
-                </div>
+                        <div id="category-margins" class="space-y-4">
+                            {% for category_key, category_formats in formats_by_category %}
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h5 class="font-medium text-gray-800">{{ categories[category_key].name }}</h5>
+                                        <div class="flex items-center space-x-2">
+                                            <input type="number" class="w-16 border-gray-300 rounded text-xs" placeholder="%" id="category-margin-{{ category_key }}" min="0" step="1">
+                                            <button type="button" onclick="applyCategoryMargin('{{ category_key }}', document.getElementById('category-margin-{{ category_key }}').value)" 
+                                                    class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded">
+                                                Appliquer
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {% for format_key, format in category_formats %}
+                                            {% for paper_key, paper in paper_types %}
+                                                {% set margin_key = format_key ~ '_' ~ paper_key %}
+                                                <div class="flex items-center justify-between bg-white rounded p-2 border">
+                                                    <div class="flex-1">
+                                                        <div class="text-sm font-medium text-gray-900">{{ format.name }}</div>
+                                                        <div class="text-xs text-gray-500">{{ paper.name }} - {{ format.base_price }}€ × {{ paper.price_multiplier }}</div>
+                                                    </div>
+                                                    <div class="w-20 ml-2">
+                                                        <div class="relative">
+                                                            <input type="number" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm pr-6" 
+                                                                   name="margins[{{ margin_key }}]" 
+                                                                   value="{{ custom_margins[margin_key] ?? '' }}" 
+                                                                   min="0" step="1" placeholder="50"
+                                                                   data-category="{{ category_key }}">
+                                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                                <span class="text-gray-500 text-xs">%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        <span>Sauvegarder les Marges</span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Catalogue CEWE par Catégories -->
+    <!-- Catalogue Prodigi par Catégories -->
     <div class="bg-white rounded-lg shadow border">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">Catalogue Complet CEWE</h3>
+            <h3 class="text-lg font-medium text-gray-900">Catalogue Complet Prodigi</h3>
             <p class="text-sm text-gray-500 mt-1">{{ formats|length }} produits disponibles</p>
         </div>
         
@@ -158,7 +252,7 @@
                             id="tab-{{ category_key }}">
                         {{ category.name }}
                         <span class="ml-2 bg-gray-100 text-gray-900 rounded-full py-0.5 px-2.5 text-xs font-medium">
-                            {{ formats_by_category[category_key]|length }}
+                            {{ formats_by_category[category_key]|default([])|length }}
                         </span>
                     </button>
                 {% endfor %}
@@ -215,6 +309,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 
 <script>
@@ -251,7 +346,7 @@ function calculatePrice() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            document.getElementById('cewe-price').textContent = data.cewe_price;
+            document.getElementById('prodigi-price').textContent = data.prodigi_price;
             document.getElementById('margin-percent').textContent = data.margin_percent;
             document.getElementById('margin-amount').textContent = data.margin_amount;
             document.getElementById('customer-price').textContent = data.customer_price;
@@ -268,8 +363,8 @@ function calculatePrice() {
     });
 }
 
-function syncWithCewe() {
-    fetch('{{ path('admin_print_pricing_sync_cewe') }}', {
+function syncWithProdigi() {
+    fetch('{{ path('admin_print_pricing_sync_prodigi') }}', {
         method: 'POST'
     })
     .then(response => response.json())
@@ -329,5 +424,56 @@ document.getElementById('calc-quantity').addEventListener('input', () => {
         calculatePrice();
     }
 });
+
+// Margin management functions
+function applyGlobalMargin() {
+    const globalMargin = document.getElementById('default-margin').value;
+    if (!globalMargin) {
+        alert('Veuillez d\'abord définir une marge par défaut');
+        return;
+    }
+    
+    const marginInputs = document.querySelectorAll('input[name^="margins["][name$="]"]:not([name="margins[default]"])');
+    marginInputs.forEach(input => {
+        input.value = globalMargin;
+    });
+    
+    alert(`Marge de ${globalMargin}% appliquée à tous les produits`);
+}
+
+function resetToDefaults() {
+    if (!confirm('Êtes-vous sûr de vouloir remettre toutes les marges aux valeurs par défaut ?')) {
+        return;
+    }
+    
+    // Category defaults from controller
+    const categoryDefaults = {
+        'tirages': 50,
+        'grands_formats': 40,
+        'puzzles': 60,
+        'cadeaux': 70,
+        'decoration': 65,
+        'calendriers': 55,
+        'livres': 50,
+        'cartes': 75
+    };
+    
+    // Apply category defaults
+    {% for category_key, category_formats in formats_by_category %}
+        const {{ category_key }}Inputs = document.querySelectorAll('[data-category="{{ category_key }}"]');
+        {{ category_key }}Inputs.forEach(input => {
+            input.value = categoryDefaults['{{ category_key }}'] || 50;
+        });
+    {% endfor %}
+    
+    alert('Marges remises aux valeurs par défaut');
+}
+
+function applyCategoryMargin(category, margin) {
+    const categoryInputs = document.querySelectorAll(`[data-category="${category}"]`);
+    categoryInputs.forEach(input => {
+        input.value = margin;
+    });
+}
 </script>
 {% endblock %}
