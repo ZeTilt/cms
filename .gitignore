@@ -13,3 +13,9 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+###> test and debug files ###
+test_*.php
+test_*.html
+debug_*.php
+###< test and debug files ###
