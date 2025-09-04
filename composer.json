@@ -28,7 +28,8 @@
         "symfony/translation": "7.3.*",
         "symfony/twig-bundle": "7.3.*",
         "symfony/validator": "7.3.*",
-        "symfony/yaml": "7.3.*"
+        "symfony/yaml": "7.3.*",
+        "wingly/prodigi": "^1.0"
     },
     "config": {
         "allow-plugins": {
@@ -88,5 +89,11 @@
         "symfony/maker-bundle": "^1.64",
         "symfony/stopwatch": "7.3.*",
         "symfony/web-profiler-bundle": "7.3.*"
+    },
+    "repositories": {
+        "prodigi": {
+            "type": "vcs",
+            "url": "https://github.com/Wingly-Company/prodigi"
+        }
     }
 }

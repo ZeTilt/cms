@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Image;
 use App\Service\PrintOrderService;
 use App\Service\CartService;
-use App\Service\CeweApiService;
+use App\Service\ProdigiApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +19,7 @@ class PrintOrderController extends AbstractController
     public function __construct(
         private PrintOrderService $printOrderService,
         private CartService $cartService,
-        private CeweApiService $ceweApiService,
+        private ProdigiApiService $prodigiApiService,
         private EntityManagerInterface $entityManager
     ) {}
 

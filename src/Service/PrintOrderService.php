@@ -12,7 +12,7 @@ class PrintOrderService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private CeweApiService $ceweApiService,
+        private ProdigiApiService $prodigiApiService,
         private CartService $cartService,
         private string $projectDir
     ) {}
@@ -63,42 +63,42 @@ class PrintOrderService
     }
 
     /**
-     * Envoyer la commande à CEWE
+     * Envoyer la commande à Prodigi
      */
-    public function sendOrderToCewe(PrintOrder $order): bool
+    public function sendOrderToProdigi(PrintOrder $order): bool
     {
         try {
-            // Préparer les données pour CEWE
+            // Préparer les données pour Prodigi
             $orderItems = [];
             foreach ($order->getItems() as $item) {
                 $orderItems[] = [
-                    'image_id' => $this->uploadImageToCewe($item->getImage()),
+                    'image_id' => $this->uploadImageToProdigi($item->getImage()),
                     'format' => $item->getPrintFormat(),
                     'paper_type' => $item->getPaperType(),
                     'quantity' => $item->getQuantity()
                 ];
             }
 
-            $ceweOrderData = $this->ceweApiService->formatOrderData(
+            $prodigiOrderData = $this->prodigiApiService->formatOrderData(
                 $orderItems,
                 $order->getShippingAddress(),
                 $order->getCustomer()->getEmail()
             );
 
-            // Créer la commande chez CEWE
-            $ceweResponse = $this->ceweApiService->createOrder($ceweOrderData);
+            // Créer la commande chez Prodigi
+            $prodigiResponse = $this->prodigiApiService->createOrder($prodigiOrderData);
 
-            // Mettre à jour notre commande avec les données CEWE
-            $order->setCeweOrderId($ceweResponse['order_id'] ?? null)
-                  ->setCeweOrderData($ceweResponse)
-                  ->setStatus('sent_to_cewe');
+            // Mettre à jour notre commande avec les données Prodigi
+            $order->setProdigiOrderId($prodigiResponse['order_id'] ?? null)
+                  ->setProdigiOrderData($prodigiResponse)
+                  ->setStatus('sent_to_prodigi');
 
             $this->entityManager->flush();
 
             return true;
         } catch (\Exception $e) {
             // Log l'erreur et marquer la commande comme échouée
-            error_log('Erreur envoi commande CEWE: ' . $e->getMessage());
+            error_log('Erreur envoi commande Prodigi: ' . $e->getMessage());
             $order->setStatus('error');
             $this->entityManager->flush();
             
@@ -139,18 +139,18 @@ class PrintOrderService
     }
 
     /**
-     * Mettre à jour le statut d'une commande depuis CEWE
+     * Mettre à jour le statut d'une commande depuis Prodigi
      */
-    public function updateOrderStatusFromCewe(PrintOrder $order): void
+    public function updateOrderStatusFromProdigi(PrintOrder $order): void
     {
-        if (!$order->getCeweOrderId()) {
+        if (!$order->getProdigiOrderId()) {
             return;
         }
 
         try {
-            $ceweStatus = $this->ceweApiService->getOrderStatus($order->getCeweOrderId());
+            $prodigiStatus = $this->prodigiApiService->getOrderStatus($order->getProdigiOrderId());
             
-            // Mapper les statuts CEWE vers nos statuts
+            // Mapper les statuts Prodigi vers nos statuts
             $statusMapping = [
                 'received' => 'confirmed',
                 'processing' => 'processing',
@@ -159,13 +159,13 @@ class PrintOrderService
                 'cancelled' => 'cancelled'
             ];
 
-            $newStatus = $statusMapping[$ceweStatus['status']] ?? $order->getStatus();
+            $newStatus = $statusMapping[$prodigiStatus['status']] ?? $order->getStatus();
             
             if ($newStatus !== $order->getStatus()) {
                 $order->setStatus($newStatus);
                 
-                if ($newStatus === 'shipped' && isset($ceweStatus['shipped_at'])) {
-                    $order->setShippedAt(new \DateTimeImmutable($ceweStatus['shipped_at']));
+                if ($newStatus === 'shipped' && isset($prodigiStatus['shipped_at'])) {
+                    $order->setShippedAt(new \DateTimeImmutable($prodigiStatus['shipped_at']));
                 }
                 
                 $this->entityManager->flush();
@@ -175,20 +175,20 @@ class PrintOrderService
         }
     }
 
-    private function uploadImageToCewe(Image $image): string
+    private function uploadImageToProdigi(Image $image): string
     {
-        // En production, uploader l'image vers CEWE et retourner l'ID CEWE
+        // En production, uploader l'image vers Prodigi et retourner l'ID Prodigi
         // Pour l'instant, retourner l'ID local
         return (string) $image->getId();
     }
 
     /**
-     * Calculer le prix d'un tirage (sans marge, prix CEWE)
+     * Calculer le prix d'un tirage (sans marge, prix Prodigi)
      */
     public function calculatePrintPrice(string $format, string $paperType, int $quantity = 1): float
     {
-        $formats = $this->ceweApiService->getAvailableFormats();
-        $paperTypes = $this->ceweApiService->getAvailablePaperTypes();
+        $formats = $this->prodigiApiService->getAvailableFormats();
+        $paperTypes = $this->prodigiApiService->getAvailablePaperTypes();
         
         $basePrice = $formats[$format]['base_price'] ?? 0.0;
         $multiplier = $paperTypes[$paperType]['price_multiplier'] ?? 1.0;
@@ -201,7 +201,7 @@ class PrintOrderService
      */
     public function calculatePrintPriceWithMargin(string $format, string $paperType, int $quantity = 1): float
     {
-        $cewePrice = $this->calculatePrintPrice($format, $paperType, 1);
+        $prodigiPrice = $this->calculatePrintPrice($format, $paperType, 1);
         $customMargins = $this->getCustomMargins();
         
         // Chercher une marge spécifique pour ce format/papier
@@ -209,7 +209,7 @@ class PrintOrderService
         $margin = $customMargins[$marginKey] ?? $customMargins['default'] ?? 50; // 50% par défaut
         
         // Appliquer la marge
-        $customerPrice = $cewePrice * (1 + ($margin / 100));
+        $customerPrice = $prodigiPrice * (1 + ($margin / 100));
         
         return $customerPrice * $quantity;
     }
