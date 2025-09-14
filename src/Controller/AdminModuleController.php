@@ -38,10 +38,10 @@ class AdminModuleController extends AbstractController
             throw $this->createNotFoundException('Module non trouvé');
         }
         
-        $module->setEnabled(!$module->isEnabled());
+        $module->setActive(!$module->isActive());
         $this->entityManager->flush();
         
-        $status = $module->isEnabled() ? 'activé' : 'désactivé';
+        $status = $module->isActive() ? 'activé' : 'désactivé';
         $this->addFlash('success', "Module {$module->getName()} {$status} avec succès !");
         
         return $this->redirectToRoute('admin_modules');
