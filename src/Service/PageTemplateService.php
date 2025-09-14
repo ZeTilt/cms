@@ -10,7 +10,7 @@ class PageTemplateService
     private string $templatesDir;
     private Filesystem $filesystem;
 
-    public function __construct(string $projectDir = "./")
+    public function __construct(string $projectDir)
     {
         $this->templatesDir = $projectDir . '/templates/pages';
         $this->filesystem = new Filesystem();

@@ -15,8 +15,8 @@ class ContentSanitizer
         
         // Allow safe HTML tags and attributes for blog content
         $config->set('HTML.Allowed', 
-            'p,br,strong,b,em,i,u,s,strike,del,ins,sup,sub,small,mark,abbr,cite,code,pre,blockquote,' .
-            'h1,h2,h3,h4,h5,h6,' .
+            'p,br,strong[class],b,em,i,u,s,strike,del,ins,sup,sub,small,mark[class],abbr,cite,code,pre,blockquote[class],' .
+            'h1[class],h2[class],h3[class],h4[class],h5[class],h6[class],' .
             'ul,ol,li,dl,dt,dd,' .
             'a[href|title|target],img[src|alt|title|width|height],' .
             'table,thead,tbody,tfoot,tr,th[scope],td[colspan|rowspan],' .
@@ -26,7 +26,7 @@ class ContentSanitizer
         // Allow safe CSS properties
         $config->set('CSS.AllowedProperties', 
             'font-weight,font-style,text-decoration,text-align,color,background-color,' .
-            'margin,padding,width,height,max-width,max-height'
+            'margin,padding,width,height,max-width,max-height,border-radius'
         );
         
         // Configure links
@@ -35,6 +35,14 @@ class ContentSanitizer
         
         // Enable cache for better performance
         $config->set('Cache.SerializerPath', sys_get_temp_dir());
+        
+        // Custom definition to ensure mark element is properly supported
+        $config->set('HTML.DefinitionID', 'custom-mark-support');
+        $config->set('HTML.DefinitionRev', 1);
+        
+        if ($def = $config->maybeGetRawHTMLDefinition()) {
+            $def->addElement('mark', 'Inline', 'Inline', 'Common', ['class' => 'Text']);
+        }
         
         $this->purifier = new HTMLPurifier($config);
     }

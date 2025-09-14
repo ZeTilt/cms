@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
 use App\Entity\Page;
 use App\Service\PageTemplateService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,30 @@ class PublicPagesController extends AbstractController
         ]);
     }
 
+    #[Route('/article/{slug}', name: 'public_article_show')]
+    public function articleShow(string $slug): Response
+    {
+        $article = $this->entityManager->getRepository(Article::class)
+            ->createQueryBuilder('a')
+            ->where('a.slug = :slug')
+            ->andWhere('a.status = :status')
+            ->andWhere('a.published_at IS NOT NULL')
+            ->andWhere('a.published_at <= :now')
+            ->setParameter('slug', $slug)
+            ->setParameter('status', 'published')
+            ->setParameter('now', new \DateTime())
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$article) {
+            throw new NotFoundHttpException('Article not found');
+        }
+
+        return $this->render('blog/article.html.twig', [
+            'article' => $article,
+        ]);
+    }
+
     #[Route('/blog/{slug}', name: 'public_blog_show')]
     public function blogShow(string $slug): Response
     {
@@ -51,15 +76,8 @@ class PublicPagesController extends AbstractController
     {
         $page = $this->findPublishedPage($slug, 'page');
 
-        // Use the custom template for this page
-        $templatePath = $this->templateService->getTemplatePath($page->getTemplatePath());
-        
-        // Check if template exists, fallback to generic template if not
-        if (!$this->templateService->templateExists($page->getTemplatePath())) {
-            $templatePath = 'public/page/show.html.twig';
-        }
-
-        return $this->render($templatePath, [
+        // Always use the generic template for now
+        return $this->render('pages/page.html.twig', [
             'page' => $page,
         ]);
     }

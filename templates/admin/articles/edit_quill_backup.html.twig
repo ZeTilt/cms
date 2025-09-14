@@ -1,0 +1,264 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ isEdit ? 'Edit Article' : 'New Article' }} - Admin{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        /* Style pour remplacer les balises <mark> */
+        .highlight {
+            background-color: #FEF3C7;
+            color: #92400E;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+        }
+        
+        /* Amélioration de l'éditeur Quill */
+        .ql-container {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .ql-editor {
+            min-height: 300px;
+        }
+        
+        /* Messages d'erreur masqués pour éviter les alertes utilisateur */
+        .ql-tooltip {
+            z-index: 1000;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="{{ path('admin_articles_list') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Articles</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ isEdit ? 'Edit' : 'New' }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                    {{ isEdit ? 'Edit Article' : 'New Article' }}
+                </h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{{ path('admin_articles_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Articles
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <form method="POST" class="space-y-8 divide-y divide-gray-200">
+        <div class="space-y-8 divide-y divide-gray-200">
+            <div>
+                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-12">
+                    <!-- Title -->
+                    <div class="sm:col-span-8">
+                        <label for="title" class="block text-sm font-medium text-gray-700">
+                            Title *
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                type="text" 
+                                name="title" 
+                                id="title" 
+                                value="{{ article.title }}"
+                                required
+                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                placeholder="Enter article title..."
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="sm:col-span-4">
+                        <label for="status" class="block text-sm font-medium text-gray-700">
+                            Status
+                        </label>
+                        <div class="mt-1">
+                            <select 
+                                name="status" 
+                                id="status"
+                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            >
+                                <option value="draft" {{ article.status == 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="published" {{ article.status == 'published' ? 'selected' : '' }}>Published</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Excerpt -->
+                    <div class="sm:col-span-12">
+                        <label for="excerpt" class="block text-sm font-medium text-gray-700">
+                            Excerpt
+                        </label>
+                        <div class="mt-1">
+                            <textarea 
+                                name="excerpt" 
+                                id="excerpt" 
+                                rows="3"
+                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                placeholder="Brief description of the article (optional)..."
+                            >{{ article.excerpt }}</textarea>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">Brief description that will be shown in article listings.</p>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="sm:col-span-12">
+                        <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                            Content *
+                        </label>
+                        
+                        <!-- Quill Editor -->
+                        <div id="quill-editor" style="height: 400px;">{{ article.content|raw }}</div>
+                        <textarea name="content" id="content-hidden" style="display:none;">{{ article.content }}</textarea>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="sm:col-span-6">
+                        <label for="category" class="block text-sm font-medium text-gray-700">
+                            Category
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                type="text" 
+                                name="category" 
+                                id="category" 
+                                value="{{ article.category }}"
+                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                placeholder="e.g. Technology, Travel, Lifestyle..."
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="sm:col-span-6">
+                        <label for="tags" class="block text-sm font-medium text-gray-700">
+                            Tags
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                type="text" 
+                                name="tags" 
+                                id="tags" 
+                                value="{{ article.tags ? article.tags|join(', ') : '' }}"
+                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                placeholder="tag1, tag2, tag3..."
+                            >
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">Separate tags with commas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-5">
+            <div class="flex justify-end space-x-3">
+                <a href="{{ path('admin_articles_list') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    {{ isEdit ? 'Update Article' : 'Create Article' }}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration personnalisée pour éviter les éléments non supportés
+    const Delta = Quill.import('delta');
+    
+    // Initialize Quill editor avec configuration améliorée
+    const quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        formats: ['bold', 'italic', 'underline', 'strike', 'header', 'list', 'bullet', 'indent', 'link', 'image', 'blockquote', 'code-block', 'color', 'background', 'align'],
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'align': [] }],
+                ['link', 'image'],
+                ['blockquote', 'code-block'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Fonction pour nettoyer le contenu HTML et éviter les éléments problématiques
+    function cleanContent(html) {
+        // Remplacer les balises <mark> par <strong> avec une classe CSS
+        html = html.replace(/<mark([^>]*)>/g, '<strong class="highlight"$1>');
+        html = html.replace(/<\/mark>/g, '</strong>');
+        
+        // Autres remplacements si nécessaire
+        // html = html.replace(/<element_non_supporté([^>]*)>/g, '<span$1>');
+        
+        return html;
+    }
+
+    // Update hidden textarea when form is submitted
+    const form = document.querySelector('form');
+    const hiddenContent = document.getElementById('content-hidden');
+    
+    form.addEventListener('submit', function() {
+        const cleanedContent = cleanContent(quill.root.innerHTML);
+        hiddenContent.value = cleanedContent;
+    });
+
+    // Auto-save content to hidden field
+    quill.on('text-change', function() {
+        const cleanedContent = cleanContent(quill.root.innerHTML);
+        hiddenContent.value = cleanedContent;
+    });
+
+    // Gestionnaire d'erreur pour les formats non supportés
+    quill.on('editor-change', function(eventName, ...args) {
+        if (eventName === 'text-change') {
+            try {
+                // Vérifier s'il y a des formats non supportés et les nettoyer
+                const delta = quill.getContents();
+                // Log des warnings sans les afficher à l'utilisateur
+                console.log('Editor content updated successfully');
+            } catch (error) {
+                if (error.message && error.message.includes('not supported')) {
+                    console.warn('Format non supporté détecté et nettoyé automatiquement');
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

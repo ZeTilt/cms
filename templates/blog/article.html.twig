@@ -1,16 +1,26 @@
-{% extends 'base.html.twig' %}
+{% extends 'plongee_base.html.twig' %}
 
-{% block title %}{{ article.title }} - ZeTilt CMS{% endblock %}
+{% block title %}{{ article.title }} - Club Subaquatique des Vénètes{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/carousel.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/carousel.js') }}"></script>
+{% endblock %}
 
 {% block body %}
 <div class="bg-white px-6 py-32 lg:px-8">
     <div class="mx-auto max-w-3xl text-base leading-7 text-gray-700">
         <div class="mb-8">
-            <a href="{{ path('blog_index') }}" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            <a href="{{ path('public_blog_list') }}" class="inline-flex items-center text-sm font-medium text-club-orange hover:text-club-orange-dark">
                 <svg class="-ml-1 mr-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Retour au blog
+                Retour aux actualités
             </a>
         </div>
 
@@ -37,7 +47,7 @@
                 {{ article.publishedAt|date('F j, Y') }}
             </time>
             <div class="text-gray-500">
-                Par {{ article.author.fullName }}
+                Par {{ article.author.firstName }} {{ article.author.lastName }}
             </div>
         </div>
 
@@ -53,11 +63,11 @@
 
         {% if article.featuredImage %}
             <figure class="mt-16">
-                <img class="aspect-video rounded-xl bg-gray-50 object-cover" src="{{ article.featuredImage }}" alt="{{ article.title }}">
+                <img class="aspect-video rounded-xl bg-gray-50 object-contain" src="{{ article.featuredImage }}" alt="{{ article.title }}">
             </figure>
         {% endif %}
 
-        <div class="mt-16 prose prose-lg max-w-none">
+        <div class="mt-16 prose prose-lg max-w-none article-content">
             {{ article.content|raw }}
         </div>
 
@@ -73,7 +83,7 @@
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-sm font-medium text-gray-900">
-                            {{ article.author.fullName }}
+                            {{ article.author.firstName }} {{ article.author.lastName }}
                         </p>
                         <p class="text-sm text-gray-500">
                             Auteur
@@ -87,7 +97,7 @@
         </div>
 
         <div class="mt-8 text-center">
-            <a href="{{ path('blog_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <a href="{{ path('public_blog_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>

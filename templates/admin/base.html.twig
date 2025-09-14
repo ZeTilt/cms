@@ -1,191 +1,256 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<div class="min-h-screen bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <a href="{{ path('admin_dashboard') }}" class="flex items-center space-x-3">
-                        <img src="{{ asset('assets/logo sans fond.png') }}" alt="ZeTilt" class="h-8 w-auto">
-                        <span class="text-xl font-semibold text-gray-900">ZeTilt CMS</span>
-                    </a>
-
-                    <!-- Main Navigation -->
-                    <div class="hidden md:flex space-x-8">
-                        <a href="{{ path('admin_dashboard') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_dashboard' ? 'text-indigo-600 bg-indigo-50' : '' }}">
-                            Dashboard
-                        </a>
-                        <a href="{{ path('admin_pages_list') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_pages' ? 'text-indigo-600 bg-indigo-50' : '' }}">
-                            Pages
-                        </a>
-                        {% if is_module_active('blog') %}
-                            <a href="{{ path('admin_articles_list') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_articles' ? 'text-indigo-600 bg-indigo-50' : '' }}">
-                                Articles
-                            </a>
-                        {% endif %}
-                        {% if is_module_active('gallery') %}
-                            <a href="{{ path('admin_galleries_list') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ app.request.get('_route') starts with 'admin_galleries' ? 'text-indigo-600 bg-indigo-50' : '' }}">
-                                Galleries
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- User Menu -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <span class="text-sm text-gray-700">{{ app.user.fullName }}</span>
-                    {% if is_granted('ROLE_SUPER_ADMIN') %}
-                        <a href="{{ path('admin_modules') }}" class="text-indigo-600 hover:text-indigo-900 text-sm">Super Admin</a>
-                    {% endif %}
-                    <a href="{{ path('app_home') }}" class="text-gray-600 hover:text-gray-900 text-sm">View Site</a>
-                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-900 text-sm">Logout</a>
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button type="button" id="mobile-menu-button" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 p-2 rounded-md">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="h-6 w-6 block" id="menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                        <svg class="h-6 w-6 hidden" id="close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+<div class="min-h-screen bg-gray-50 flex">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" id="sidebar">
+        <div class="flex items-center justify-center h-16 bg-club-blue">
+            <a href="{{ path('admin_dashboard') }}" class="flex items-center space-x-3">
+                <img src="{{ asset('assets/logo sans fond.png') }}" alt="Club Vénètes" class="h-8 w-auto">
+                <span class="text-lg font-semibold text-white">Admin Club</span>
+            </a>
         </div>
-
-        <!-- Mobile menu -->
-        <div class="md:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-                <a href="{{ path('admin_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_dashboard' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
-                    Dashboard
+        
+        <nav class="mt-5 px-2">
+            <div class="space-y-1">
+                <!-- Dashboard -->
+                <a href="{{ path('admin_dashboard') }}" 
+                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_dashboard' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_dashboard' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6h-8V5z"/>
+                    </svg>
+                    Tableau de Bord
                 </a>
-                <a href="{{ path('admin_pages_list') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_pages' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+
+                <!-- Pages -->
+                <a href="{{ path('admin_pages_list') }}" 
+                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_pages' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_pages' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
                     Pages
                 </a>
+
+                <!-- Blog Articles -->
                 {% if is_module_active('blog') %}
-                    <a href="{{ path('admin_articles_list') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_articles' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
-                        Articles
-                    </a>
+                <a href="{{ path('admin_articles_list') }}" 
+                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_articles' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_articles' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                    Articles
+                </a>
                 {% endif %}
+
+                <!-- Calendrier / Événements -->
+                <a href="{{ path('admin_events_list') }}" 
+                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_events' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_events' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Événements
+                </a>
+
+                <!-- Types d'Événements -->
+                <a href="{{ path('admin_event_types_list') }}" 
+                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_event_types' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_event_types' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a1.994 1.994 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    Types d'Événements
+                </a>
+
+                <!-- Galleries -->
                 {% if is_module_active('gallery') %}
-                    <a href="{{ path('admin_galleries_list') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ app.request.get('_route') starts with 'admin_galleries' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
-                        Galleries
-                    </a>
+                <a href="{{ path('admin_galleries_list') }}" 
+                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_galleries' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_galleries' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v16z"/>
+                    </svg>
+                    Galeries
+                </a>
                 {% endif %}
             </div>
-            <div class="pt-4 pb-3 border-t border-gray-200">
-                <div class="px-4 space-y-1">
-                    <div class="text-base font-medium text-gray-800">{{ app.user.fullName }}</div>
-                    <div class="text-sm text-gray-500">{{ app.user.email }}</div>
+
+            <!-- Section Système -->
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <div class="mt-8">
+                <div class="px-3 py-2">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Système</div>
                 </div>
-                <div class="mt-3 px-2 space-y-1">
-                    {% if is_granted('ROLE_SUPER_ADMIN') %}
-                        <a href="{{ path('admin_modules') }}" class="block px-3 py-2 rounded-md text-base font-medium text-indigo-600 hover:text-indigo-900 hover:bg-gray-50">Super Admin</a>
-                    {% endif %}
-                    <a href="{{ path('app_home') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50">View Site</a>
-                    <a href="{{ path('app_logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-900 hover:bg-gray-50">Logout</a>
+                <div class="space-y-1">
+                    <a href="{{ path('admin_modules') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_modules' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_modules' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                        Modules
+                    </a>
+                    
+                    <a href="{{ path('admin_config_index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_config' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_config' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Configuration
+                    </a>
+                    
+                    <a href="#" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <svg class="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                        </svg>
+                        Utilisateurs
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </nav>
+
+        <!-- User Info at Bottom -->
+        <div class="absolute bottom-0 w-full p-4 bg-gray-50 border-t border-gray-200">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-club-blue rounded-full flex items-center justify-center">
+                        <span class="text-sm font-medium text-white">
+                            {{ app.user.firstName|slice(0, 1)|upper }}{{ app.user.lastName|slice(0, 1)|upper }}
+                        </span>
+                    </div>
+                </div>
+                <div class="ml-3 min-w-0 flex-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ app.user.fullName }}</p>
+                    <div class="flex space-x-2 text-xs text-gray-500">
+                        <a href="{{ path('app_home') }}" class="hover:text-club-orange">Voir le site</a>
+                        <span>•</span>
+                        <a href="{{ path('app_logout') }}" class="hover:text-red-600">Déconnexion</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- Breadcrumbs -->
-    {% block breadcrumbs %}
-        <div class="bg-gray-50 border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                <nav class="flex overflow-x-auto" aria-label="Breadcrumb">
-                    <ol class="flex items-center space-x-2 sm:space-x-4 whitespace-nowrap">
+    <!-- Mobile menu overlay -->
+    <div class="fixed inset-0 z-40 lg:hidden" id="sidebar-overlay" style="display: none;">
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
+    </div>
+
+    <!-- Mobile menu button -->
+    <div class="lg:hidden fixed top-0 left-0 z-50 p-4">
+        <button type="button" id="sidebar-toggle" class="text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-club-orange">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        <!-- Top Bar for Mobile -->
+        <div class="lg:hidden bg-white border-b border-gray-200 px-4 py-3">
+            <div class="flex items-center justify-between">
+                <h1 class="text-lg font-semibold text-gray-900">Administration</h1>
+                <div class="flex items-center space-x-2">
+                    <a href="{{ path('app_home') }}" class="text-gray-600 hover:text-club-orange text-sm">Voir le site</a>
+                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-700 text-sm">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        {% block page_header %}
+        <div class="bg-white shadow-sm border-b border-gray-200">
+            <div class="px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">{% block page_title %}Dashboard{% endblock %}</h1>
+                        {% block page_description %}{% endblock %}
+                    </div>
+                    <div>
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                </div>
+                
+                <!-- Breadcrumbs -->
+                {% block breadcrumbs %}
+                <nav class="flex mt-4" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2">
                         <li>
-                            <div>
-                                <a href="{{ path('admin_dashboard') }}" class="text-gray-400 hover:text-gray-500">
-                                    <svg class="flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                                    </svg>
-                                    <span class="sr-only">Home</span>
-                                </a>
-                            </div>
+                            <a href="{{ path('admin_dashboard') }}" class="text-gray-400 hover:text-gray-500">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                                </svg>
+                                <span class="sr-only">Dashboard</span>
+                            </a>
                         </li>
                         {% block breadcrumb_items %}{% endblock %}
                     </ol>
                 </nav>
+                {% endblock %}
             </div>
         </div>
-    {% endblock %}
+        {% endblock %}
 
-    <!-- Flash Messages -->
-    {% for type, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-                <div class="rounded-md p-4 {{ type == 'error' ? 'bg-red-50 border border-red-200' : type == 'warning' ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50 border border-green-200' }}">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            {% if type == 'error' %}
-                                <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            {% elseif type == 'warning' %}
-                                <svg class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                                </svg>
-                            {% else %}
-                                <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            {% endif %}
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm {{ type == 'error' ? 'text-red-800' : type == 'warning' ? 'text-yellow-800' : 'text-green-800' }}">
-                                {{ message }}
-                            </p>
+        <!-- Flash Messages -->
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="px-4 sm:px-6 lg:px-8 pt-4">
+                    <div class="rounded-md p-4 {{ type == 'error' ? 'bg-red-50 border border-red-200' : type == 'warning' ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50 border border-green-200' }}">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                {% if type == 'error' %}
+                                    <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% elseif type == 'warning' %}
+                                    <svg class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm {{ type == 'error' ? 'text-red-800' : type == 'warning' ? 'text-yellow-800' : 'text-green-800' }}">
+                                    {{ message }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
 
-    <!-- Main Content -->
-    {% block content %}{% endblock %}
-
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="px-4 sm:px-6 lg:px-8 py-8">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
 </div>
 
-<!-- Mobile Menu JavaScript -->
+<!-- Sidebar Mobile JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon = document.getElementById('menu-icon');
-    const closeIcon = document.getElementById('close-icon');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
     
-    mobileMenuButton.addEventListener('click', function() {
-        const isHidden = mobileMenu.classList.contains('hidden');
+    if (sidebarToggle && sidebar && overlay) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.style.display = sidebar.classList.contains('-translate-x-full') ? 'none' : 'block';
+        });
         
-        if (isHidden) {
-            mobileMenu.classList.remove('hidden');
-            menuIcon.classList.add('hidden');
-            closeIcon.classList.remove('hidden');
-        } else {
-            mobileMenu.classList.add('hidden');
-            menuIcon.classList.remove('hidden');
-            closeIcon.classList.add('hidden');
-        }
-    });
-    
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(event) {
-        const isClickInsideNav = mobileMenuButton.contains(event.target) || mobileMenu.contains(event.target);
-        
-        if (!isClickInsideNav && !mobileMenu.classList.contains('hidden')) {
-            mobileMenu.classList.add('hidden');
-            menuIcon.classList.remove('hidden');
-            closeIcon.classList.add('hidden');
-        }
-    });
+        overlay.addEventListener('click', function() {
+            sidebar.classList.add('-translate-x-full');
+            overlay.style.display = 'none';
+        });
+    }
 });
 </script>
 {% endblock %}

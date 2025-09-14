@@ -1,0 +1,184 @@
+{% extends 'plongee_base.html.twig' %}
+
+{% block title %}{{ event.title }} - Calendrier - Club Subaquatique des Vénètes{% endblock %}
+
+{% block body %}
+<div class="bg-white py-8">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="{{ path('public_calendar') }}" 
+               class="inline-flex items-center text-club-orange hover:text-club-orange-dark font-medium">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Retour au calendrier
+            </a>
+        </div>
+
+        <!-- Détail de l'événement -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Header coloré -->
+            <div class="px-8 py-6" style="background-color: {{ event.color ?? '#FD7E29' }}">
+                <div class="flex items-start justify-between">
+                    <div class="text-white">
+                        <h1 class="text-3xl font-bold mb-2">{{ event.title }}</h1>
+                        <div class="flex items-center text-white/90">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>
+                                {{ event.startDate|date('l j F Y à H:i') }}
+                                {% if event.endDate and event.endDate != event.startDate %}
+                                    - {{ event.endDate|date('H:i') }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {{ event.typeDisplayName }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Contenu -->
+            <div class="px-8 py-6">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Informations principales -->
+                    <div class="md:col-span-2">
+                        {% if event.description %}
+                            <div class="mb-8">
+                                <h2 class="text-xl font-bold text-club-blue mb-4">Description</h2>
+                                <div class="prose max-w-none text-gray-700">
+                                    {{ event.description|nl2br }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Informations pratiques -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-club-blue mb-3">📅 Horaires</h3>
+                                <div class="text-gray-700 space-y-1">
+                                    <div>
+                                        <strong>Début:</strong> {{ event.startDate|date('d/m/Y à H:i') }}
+                                    </div>
+                                    {% if event.endDate %}
+                                        <div>
+                                            <strong>Fin:</strong> {{ event.endDate|date('d/m/Y à H:i') }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if event.location %}
+                                <div>
+                                    <h3 class="text-lg font-semibold text-club-blue mb-3">📍 Lieu</h3>
+                                    <div class="text-gray-700">
+                                        {{ event.location }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Sidebar informations -->
+                    <div class="md:col-span-1">
+                        <!-- Participation -->
+                        {% if event.maxParticipants %}
+                            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                                <h3 class="text-lg font-semibold text-club-blue mb-4">👥 Participation</h3>
+                                
+                                <div class="text-center mb-4">
+                                    <div class="text-3xl font-bold text-club-orange">
+                                        {{ event.currentParticipants }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        sur {{ event.maxParticipants }} places
+                                    </div>
+                                </div>
+
+                                <!-- Barre de progression -->
+                                <div class="mb-4">
+                                    {% set percentage = event.maxParticipants > 0 ? (event.currentParticipants / event.maxParticipants * 100) : 0 %}
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-club-orange h-3 rounded-full transition-all duration-300" 
+                                             style="width: {{ percentage }}%"></div>
+                                    </div>
+                                </div>
+
+                                {% if event.isFullyBooked %}
+                                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                                        <div class="text-red-600 font-semibold mb-1">Complet</div>
+                                        <div class="text-red-500 text-sm">Aucune place disponible</div>
+                                    </div>
+                                {% else %}
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                                        <div class="text-green-600 font-semibold mb-1">
+                                            {{ event.availableSpots }} place(s) disponible(s)
+                                        </div>
+                                        <button class="mt-2 w-full bg-club-orange hover:bg-club-orange-dark text-white px-4 py-2 rounded-md font-medium transition-colors">
+                                            S'inscrire
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Informations complémentaires -->
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-club-blue mb-4">ℹ️ Informations</h3>
+                            
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600">Type:</span>
+                                    <span class="font-medium">{{ event.typeDisplayName }}</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600">Statut:</span>
+                                    <span class="font-medium">{{ event.statusDisplayName }}</span>
+                                </div>
+
+                                {% if event.type == 'dive' %}
+                                    <div class="pt-3 border-t border-gray-200">
+                                        <div class="text-xs text-gray-500 mb-2">Recommandations plongée:</div>
+                                        <ul class="text-xs text-gray-600 space-y-1">
+                                            <li>• Matériel de plongée complet</li>
+                                            <li>• Carnet de plongée</li>
+                                            <li>• Certificat médical valide</li>
+                                        </ul>
+                                    </div>
+                                {% endif %}
+
+                                {% if event.type == 'training' %}
+                                    <div class="pt-3 border-t border-gray-200">
+                                        <div class="text-xs text-gray-500 mb-2">Matériel requis:</div>
+                                        <ul class="text-xs text-gray-600 space-y-1">
+                                            <li>• Manuel de formation</li>
+                                            <li>• Matériel de prise de notes</li>
+                                            <li>• Équipement selon formation</li>
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="bg-club-blue/5 rounded-lg p-6 mt-6">
+                            <h3 class="text-lg font-semibold text-club-blue mb-4">📞 Contact</h3>
+                            <div class="text-sm text-gray-700 space-y-2">
+                                <p>Pour plus d'informations sur cet événement :</p>
+                                <div class="font-medium">
+                                    📧 contact@venetes-plongee.fr<br>
+                                    📱 02 97 XX XX XX
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

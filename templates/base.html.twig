@@ -7,6 +7,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block stylesheets %}
             <script src="https://cdn.tailwindcss.com"></script>
+            <script>
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            colors: {
+                                'club-orange': '#FD7E29',
+                                'club-orange-dark': '#E56B1F',
+                                'club-blue': '#1E40AF',
+                                'club-blue-dark': '#1E3A8A'
+                            }
+                        }
+                    }
+                }
+            </script>
         {% endblock %}
 
         {% block javascripts %}

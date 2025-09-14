@@ -1,0 +1,258 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}Gestion des Événements{% endblock %}
+
+{% block page_actions %}
+<a href="{{ path('admin_events_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark">
+    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+    </svg>
+    Nouvel Événement
+</a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">Événements</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-sm rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-medium text-gray-900">Tous les Événements</h2>
+            <span class="text-sm text-gray-500">{{ events|length }} événement(s)</span>
+        </div>
+    </div>
+
+    {% if events is empty %}
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-semibold text-gray-900">Aucun événement</h3>
+            <p class="mt-1 text-sm text-gray-500">Commencez par créer votre premier événement.</p>
+            <div class="mt-6">
+                <a href="{{ path('admin_events_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark">
+                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Nouvel Événement
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Événement
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date/Heure
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Participants
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Statut
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for event in events %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-3 h-3 rounded-full mr-3" style="background-color: {{ event.color ?? '#FD7E29' }}"></div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ event.title }}
+                                            {% if event.isRecurring %}
+                                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                    🔄 Récurrent ({{ event.generatedEvents|length + 1 }})
+                                                </span>
+                                            {% elseif event.isGeneratedEvent %}
+                                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                    📅 Série
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        {% if event.location %}
+                                            <div class="text-sm text-gray-500">📍 {{ event.location }}</div>
+                                        {% endif %}
+                                        {% if event.isGeneratedEvent %}
+                                            <div class="text-xs text-gray-400 mt-1">
+                                                Série: <a href="{{ path('admin_events_edit', {id: event.parentEvent.id}) }}" class="text-blue-600 hover:text-blue-900">{{ event.parentEvent.title }}</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ event.startDate|date('d/m/Y à H:i') }}</div>
+                                {% if event.endDate %}
+                                    <div class="text-sm text-gray-500">→ {{ event.endDate|date('d/m/Y à H:i') }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                      style="background-color: {{ event.color ?? '#FD7E29' }}1A; color: {{ event.color ?? '#FD7E29' }}">
+                                    {{ event.typeDisplayName }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if event.maxParticipants %}
+                                    <div class="flex items-center">
+                                        <span class="mr-2">{{ event.currentParticipants }}/{{ event.maxParticipants }}</span>
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2 w-16">
+                                            {% set percentage = event.maxParticipants > 0 ? (event.currentParticipants / event.maxParticipants * 100) : 0 %}
+                                            <div class="bg-club-orange h-2 rounded-full" style="width: {{ percentage }}%"></div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="text-gray-400">Libre</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if event.status == 'active' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                {% elseif event.status == 'cancelled' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Annulé
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ event.statusDisplayName }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end space-x-2">
+                                    <a href="{{ path('calendar_event_detail', {id: event.id}) }}" 
+                                       class="text-club-blue hover:text-club-blue-dark" 
+                                       target="_blank"
+                                       title="Voir sur le site">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M14 4h6m0 0v6m0-6L10 14"/>
+                                        </svg>
+                                    </a>
+                                    <a href="{{ path('admin_events_edit', {id: event.id}) }}" 
+                                       class="text-gray-600 hover:text-gray-900"
+                                       title="Modifier">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                    </a>
+                                    
+                                    <!-- Bouton de suppression avec dropdown pour les options -->
+                                    <div class="relative inline-block text-left" x-data="{ open: false }">
+                                        {% if event.isRecurring or event.isGeneratedEvent %}
+                                            <!-- Dropdown button pour les événements récurrents -->
+                                            <button @click="open = !open" 
+                                                    class="text-red-600 hover:text-red-900 p-1 rounded"
+                                                    title="Options de suppression">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                                <svg class="h-3 w-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Dropdown menu -->
+                                            <div x-show="open" 
+                                                 @click.away="open = false" 
+                                                 x-transition
+                                                 class="absolute right-0 z-10 mt-2 w-72 bg-white rounded-md shadow-lg border border-gray-200">
+                                                <div class="py-1">
+                                                    <!-- Supprimer cette occurrence seulement -->
+                                                    <a href="{{ path('admin_events_delete', {id: event.id}) }}" 
+                                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                       onclick="return confirm('Supprimer uniquement cette occurrence ?')">
+                                                        <div class="flex items-center">
+                                                            <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                            </svg>
+                                                            Supprimer cette occurrence
+                                                        </div>
+                                                        <span class="text-xs text-gray-500 ml-6">Cette occurrence seulement</span>
+                                                    </a>
+
+                                                    {% if event.isGeneratedEvent %}
+                                                        <!-- Supprimer cette occurrence et les suivantes -->
+                                                        <a href="{{ path('admin_events_delete_from', {id: event.id}) }}" 
+                                                           class="block px-4 py-2 text-sm text-orange-700 hover:bg-orange-50"
+                                                           onclick="return confirm('Supprimer cette occurrence et toutes les suivantes ?')">
+                                                            <div class="flex items-center">
+                                                                <svg class="h-4 w-4 mr-2 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                                                </svg>
+                                                                Supprimer à partir de cette occurrence
+                                                            </div>
+                                                            <span class="text-xs text-gray-500 ml-6">Cette occurrence et toutes les suivantes</span>
+                                                        </a>
+
+                                                        <!-- Supprimer toute la série -->
+                                                        <a href="{{ path('admin_events_delete_series', {id: event.parentEvent.id}) }}" 
+                                                           class="block px-4 py-2 text-sm text-red-700 hover:bg-red-50 border-t"
+                                                           onclick="return confirm('Supprimer toute la série récurrente ?')">
+                                                            <div class="flex items-center">
+                                                                <svg class="h-4 w-4 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                                </svg>
+                                                                Supprimer toute la série
+                                                            </div>
+                                                            <span class="text-xs text-gray-500 ml-6">Tous les événements de cette série</span>
+                                                        </a>
+                                                    {% elseif event.isRecurring and event.generatedEvents|length > 0 %}
+                                                        <!-- Supprimer toute la série (pour l'événement parent) -->
+                                                        <a href="{{ path('admin_events_delete_series', {id: event.id}) }}" 
+                                                           class="block px-4 py-2 text-sm text-red-700 hover:bg-red-50 border-t"
+                                                           onclick="return confirm('Supprimer toute la série récurrente ({{ event.generatedEvents|length + 1 }} événements) ?')">
+                                                            <div class="flex items-center">
+                                                                <svg class="h-4 w-4 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                                </svg>
+                                                                Supprimer toute la série
+                                                            </div>
+                                                            <span class="text-xs text-gray-500 ml-6">{{ event.generatedEvents|length + 1 }} événements</span>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <!-- Simple delete button pour les événements non-récurrents -->
+                                            <a href="{{ path('admin_events_delete', {id: event.id}) }}" 
+                                               class="text-red-600 hover:text-red-900"
+                                               title="Supprimer cet événement"
+                                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Types d'Événements{% endblock %}
+
+{% block page_title %}Types d'Événements{% endblock %}
+
+{% block page_actions %}
+<a href="{{ path('admin_event_types_new') }}" class="inline-flex items-center rounded-md bg-club-orange px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-club-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-club-orange">
+    <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Nouveau Type
+</a>
+{% endblock %}
+
+{% block content %}
+
+{% for message in app.flashes('success') %}
+    <div class="mb-4 rounded-md bg-green-50 p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-green-800">{{ message }}</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div class="mb-4 rounded-md bg-red-50 p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-red-800">{{ message }}</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<div>
+            {% if eventTypes|length > 0 %}
+                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nom
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Code
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Couleur
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Statut
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Événements
+                                </th>
+                                <th scope="col" class="relative px-6 py-3">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for eventType in eventTypes %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-4 h-4 rounded-full mr-3" style="background-color: {{ eventType.color }}"></div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">{{ eventType.name }}</div>
+                                                {% if eventType.description %}
+                                                    <div class="text-sm text-gray-500">{{ eventType.description|slice(0, 50) }}{% if eventType.description|length > 50 %}...{% endif %}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">{{ eventType.code }}</code>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full border border-gray-200" style="background-color: {{ eventType.color }}"></div>
+                                            <span class="ml-2 text-sm text-gray-500">{{ eventType.color }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if eventType.isActive %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Actif
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                Inactif
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ eventType.events|length }} événement(s)
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex items-center space-x-2">
+                                            <a href="{{ path('admin_event_types_edit', {id: eventType.id}) }}" class="text-indigo-600 hover:text-indigo-900">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                            </a>
+                                            <a href="{{ path('admin_event_types_toggle', {id: eventType.id}) }}" class="text-yellow-600 hover:text-yellow-900">
+                                                {% if eventType.isActive %}
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+                                                    </svg>
+                                                {% else %}
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                {% endif %}
+                                            </a>
+                                            {% if eventType.events|length == 0 %}
+                                                <a href="{{ path('admin_event_types_delete', {id: eventType.id}) }}" 
+                                                   class="text-red-600 hover:text-red-900"
+                                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce type d\'événement ?')">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 0h4m-4 0v9a1 1 0 001 1h.01M8 7v9a1 1 0 001 1h.01"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun type d'événement</h3>
+                    <p class="mt-1 text-sm text-gray-500">Commencez par créer votre premier type d'événement.</p>
+                    <div class="mt-6">
+                        <a href="{{ path('admin_event_types_new') }}" class="inline-flex items-center rounded-md bg-club-orange px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-club-orange-dark">
+                            <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Nouveau Type
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+</div>
+{% endblock %}

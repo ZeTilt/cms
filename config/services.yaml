@@ -18,13 +18,7 @@ services:
     App\:
         resource: '../src/'
         exclude:
-            - '../src/ZeTilt/'
-
-    # ZeTilt CMS services
-    ZeTilt\Cms\:
-        resource: '../src/ZeTilt/Cms/'
-        exclude:
-            - '../src/ZeTilt/Cms/Entity/'
+            - '../src/DependencyInjection/'
 
     # Image Upload Service
     App\Service\ImageUploadService:

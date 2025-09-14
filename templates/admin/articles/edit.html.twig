@@ -1,205 +1,445 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}{{ isEdit ? 'Edit Article' : 'New Article' }} - Admin{% endblock %}
+{% block page_title %}{{ isEdit ? 'Modifier l\'Article' : 'Nouvel Article' }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <style>
+        .note-editor {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+        .note-toolbar {
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            background-color: #f9fafb;
+        }
+        .note-editing-area {
+            border-bottom-left-radius: 0.375rem;
+            border-bottom-right-radius: 0.375rem;
+        }
+        .note-editable {
+            min-height: 300px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* Style pour les éléments surlignés */
+        .highlight {
+            background-color: #FEF3C7;
+            color: #92400E;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-weight: bold;
+        }
+    </style>
 {% endblock %}
 
 {% block breadcrumb_items %}
-    <li>
-        <div class="flex items-center">
-            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <a href="{{ path('admin_articles_list') }}" class="text-gray-500 hover:text-gray-700">Articles</a>
+</li>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">{{ isEdit ? 'Modifier' : 'Nouveau' }}</span>
+</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="flex items-center space-x-3">
+    <a href="{{ path('admin_articles_list') }}" 
+       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Retour
+    </a>
+    {% if isEdit and article.id %}
+        <a href="{{ path('blog_article', {slug: article.slug}) }}" 
+           target="_blank"
+           class="inline-flex items-center px-4 py-2 border border-club-blue text-sm font-medium rounded-md text-club-blue bg-white hover:bg-club-blue hover:text-white">
+            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M14 4h6m0 0v6m0-6L10 14"/>
             </svg>
-            <a href="{{ path('admin_articles_list') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Articles</a>
-        </div>
-    </li>
-    <li>
-        <div class="flex items-center">
-            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-            </svg>
-            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">{{ isEdit ? 'Edit' : 'New' }}</span>
-        </div>
-    </li>
+            Prévisualiser
+        </a>
+    {% endif %}
+</div>
 {% endblock %}
 
 {% block content %}
-<!-- Header -->
-<div class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2 sm:space-x-4">
-                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                    {{ isEdit ? 'Edit Article' : 'New Article' }}
-                </h1>
+<div class="max-w-5xl">
+    <form method="POST" class="space-y-6">
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Détails de l'article</h2>
             </div>
-            <div class="flex items-center space-x-4">
-                <a href="{{ path('admin_articles_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to Articles
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Content -->
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <form method="POST" class="space-y-8 divide-y divide-gray-200">
-        <div class="space-y-8 divide-y divide-gray-200">
-            <div>
-                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-12">
-                    <!-- Title -->
-                    <div class="sm:col-span-8">
-                        <label for="title" class="block text-sm font-medium text-gray-700">
-                            Title *
+            
+            <div class="px-6 py-6 space-y-6">
+                <!-- Titre et Statut -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="md:col-span-3">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                            Titre de l'article *
                         </label>
-                        <div class="mt-1">
-                            <input 
-                                type="text" 
-                                name="title" 
-                                id="title" 
-                                value="{{ article.title }}"
-                                required
-                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="Enter article title..."
-                            >
-                        </div>
+                        <input type="text" id="title" name="title" 
+                               value="{{ article.title ?? '' }}" 
+                               required
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                               placeholder="Entrez le titre de l'article...">
                     </div>
-
-                    <!-- Status -->
-                    <div class="sm:col-span-4">
-                        <label for="status" class="block text-sm font-medium text-gray-700">
-                            Status
+                    
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
+                            Statut
                         </label>
-                        <div class="mt-1">
-                            <select 
-                                name="status" 
-                                id="status"
-                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                            >
-                                <option value="draft" {{ article.status == 'draft' ? 'selected' : '' }}>Draft</option>
-                                <option value="published" {{ article.status == 'published' ? 'selected' : '' }}>Published</option>
-                            </select>
-                        </div>
+                        <select id="status" name="status" 
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                            <option value="draft" {{ article.status == 'draft' ? 'selected' : '' }}>Brouillon</option>
+                            <option value="published" {{ article.status == 'published' ? 'selected' : '' }}>Publié</option>
+                        </select>
                     </div>
+                </div>
 
-                    <!-- Excerpt -->
-                    <div class="sm:col-span-12">
-                        <label for="excerpt" class="block text-sm font-medium text-gray-700">
-                            Excerpt
+                <!-- Extrait -->
+                <div>
+                    <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-2">
+                        Extrait
+                    </label>
+                    <textarea id="excerpt" name="excerpt" rows="3"
+                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                              placeholder="Résumé court de l'article (optionnel)...">{{ article.excerpt ?? '' }}</textarea>
+                    <p class="mt-1 text-sm text-gray-500">Résumé qui sera affiché dans les listes d'articles.</p>
+                </div>
+
+                <!-- Contenu -->
+                <div>
+                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                        Contenu *
+                    </label>
+                    <textarea id="content" name="content">{{ article.content ?? '' }}</textarea>
+                </div>
+
+                <!-- Catégorie et Tags -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                            Catégorie
                         </label>
-                        <div class="mt-1">
-                            <textarea 
-                                name="excerpt" 
-                                id="excerpt" 
-                                rows="3"
-                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="Brief description of the article (optional)..."
-                            >{{ article.excerpt }}</textarea>
-                        </div>
-                        <p class="mt-2 text-sm text-gray-500">Brief description that will be shown in article listings.</p>
+                        <input type="text" id="category" name="category" 
+                               value="{{ article.category ?? '' }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                               placeholder="Ex: Formation, Sortie, Technique...">
                     </div>
-
-                    <!-- Content -->
-                    <div class="sm:col-span-12">
-                        <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
-                            Content *
-                        </label>
-                        
-                        <!-- Quill Editor -->
-                        <div id="quill-editor" style="height: 400px;">{{ article.content|raw }}</div>
-                        <textarea name="content" id="content-hidden" style="display:none;">{{ article.content }}</textarea>
-                    </div>
-
-                    <!-- Category -->
-                    <div class="sm:col-span-6">
-                        <label for="category" class="block text-sm font-medium text-gray-700">
-                            Category
-                        </label>
-                        <div class="mt-1">
-                            <input 
-                                type="text" 
-                                name="category" 
-                                id="category" 
-                                value="{{ article.category }}"
-                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="e.g. Technology, Travel, Lifestyle..."
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Tags -->
-                    <div class="sm:col-span-6">
-                        <label for="tags" class="block text-sm font-medium text-gray-700">
+                    
+                    <div>
+                        <label for="tags" class="block text-sm font-medium text-gray-700 mb-2">
                             Tags
                         </label>
-                        <div class="mt-1">
-                            <input 
-                                type="text" 
-                                name="tags" 
-                                id="tags" 
-                                value="{{ article.tags ? article.tags|join(', ') : '' }}"
-                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                placeholder="tag1, tag2, tag3..."
-                            >
-                        </div>
-                        <p class="mt-2 text-sm text-gray-500">Separate tags with commas.</p>
+                        <input type="text" id="tags" name="tags" 
+                               value="{{ article.tags ? article.tags|join(', ') : '' }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                               placeholder="plongée, formation, niveau1...">
+                        <p class="mt-1 text-sm text-gray-500">Séparez les tags par des virgules.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="pt-5">
-            <div class="flex justify-end space-x-3">
-                <a href="{{ path('admin_articles_list') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    Cancel
-                </a>
-                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    {{ isEdit ? 'Update Article' : 'Create Article' }}
-                </button>
-            </div>
+        <!-- Actions -->
+        <div class="flex items-center justify-end space-x-3">
+            <a href="{{ path('admin_articles_list') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Annuler
+            </a>
+            
+            <button type="submit" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark">
+                <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                {{ isEdit ? 'Mettre à jour' : 'Créer l\'article' }}
+            </button>
         </div>
     </form>
 </div>
 
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<!-- jQuery et Summernote -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Quill editor
-    const quill = new Quill('#quill-editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                [{ 'align': [] }],
-                ['link', 'image'],
-                ['blockquote', 'code-block'],
-                ['clean']
+$(document).ready(function() {
+    // Variables pour gérer les uploads multiples
+    var pendingUploads = [];
+    var uploadedUrls = [];
+    var uploadTimeout = null;
+
+    // Fonction d'upload d'image individuelle
+    function uploadSingleImage(file) {
+        return new Promise((resolve, reject) => {
+            var formData = new FormData();
+            formData.append('file', file);
+            
+            $.ajax({
+                url: '{{ path("admin_upload_image") }}',
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        console.log('Image uploaded successfully:', response.url);
+                        resolve(response.url);
+                    } else {
+                        console.error('Upload error:', response.error);
+                        reject(response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax error:', xhr.responseText);
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    // Fonction d'upload multiple avec gestion du carousel
+    function uploadImageToServer(file) {
+        pendingUploads.push(file);
+        
+        // Annuler le timeout précédent s'il existe
+        if (uploadTimeout) {
+            clearTimeout(uploadTimeout);
+        }
+        
+        // Attendre 500ms pour voir s'il y a d'autres fichiers qui arrivent
+        uploadTimeout = setTimeout(() => {
+            processMultipleUploads();
+        }, 500);
+    }
+
+    // Traiter les uploads en lot
+    function processMultipleUploads() {
+        if (pendingUploads.length === 0) return;
+        
+        console.log('Processing', pendingUploads.length, 'uploads');
+        
+        // Upload de tous les fichiers en parallèle
+        Promise.all(pendingUploads.map(file => uploadSingleImage(file)))
+            .then(urls => {
+                if (urls.length === 1) {
+                    // Une seule image : insertion normale
+                    $('#content').summernote('insertImage', urls[0]);
+                } else if (urls.length > 1) {
+                    // Plusieurs images : créer un carousel
+                    var carouselShortcode = '\n[carousel]' + urls.join(',') + '[/carousel]\n';
+                    $('#content').summernote('insertText', carouselShortcode);
+                }
+                
+                // Reset
+                pendingUploads = [];
+                uploadedUrls = [];
+            })
+            .catch(error => {
+                alert('Erreur lors de l\'upload des images: ' + error);
+                // Reset même en cas d'erreur
+                pendingUploads = [];
+                uploadedUrls = [];
+            });
+    }
+
+    // Bouton personnalisé pour carousel
+    var CarouselButton = function (context) {
+        var ui = $.summernote.ui;
+        var button = ui.button({
+            contents: '<i class="fas fa-images"></i>',
+            tooltip: 'Insérer un carousel d\'images',
+            click: function () {
+                // Créer un input file multiple
+                var input = document.createElement('input');
+                input.type = 'file';
+                input.multiple = true;
+                input.accept = 'image/*';
+                
+                input.onchange = function(e) {
+                    var files = Array.from(e.target.files);
+                    if (files.length > 0) {
+                        console.log('Carousel button: uploading', files.length, 'files');
+                        
+                        // Forcer la création d'un carousel même pour une seule image
+                        Promise.all(files.map(file => uploadSingleImage(file)))
+                            .then(urls => {
+                                var carouselShortcode = '\n[carousel]' + urls.join(',') + '[/carousel]\n';
+                                context.invoke('editor.insertText', carouselShortcode);
+                            })
+                            .catch(error => {
+                                alert('Erreur lors de l\'upload des images: ' + error);
+                            });
+                    }
+                };
+                
+                input.click();
+            }
+        });
+        return button.render();
+    };
+
+    // Configuration de Summernote
+    $('#content').summernote({
+        height: 400,
+        lang: 'fr-FR',
+        disableDragAndDrop: false,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'carousel', 'hr']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        styleTags: [
+            'p',
+            { title: 'Titre 1', tag: 'h1', className: 'text-3xl font-bold text-gray-900' },
+            { title: 'Titre 2', tag: 'h2', className: 'text-2xl font-bold text-gray-800' },
+            { title: 'Titre 3', tag: 'h3', className: 'text-xl font-bold text-gray-700' },
+            { title: 'Titre 4', tag: 'h4', className: 'text-lg font-semibold text-gray-700' },
+            { title: 'Citation', tag: 'blockquote', className: 'border-l-4 border-club-orange pl-4 italic text-gray-600' },
+            { title: 'Texte surligné', tag: 'span', className: 'highlight' }
+        ],
+        buttons: {
+            carousel: CarouselButton
+        },
+        callbacks: {
+            onImageUpload: function(files) {
+                // Upload des images via notre endpoint
+                console.log('onImageUpload triggered with', files.length, 'files');
+                for (let i = 0; i < files.length; i++) {
+                    uploadImageToServer(files[i]);
+                }
+            },
+            onInit: function() {
+                console.log('Éditeur Summernote initialisé avec succès');
+                
+                // Intercepter aussi les événements drop et paste directement
+                $('.note-editable').on('drop', function(e) {
+                    e.preventDefault();
+                    var files = e.originalEvent.dataTransfer.files;
+                    if (files.length > 0) {
+                        console.log('Drop detected with', files.length, 'files');
+                        for (let i = 0; i < files.length; i++) {
+                            if (files[i].type.startsWith('image/')) {
+                                uploadImageToServer(files[i]);
+                            }
+                        }
+                    }
+                });
+                
+                $('.note-editable').on('paste', function(e) {
+                    var clipboardData = e.originalEvent.clipboardData;
+                    if (clipboardData && clipboardData.files.length > 0) {
+                        console.log('Paste detected with', clipboardData.files.length, 'files');
+                        e.preventDefault();
+                        for (let i = 0; i < clipboardData.files.length; i++) {
+                            if (clipboardData.files[i].type.startsWith('image/')) {
+                                uploadImageToServer(clipboardData.files[i]);
+                            }
+                        }
+                    }
+                });
+                // Nettoyer le contenu initial si nécessaire
+                var initialContent = $('#content').summernote('code');
+                var cleanedContent = initialContent
+                    .replace(/<mark([^>]*)>/g, '<span class="highlight"$1>')
+                    .replace(/<\/mark>/g, '</span>');
+                if (initialContent !== cleanedContent) {
+                    $('#content').summernote('code', cleanedContent);
+                }
+            },
+            onChange: function(contents) {
+                // Nettoyer automatiquement le contenu en temps réel
+                var cleanedContents = contents
+                    .replace(/<mark([^>]*)>/g, '<span class="highlight"$1>')
+                    .replace(/<\/mark>/g, '</span>');
+                if (contents !== cleanedContents) {
+                    $('#content').summernote('code', cleanedContents);
+                }
+            },
+            onPaste: function(e) {
+                // Nettoyer le contenu collé avec un délai plus court
+                setTimeout(function() {
+                    var content = $('#content').summernote('code');
+                    var cleanedContent = content
+                        .replace(/<mark([^>]*)>/g, '<span class="highlight"$1>')
+                        .replace(/<\/mark>/g, '</span>');
+                    if (content !== cleanedContent) {
+                        $('#content').summernote('code', cleanedContent);
+                    }
+                }, 50);
+            }
+        },
+        popover: {
+            image: [
+                ['image', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+                ['float', ['floatLeft', 'floatRight', 'floatNone']],
+                ['remove', ['removeMedia']]
+            ],
+            link: [
+                ['link', ['linkDialogShow', 'unlink']]
+            ],
+            table: [
+                ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
+                ['delete', ['deleteRow', 'deleteCol', 'deleteTable']],
+            ],
+            air: [
+                ['color', ['color']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['para', ['ul', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture']]
             ]
         }
     });
 
-    // Update hidden textarea when form is submitted
-    const form = document.querySelector('form');
-    const hiddenContent = document.getElementById('content-hidden');
-    
-    form.addEventListener('submit', function() {
-        hiddenContent.value = quill.root.innerHTML;
-    });
-
-    // Auto-save content to hidden field
-    quill.on('text-change', function() {
-        hiddenContent.value = quill.root.innerHTML;
+    // Nettoyage avant soumission du formulaire
+    $('form').on('submit', function(e) {
+        var content = $('#content').summernote('code');
+        
+        // Nettoyage complet avant envoi
+        var cleanedContent = content
+            .replace(/<mark([^>]*)>/g, '<span class="highlight"$1>')
+            .replace(/<\/mark>/g, '</span>')
+            // Supprimer d'autres balises potentiellement problématiques
+            .replace(/<font([^>]*)>/gi, '<span$1>')
+            .replace(/<\/font>/gi, '</span>')
+            .replace(/<center([^>]*)>/gi, '<div style="text-align: center"$1>')
+            .replace(/<\/center>/gi, '</div>');
+        
+        // S'assurer que le contenu nettoyé est dans l'éditeur et le champ caché
+        $('#content').summernote('code', cleanedContent);
+        
+        // Forcer la mise à jour du textarea caché
+        var hiddenTextarea = $('textarea[name="content"]');
+        if (hiddenTextarea.length === 0) {
+            // Créer un textarea caché si nécessaire
+            $('<textarea name="content" style="display:none;"></textarea>').appendTo($(this));
+            hiddenTextarea = $('textarea[name="content"]');
+        }
+        hiddenTextarea.val(cleanedContent);
+        
+        console.log('Contenu nettoyé avant soumission:', cleanedContent.substring(0, 200) + '...');
     });
 });
 </script>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Club Subaquatique des Vénètes{% endblock %}</title>
+    <link rel="icon" href="{{ asset('assets/favicon.png') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block meta_description %}Club de plongée sous-marine à Vannes - Formations FFESSM, sorties mer, voyages plongée{% endblock %}">
+    
+    {% block stylesheets %}
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'club-orange': '#FD7E29',
+                            'club-orange-dark': '#E56B1F',
+                            'club-blue': '#1E40AF',
+                            'club-blue-dark': '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        </script>
+        <style>
+            .dropdown:hover .dropdown-menu { display: block; }
+            .hero-carousel { height: 500px; }
+            @media (max-width: 768px) {
+                .hero-carousel { height: 300px; }
+            }
+            
+            /* Style pour les éléments surlignés (remplace <mark>) */
+            .highlight {
+                background-color: #FEF3C7;
+                color: #92400E;
+                padding: 0.125rem 0.25rem;
+                border-radius: 0.25rem;
+                font-weight: bold;
+            }
+            
+            /* Amélioration du style des articles */
+            .prose .highlight {
+                background-color: #FEF3C7;
+                color: #92400E;
+                padding: 0.125rem 0.25rem;
+                border-radius: 0.25rem;
+            }
+        </style>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    {% endblock %}
+</head>
+<body class="bg-gray-50">
+    <!-- Header with Logo and Navigation -->
+    <header class="bg-white shadow-lg">
+        <!-- Top bar -->
+        <div class="bg-club-orange text-white py-2">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center text-sm">
+                    <div class="flex items-center space-x-6">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            {{ club_info().email }}
+                        </span>
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                            </svg>
+                            {{ club_info().phone }}
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ club_info().facebook }}" target="_blank" class="hover:text-orange-200">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Logo -->
+                    <div class="flex items-center">
+                        <a href="{{ path('app_home') }}" class="flex items-center space-x-3">
+                            <img src="{{ asset('assets/logo sans fond.png') }}" alt="Club Subaquatique des Vénètes" class="h-12 w-auto">
+                            <div class="flex flex-col">
+                                <span class="text-lg font-bold text-club-blue">Club Subaquatique</span>
+                                <span class="text-sm text-club-orange font-semibold">des Vénètes</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <!-- Le Club Dropdown -->
+                        <div class="relative dropdown">
+                            <button class="flex items-center text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                Le club
+                                <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu absolute left-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 hidden">
+                                <div class="py-1">
+                                    <a href="{{ path('public_page_show', {slug: 'qui-sommes-nous'}) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-club-orange hover:text-white">
+                                        <span class="mr-2">👥</span>
+                                        Qui sommes nous
+                                    </a>
+                                    <a href="{{ path('public_page_show', {slug: 'ou-nous-trouver'}) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-club-orange hover:text-white">
+                                        <span class="mr-2">📍</span>
+                                        Où nous trouver
+                                    </a>
+                                    <a href="{{ path('public_page_show', {slug: 'tarifs-2025'}) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-club-orange hover:text-white">
+                                        <span class="mr-2">💰</span>
+                                        Tarifs Adhésion et licence 2025
+                                    </a>
+                                    <a href="{{ path('public_page_show', {slug: 'nos-partenaires'}) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-club-orange hover:text-white">
+                                        <span class="mr-2">🤝</span>
+                                        Nos partenaires
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nos activités -->
+                        <a href="{{ path('public_page_show', {slug: 'nos-activites'}) }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                            Nos activités
+                        </a>
+
+                        <!-- Calendrier -->
+                        <a href="{{ path('public_calendar') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                            Calendrier
+                        </a>
+
+                        <!-- Actualités -->
+                        <a href="{{ path('public_blog_list') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                            Actualités
+                        </a>
+
+                        <!-- Accès membre -->
+                        <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                            Accès membre
+                        </a>
+
+                        <!-- Contact -->
+                        <a href="#contact" class="bg-club-orange text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-club-orange-dark">
+                            Contact
+                        </a>
+                    </div>
+
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden">
+                        <button x-data="{ open: false }" @click="open = !open" class="text-gray-700 hover:text-club-orange">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-club-blue text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Club Subaquatique des Vénètes</h3>
+                    <p class="text-blue-200 text-sm mb-4">
+                        Votre club de plongée à Vannes depuis 1975. 
+                        Formations FFESSM, sorties mer et voyages plongée.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="{{ club_info().facebook }}" target="_blank" class="text-blue-200 hover:text-white">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ path('public_page_show', {slug: 'qui-sommes-nous'}) }}" class="text-blue-200 hover:text-white">Qui sommes nous</a></li>
+                        <li><a href="{{ path('public_page_show', {slug: 'nos-activites'}) }}" class="text-blue-200 hover:text-white">Nos activités</a></li>
+                        <li><a href="{{ path('public_calendar') }}" class="text-blue-200 hover:text-white">Calendrier</a></li>
+                        <li><a href="{{ path('public_page_show', {slug: 'tarifs-2025'}) }}" class="text-blue-200 hover:text-white">Tarifs 2025</a></li>
+                        <li><a href="{{ path('public_blog_list') }}" class="text-blue-200 hover:text-white">Actualités</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Horaires</h3>
+                    <div class="text-sm text-blue-200 space-y-1">
+                        <div class="flex justify-between">
+                            <span>Mardi</span>
+                            <span>20h-22h</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Jeudi</span>
+                            <span>20h-22h</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Samedi</span>
+                            <span>14h-16h</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <div class="text-sm text-blue-200 space-y-2">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ club_info().address|nl2br }}
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                            </svg>
+                            {{ club_info().email }}
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                            {{ club_info().phone }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-blue-800 mt-8 pt-8 text-center text-sm text-blue-200">
+                <p>&copy; 2025 Club Subaquatique des Vénètes. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

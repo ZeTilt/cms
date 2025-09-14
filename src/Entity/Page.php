@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\PageRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PageRepository::class)]
 #[ORM\Table(name: 'pages')]
 class Page
 {
@@ -21,6 +23,9 @@ class Page
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $excerpt = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $content = null;
 
     #[ORM\Column(length: 255)]
     private string $template_path = '';
@@ -100,6 +105,17 @@ class Page
     public function setExcerpt(?string $excerpt): static
     {
         $this->excerpt = $excerpt;
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(?string $content): static
+    {
+        $this->content = $content;
         return $this;
     }
 
@@ -258,6 +274,20 @@ class Page
         $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
         $slug = trim($slug, '-');
         $this->slug = $slug;
+        return $this;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
         return $this;
     }
 }
