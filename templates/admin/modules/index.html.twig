@@ -1,0 +1,113 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}Gestion des Modules{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">Modules</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-sm rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-medium text-gray-900">Modules du système</h2>
+            <span class="text-sm text-gray-500">{{ modules|length }} module(s)</span>
+        </div>
+        <p class="mt-2 text-sm text-gray-600">
+            Activez ou désactivez les fonctionnalités du site selon vos besoins.
+        </p>
+    </div>
+
+    {% if modules is empty %}
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-semibold text-gray-900">Aucun module configuré</h3>
+            <p class="mt-1 text-sm text-gray-500">Les modules seront affichés ici une fois configurés.</p>
+        </div>
+    {% else %}
+        <div class="divide-y divide-gray-200">
+            {% for module in modules %}
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <!-- Icon -->
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-{{ module.enabled ? 'green' : 'gray' }}-100 rounded-lg flex items-center justify-center">
+                                    {% if module.name == 'blog' %}
+                                        <svg class="w-6 h-6 text-{{ module.enabled ? 'green' : 'gray' }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                                        </svg>
+                                    {% elseif module.name == 'gallery' %}
+                                        <svg class="w-6 h-6 text-{{ module.enabled ? 'green' : 'gray' }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v16z"/>
+                                        </svg>
+                                    {% elseif module.name == 'events' %}
+                                        <svg class="w-6 h-6 text-{{ module.enabled ? 'green' : 'gray' }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    {% else %}
+                                        <svg class="w-6 h-6 text-{{ module.enabled ? 'green' : 'gray' }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                        </svg>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Info -->
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-sm font-medium text-gray-900">
+                                    {{ module.displayName ?? module.name|title }}
+                                </h3>
+                                <p class="text-sm text-gray-500">
+                                    {{ module.description ?? 'Module ' ~ module.name }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Status & Actions -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Status Badge -->
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ module.enabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ module.enabled ? 'Activé' : 'Désactivé' }}
+                            </span>
+                            
+                            <!-- Toggle Button -->
+                            <a href="{{ path('admin_modules_toggle', {id: module.id}) }}" 
+                               class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white {{ module.enabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ module.enabled ? 'red' : 'green' }}-500">
+                                {{ module.enabled ? 'Désactiver' : 'Activer' }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+{% if modules is not empty %}
+<div class="mt-6 bg-blue-50 border border-blue-200 rounded-md p-4">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-sm font-medium text-blue-800">Information</h3>
+            <div class="mt-2 text-sm text-blue-700">
+                <p>
+                    La désactivation d'un module masque les fonctionnalités associées dans l'interface d'administration et sur le site public, mais conserve les données en base.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
