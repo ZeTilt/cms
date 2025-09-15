@@ -26,16 +26,31 @@
     </div>
     
     <form method="POST" class="p-6 space-y-6">
-        <!-- Nom -->
+        <!-- Prénom -->
         <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Nom complet</label>
+            <label for="firstName" class="block text-sm font-medium text-gray-700">Prénom *</label>
             <div class="mt-1">
                 <input type="text" 
-                       name="name" 
-                       id="name" 
-                       value="{{ user.name ?? '' }}"
+                       name="firstName" 
+                       id="firstName" 
+                       value="{{ user.firstName ?? '' }}"
+                       required
                        class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
-                       placeholder="Nom complet de l'utilisateur">
+                       placeholder="Prénom">
+            </div>
+        </div>
+
+        <!-- Nom -->
+        <div>
+            <label for="lastName" class="block text-sm font-medium text-gray-700">Nom *</label>
+            <div class="mt-1">
+                <input type="text" 
+                       name="lastName" 
+                       id="lastName" 
+                       value="{{ user.lastName ?? '' }}"
+                       required
+                       class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
+                       placeholder="Nom de famille">
             </div>
         </div>
 

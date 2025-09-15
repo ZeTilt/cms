@@ -39,7 +39,8 @@ class AdminUserController extends AbstractController
         
         if ($request->isMethod('POST')) {
             $user->setEmail($request->request->get('email'));
-            $user->setName($request->request->get('name'));
+            $user->setFirstName($request->request->get('firstName') ?: '');
+            $user->setLastName($request->request->get('lastName') ?: '');
             
             $roles = $request->request->all('roles') ?: [];
             $user->setRoles($roles);
@@ -69,7 +70,8 @@ class AdminUserController extends AbstractController
     {
         if ($request->isMethod('POST')) {
             $user->setEmail($request->request->get('email'));
-            $user->setName($request->request->get('name'));
+            $user->setFirstName($request->request->get('firstName') ?: '');
+            $user->setLastName($request->request->get('lastName') ?: '');
             
             $roles = $request->request->all('roles') ?: [];
             $user->setRoles($roles);
