@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\EventRepository;
+use App\Repository\EventTypeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +13,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class CalendarController extends AbstractController
 {
     public function __construct(
-        private EventRepository $eventRepository
+        private EventRepository $eventRepository,
+        private EventTypeRepository $eventTypeRepository
     ) {}
 
     #[Route('/calendrier', name: 'public_calendar')]
@@ -28,6 +30,7 @@ class CalendarController extends AbstractController
 
         $events = $this->eventRepository->findEventsByMonth($year, $month);
         $upcomingEvents = $this->eventRepository->findUpcomingEvents(5);
+        $eventTypes = $this->eventTypeRepository->findActive();
 
         // Calculer le mois précédent et suivant
         $prevMonth = $month - 1;
@@ -47,6 +50,7 @@ class CalendarController extends AbstractController
         return $this->render('calendar/index.html.twig', [
             'events' => $events,
             'upcoming_events' => $upcomingEvents,
+            'event_types' => $eventTypes,
             'current_year' => $year,
             'current_month' => $month,
             'prev_year' => $prevYear,
