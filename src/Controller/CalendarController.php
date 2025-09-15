@@ -30,7 +30,14 @@ class CalendarController extends AbstractController
 
         $events = $this->eventRepository->findEventsByMonth($year, $month);
         $upcomingEvents = $this->eventRepository->findUpcomingEvents(5);
-        $eventTypes = $this->eventTypeRepository->findActive();
+        
+        // Gestion sécurisée des types d'événements (au cas où la table n'existe pas encore)
+        try {
+            $eventTypes = $this->eventTypeRepository->findActive();
+        } catch (\Exception $e) {
+            // Si erreur (table manquante, etc.), on continue sans types
+            $eventTypes = [];
+        }
 
         // Calculer le mois précédent et suivant
         $prevMonth = $month - 1;
