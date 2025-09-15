@@ -244,4 +244,38 @@ class AdminUserController extends AbstractController
             $this->entityManager->remove($attribute);
         }
     }
+
+    #[Route('/{id}/approve', name: 'admin_users_approve')]
+    public function approve(User $user): Response
+    {
+        if ($user->getStatus() !== 'pending') {
+            $this->addFlash('error', 'Seuls les comptes en attente peuvent être validés.');
+            return $this->redirectToRoute('admin_users_list');
+        }
+
+        $user->setStatus('approved');
+        $user->setActive(true);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', "Inscription de {$user->getFullName()} validée avec succès !");
+        
+        return $this->redirectToRoute('admin_users_list');
+    }
+
+    #[Route('/{id}/reject', name: 'admin_users_reject')]
+    public function reject(User $user): Response
+    {
+        if ($user->getStatus() !== 'pending') {
+            $this->addFlash('error', 'Seuls les comptes en attente peuvent être rejetés.');
+            return $this->redirectToRoute('admin_users_list');
+        }
+
+        $user->setStatus('rejected');
+        $user->setActive(false);
+        $this->entityManager->flush();
+
+        $this->addFlash('warning', "Inscription de {$user->getFullName()} rejetée.");
+        
+        return $this->redirectToRoute('admin_users_list');
+    }
 }
