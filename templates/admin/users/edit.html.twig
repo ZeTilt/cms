@@ -96,28 +96,31 @@
                         id="diving_level"
                         class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md">
                     <option value="">-- Sélectionner un niveau --</option>
-                    <option value="bapteme" {{ (not isNew and user_diving_level == 'bapteme') ? 'selected' : '' }}>Baptême</option>
-                    <option value="pe12" {{ (not isNew and user_diving_level == 'pe12') ? 'selected' : '' }}>PE12 (Plongeur Encadré 12m)</option>
-                    <option value="pe20" {{ (not isNew and user_diving_level == 'pe20') ? 'selected' : '' }}>PE20 (Plongeur Encadré 20m)</option>
-                    <option value="pe40" {{ (not isNew and user_diving_level == 'pe40') ? 'selected' : '' }}>PE40 (Plongeur Encadré 40m)</option>
-                    <option value="pe60" {{ (not isNew and user_diving_level == 'pe60') ? 'selected' : '' }}>PE60 (Plongeur Encadré 60m)</option>
-                    <option value="pa12" {{ (not isNew and user_diving_level == 'pa12') ? 'selected' : '' }}>PA12 (Plongeur Autonome 12m)</option>
-                    <option value="pa20" {{ (not isNew and user_diving_level == 'pa20') ? 'selected' : '' }}>PA20 (Plongeur Autonome 20m)</option>
-                    <option value="pa40" {{ (not isNew and user_diving_level == 'pa40') ? 'selected' : '' }}>PA40 (Plongeur Autonome 40m)</option>
-                    <option value="pa60" {{ (not isNew and user_diving_level == 'pa60') ? 'selected' : '' }}>PA60 (Plongeur Autonome 60m)</option>
-                    <option value="n1" {{ (not isNew and user_diving_level == 'n1') ? 'selected' : '' }}>N1 (Niveau 1)</option>
-                    <option value="n2" {{ (not isNew and user_diving_level == 'n2') ? 'selected' : '' }}>N2 (Niveau 2)</option>
-                    <option value="n3" {{ (not isNew and user_diving_level == 'n3') ? 'selected' : '' }}>N3 (Niveau 3)</option>
-                    <option value="n4" {{ (not isNew and user_diving_level == 'n4') ? 'selected' : '' }}>N4 (Niveau 4)</option>
-                    <option value="mf1" {{ (not isNew and user_diving_level == 'mf1') ? 'selected' : '' }}>MF1 (Moniteur Fédéral 1er degré)</option>
-                    <option value="mf2" {{ (not isNew and user_diving_level == 'mf2') ? 'selected' : '' }}>MF2 (Moniteur Fédéral 2ème degré)</option>
-                    <option value="e1" {{ (not isNew and user_diving_level == 'e1') ? 'selected' : '' }}>E1 (Encadrant niveau 1)</option>
-                    <option value="e2" {{ (not isNew and user_diving_level == 'e2') ? 'selected' : '' }}>E2 (Encadrant niveau 2)</option>
-                    <option value="e3" {{ (not isNew and user_diving_level == 'e3') ? 'selected' : '' }}>E3 (Encadrant niveau 3)</option>
-                    <option value="e4" {{ (not isNew and user_diving_level == 'e4') ? 'selected' : '' }}>E4 (Encadrant niveau 4)</option>
+                    {% for level in diving_levels %}
+                        <option value="{{ level.code }}" {{ (not isNew and user_diving_level == level.code) ? 'selected' : '' }}>
+                            {{ level.name }}{% if level.description %} - {{ level.description }}{% endif %}
+                        </option>
+                    {% endfor %}
                 </select>
             </div>
             <p class="mt-1 text-sm text-gray-500">Niveau de certification FFESSM du plongeur</p>
+        </div>
+
+        <!-- Apnéiste -->
+        <div>
+            <div class="flex items-center">
+                <input type="hidden" name="is_freediver" value="0">
+                <input type="checkbox" 
+                       name="is_freediver" 
+                       id="is_freediver" 
+                       value="1"
+                       {{ (not isNew and user_is_freediver) ? 'checked' : '' }}
+                       class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                <label for="is_freediver" class="ml-2 block text-sm text-gray-900">
+                    Apnéiste
+                </label>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Cochez si le membre pratique l'apnée</p>
         </div>
 
         <!-- Rôles -->

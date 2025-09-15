@@ -1,0 +1,117 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}{{ isNew ? 'Nouveau Niveau de Plongée' : 'Modifier Niveau de Plongée' }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <a href="{{ path('admin_diving_levels_list') }}" class="text-gray-500 hover:text-gray-700">Niveaux de Plongée</a>
+</li>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">{{ isNew ? 'Nouveau' : 'Modifier' }}</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-sm rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">
+            {{ isNew ? 'Créer un nouveau niveau de plongée' : 'Modifier le niveau de plongée' }}
+        </h2>
+    </div>
+    
+    <form method="POST" class="p-6 space-y-6">
+        <!-- Nom -->
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Nom *</label>
+            <div class="mt-1">
+                <input type="text" 
+                       name="name" 
+                       id="name" 
+                       value="{{ isNew ? '' : (diving_level.name ?? '') }}"
+                       required
+                       class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
+                       placeholder="Ex: Niveau 1, PE20, MF1...">
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Nom complet du niveau de plongée</p>
+        </div>
+
+        <!-- Code -->
+        <div>
+            <label for="code" class="block text-sm font-medium text-gray-700">Code *</label>
+            <div class="mt-1">
+                <input type="text" 
+                       name="code" 
+                       id="code" 
+                       value="{{ isNew ? '' : (diving_level.code ?? '') }}"
+                       required
+                       class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
+                       placeholder="Ex: n1, pe20, mf1..."
+                       maxlength="20">
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Code unique pour identifier le niveau (lettres minuscules et chiffres)</p>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            <div class="mt-1">
+                <textarea name="description" 
+                          id="description" 
+                          rows="3"
+                          class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
+                          placeholder="Description détaillée du niveau...">{{ isNew ? '' : (diving_level.description ?? '') }}</textarea>
+            </div>
+        </div>
+
+        <!-- Ordre de tri -->
+        <div>
+            <label for="sort_order" class="block text-sm font-medium text-gray-700">Ordre de tri</label>
+            <div class="mt-1">
+                <input type="number" 
+                       name="sort_order" 
+                       id="sort_order" 
+                       value="{{ isNew ? 0 : (diving_level.sortOrder ?? 0) }}"
+                       min="0"
+                       class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Plus le nombre est petit, plus le niveau apparaîtra en premier</p>
+        </div>
+
+        <!-- Statut actif -->
+        <div>
+            <div class="flex items-center">
+                <input type="hidden" name="is_active" value="0">
+                <input type="checkbox" 
+                       name="is_active" 
+                       id="is_active" 
+                       value="1"
+                       {{ (isNew or diving_level.active) ? 'checked' : '' }}
+                       class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                    Niveau actif
+                </label>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Les niveaux inactifs n'apparaissent pas dans les formulaires</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-between pt-6 border-t border-gray-200">
+            <a href="{{ path('admin_diving_levels_list') }}" 
+               class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                Annuler
+            </a>
+            
+            <button type="submit" 
+                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                {{ isNew ? 'Créer le niveau' : 'Sauvegarder les modifications' }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

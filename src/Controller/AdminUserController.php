@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\EntityAttribute;
+use App\Entity\DivingLevel;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,8 +44,16 @@ class AdminUserController extends AbstractController
                 ->getQuery()
                 ->getResult();
                 
+            // Récupérer aussi les niveaux de plongée pour le formatage
+            $divingLevelEntities = $this->entityManager->getRepository(DivingLevel::class)->findAll();
+            $levelMap = [];
+            foreach ($divingLevelEntities as $level) {
+                $levelMap[$level->getCode()] = $level->getName();
+            }
+            
             foreach ($attributes as $attr) {
-                $divingLevels[$attr->getEntityId()] = $this->formatDivingLevel($attr->getAttributeValue());
+                $code = $attr->getAttributeValue();
+                $divingLevels[$attr->getEntityId()] = $levelMap[$code] ?? $code;
             }
         }
         
@@ -82,6 +91,10 @@ class AdminUserController extends AbstractController
             
             // Sauvegarder le niveau de plongée via EAV
             $this->saveDivingLevel($user, $request->request->get('diving_level'));
+            
+            // Sauvegarder le statut apnéiste via EAV
+            $this->saveFreediverStatus($user, (bool) $request->request->get('is_freediver'));
+            
             $this->entityManager->flush();
             
             $this->addFlash('success', 'Utilisateur créé avec succès !');
@@ -89,10 +102,16 @@ class AdminUserController extends AbstractController
             return $this->redirectToRoute('admin_users_list');
         }
         
+        // Récupérer les niveaux de plongée actifs
+        $divingLevels = $this->entityManager->getRepository(DivingLevel::class)
+            ->findBy(['isActive' => true], ['sortOrder' => 'ASC', 'name' => 'ASC']);
+        
         return $this->render('admin/users/edit.html.twig', [
             'user' => $user,
             'isNew' => true,
             'user_diving_level' => null,
+            'user_is_freediver' => false,
+            'diving_levels' => $divingLevels,
         ]);
     }
 
@@ -116,6 +135,9 @@ class AdminUserController extends AbstractController
             // Sauvegarder le niveau de plongée via EAV
             $this->saveDivingLevel($user, $request->request->get('diving_level'));
             
+            // Sauvegarder le statut apnéiste via EAV
+            $this->saveFreediverStatus($user, (bool) $request->request->get('is_freediver'));
+            
             $this->entityManager->flush();
             
             $this->addFlash('success', 'Utilisateur mis à jour avec succès !');
@@ -130,11 +152,25 @@ class AdminUserController extends AbstractController
                 'entityId' => $user->getId(),
                 'attributeName' => 'diving_level'
             ]);
+            
+        // Récupérer le statut apnéiste actuel
+        $freediverAttr = $this->entityManager->getRepository(EntityAttribute::class)
+            ->findOneBy([
+                'entityType' => 'User',
+                'entityId' => $user->getId(),
+                'attributeName' => 'is_freediver'
+            ]);
+        
+        // Récupérer les niveaux de plongée actifs
+        $divingLevels = $this->entityManager->getRepository(DivingLevel::class)
+            ->findBy(['isActive' => true], ['sortOrder' => 'ASC', 'name' => 'ASC']);
         
         return $this->render('admin/users/edit.html.twig', [
             'user' => $user,
             'isNew' => false,
             'user_diving_level' => $divingLevelAttr?->getAttributeValue(),
+            'user_is_freediver' => (bool) ($freediverAttr?->getAttributeValue() ?? false),
+            'diving_levels' => $divingLevels,
         ]);
     }
 
@@ -182,32 +218,30 @@ class AdminUserController extends AbstractController
         }
     }
 
-    private function formatDivingLevel(?string $level): ?string
+    private function saveFreediverStatus(User $user, bool $isFreediver): void
     {
-        if (!$level) return null;
-        
-        $levels = [
-            'bapteme' => 'Baptême',
-            'pe12' => 'PE12',
-            'pe20' => 'PE20',
-            'pe40' => 'PE40',
-            'pe60' => 'PE60',
-            'pa12' => 'PA12',
-            'pa20' => 'PA20',
-            'pa40' => 'PA40',
-            'pa60' => 'PA60',
-            'n1' => 'N1',
-            'n2' => 'N2',
-            'n3' => 'N3',
-            'n4' => 'N4',
-            'mf1' => 'MF1',
-            'mf2' => 'MF2',
-            'e1' => 'E1',
-            'e2' => 'E2',
-            'e3' => 'E3',
-            'e4' => 'E4',
-        ];
-        
-        return $levels[$level] ?? $level;
+        // Chercher l'attribut existant
+        $attribute = $this->entityManager->getRepository(EntityAttribute::class)
+            ->findOneBy([
+                'entityType' => 'User',
+                'entityId' => $user->getId(),
+                'attributeName' => 'is_freediver'
+            ]);
+
+        if ($isFreediver) {
+            if (!$attribute) {
+                // Créer un nouvel attribut
+                $attribute = new EntityAttribute();
+                $attribute->setEntityType('User');
+                $attribute->setEntityId($user->getId());
+                $attribute->setAttributeName('is_freediver');
+                $attribute->setAttributeType('boolean');
+                $this->entityManager->persist($attribute);
+            }
+            $attribute->setAttributeValue('1');
+        } elseif ($attribute) {
+            // Supprimer l'attribut si pas apnéiste
+            $this->entityManager->remove($attribute);
+        }
     }
 }
