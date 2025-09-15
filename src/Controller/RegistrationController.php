@@ -140,7 +140,7 @@ class RegistrationController extends AbstractController
         );
 
         $email = (new Email())
-            ->from('noreply@club-venetes.fr')
+            ->from('no-reply@venetes.dhuicque.fr')
             ->to($user->getEmail())
             ->subject('Vérification de votre adresse email - Club Subaquatique des Vénètes')
             ->html($this->renderView('emails/verify_email.html.twig', [

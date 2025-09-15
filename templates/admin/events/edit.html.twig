@@ -229,6 +229,138 @@
                         Si défini, les utilisateurs pourront voir le nombre de places disponibles
                     </p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Conditions d'inscription -->
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Conditions d'inscription</h2>
+                <p class="mt-1 text-sm text-gray-500">Définissez les prérequis pour participer à cet événement</p>
+            </div>
+            
+            <div class="px-6 py-4 space-y-6">
+                <!-- Niveau de plongée minimum -->
+                <div>
+                    <label for="min_diving_level" class="block text-sm font-medium text-gray-700 mb-2">
+                        Niveau de plongée minimum requis
+                    </label>
+                    <select id="min_diving_level" name="min_diving_level"
+                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <option value="">-- Aucune restriction --</option>
+                        <optgroup label="Plongeur">
+                            <option value="N1" {{ event.minDivingLevel == 'N1' ? 'selected' : '' }}>N1 - Plongeur Encadré 20m</option>
+                            <option value="N2" {{ event.minDivingLevel == 'N2' ? 'selected' : '' }}>N2 - Plongeur Autonome 20m / Encadré 40m</option>
+                            <option value="N3" {{ event.minDivingLevel == 'N3' ? 'selected' : '' }}>N3 - Plongeur Autonome 60m</option>
+                            <option value="N4" {{ event.minDivingLevel == 'N4' ? 'selected' : '' }}>N4 - Guide de Palanquée</option>
+                            <option value="N5" {{ event.minDivingLevel == 'N5' ? 'selected' : '' }}>N5 - Directeur de Plongée</option>
+                        </optgroup>
+                        <optgroup label="Plongeur (Ancien système)">
+                            <option value="P1" {{ event.minDivingLevel == 'P1' ? 'selected' : '' }}>P1 - Premier Degré</option>
+                            <option value="P2" {{ event.minDivingLevel == 'P2' ? 'selected' : '' }}>P2 - Deuxième Degré</option>
+                            <option value="P3" {{ event.minDivingLevel == 'P3' ? 'selected' : '' }}>P3 - Troisième Degré</option>
+                            <option value="P4" {{ event.minDivingLevel == 'P4' ? 'selected' : '' }}>P4 - Quatrième Degré</option>
+                            <option value="P5" {{ event.minDivingLevel == 'P5' ? 'selected' : '' }}>P5 - Cinquième Degré</option>
+                        </optgroup>
+                        <optgroup label="Encadrement">
+                            <option value="E1" {{ event.minDivingLevel == 'E1' ? 'selected' : '' }}>E1 - Initiateur</option>
+                            <option value="E2" {{ event.minDivingLevel == 'E2' ? 'selected' : '' }}>E2 - Moniteur Fédéral 1er Degré</option>
+                            <option value="E3" {{ event.minDivingLevel == 'E3' ? 'selected' : '' }}>E3 - Moniteur Fédéral 2ème Degré</option>
+                            <option value="E4" {{ event.minDivingLevel == 'E4' ? 'selected' : '' }}>E4 - Moniteur Fédéral 3ème Degré</option>
+                        </optgroup>
+                        <optgroup label="Secours">
+                            <option value="RIFAP" {{ event.minDivingLevel == 'RIFAP' ? 'selected' : '' }}>RIFAP</option>
+                            <option value="RIFAP_recyclage" {{ event.minDivingLevel == 'RIFAP_recyclage' ? 'selected' : '' }}>RIFAP Recyclage</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Âge -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="min_age" class="block text-sm font-medium text-gray-700 mb-2">
+                            Âge minimum (années)
+                        </label>
+                        <input type="number" id="min_age" name="min_age" 
+                               value="{{ event.minAge ?? '' }}" 
+                               min="8" max="99"
+                               placeholder="Ex: 16"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="max_age" class="block text-sm font-medium text-gray-700 mb-2">
+                            Âge maximum (années)
+                        </label>
+                        <input type="number" id="max_age" name="max_age" 
+                               value="{{ event.maxAge ?? '' }}" 
+                               min="8" max="99"
+                               placeholder="Ex: 65"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Certificat médical -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" 
+                               name="requires_medical_certificate" 
+                               id="requires_medical_certificate" 
+                               value="1"
+                               {{ event.requiresMedicalCertificate ? 'checked' : '' }}
+                               onchange="toggleMedicalCertificateFields(this.checked)"
+                               class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                        <label for="requires_medical_certificate" class="ml-2 block text-sm font-medium text-gray-900">
+                            Certificat médical requis
+                        </label>
+                    </div>
+                    
+                    <div id="medical_certificate_fields" style="display: {{ event.requiresMedicalCertificate ? 'block' : 'none' }}">
+                        <div class="ml-6">
+                            <label for="medical_certificate_validity_days" class="block text-sm font-medium text-gray-700 mb-2">
+                                Validité du certificat médical (jours)
+                            </label>
+                            <input type="number" 
+                                   name="medical_certificate_validity_days" 
+                                   id="medical_certificate_validity_days" 
+                                   value="{{ event.medicalCertificateValidityDays ?? 365 }}"
+                                   min="30" max="1095"
+                                   placeholder="365"
+                                   class="block w-32 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                            <p class="mt-1 text-xs text-gray-500">Par défaut : 365 jours (1 an)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test de natation -->
+                <div>
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               name="requires_swimming_test" 
+                               id="requires_swimming_test" 
+                               value="1"
+                               {{ event.requiresSwimmingTest ? 'checked' : '' }}
+                               class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                        <label for="requires_swimming_test" class="ml-2 block text-sm font-medium text-gray-900">
+                            Test de natation requis
+                        </label>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500 ml-6">
+                        Le participant doit avoir réussi le test de natation du club
+                    </p>
+                </div>
+
+                <!-- Conditions supplémentaires -->
+                <div>
+                    <label for="additional_requirements" class="block text-sm font-medium text-gray-700 mb-2">
+                        Conditions supplémentaires
+                    </label>
+                    <textarea id="additional_requirements" name="additional_requirements" rows="3"
+                              placeholder="Ex: Avoir son propre matériel, expérience en plongée de nuit requise..."
+                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">{{ event.additionalRequirements ?? '' }}</textarea>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Décrivez les conditions particulières non couvertes par les champs ci-dessus
+                    </p>
+                </div>
 
                 <!-- Statut (pour modification seulement) -->
                 {% if not isNew %}
@@ -299,6 +431,11 @@ function toggleWeekdayFields(recurrenceType) {
         weekdaysField.style.display = 'none';
         intervalLabel.textContent = 'jour(s)';
     }
+}
+
+function toggleMedicalCertificateFields(requiresCertificate) {
+    const fields = document.getElementById('medical_certificate_fields');
+    fields.style.display = requiresCertificate ? 'block' : 'none';
 }
 
 // Initialiser l'état au chargement
