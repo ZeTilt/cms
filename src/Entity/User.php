@@ -18,19 +18,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    private string $email;
+    private string $email = '';
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     #[ORM\Column]
-    private string $password;
+    private string $password = '';
 
     #[ORM\Column(length: 100)]
-    private string $firstName;
+    private string $firstName = '';
 
     #[ORM\Column(length: 100)]
-    private string $lastName;
+    private string $lastName = '';
 
     #[ORM\Column(type: 'boolean')]
     private bool $active = true;

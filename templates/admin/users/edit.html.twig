@@ -33,7 +33,7 @@
                 <input type="text" 
                        name="firstName" 
                        id="firstName" 
-                       value="{{ user.firstName ?? '' }}"
+                       value="{{ user.id ? user.firstName : '' }}"
                        required
                        class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
                        placeholder="Prénom">
@@ -47,7 +47,7 @@
                 <input type="text" 
                        name="lastName" 
                        id="lastName" 
-                       value="{{ user.lastName ?? '' }}"
+                       value="{{ user.id ? user.lastName : '' }}"
                        required
                        class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
                        placeholder="Nom de famille">
@@ -61,7 +61,7 @@
                 <input type="email" 
                        name="email" 
                        id="email" 
-                       value="{{ user.email ?? '' }}"
+                       value="{{ user.id ? user.email : '' }}"
                        required
                        class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md"
                        placeholder="email@exemple.com">
@@ -97,7 +97,7 @@
                            name="roles[]" 
                            value="ROLE_ADMIN" 
                            id="role_admin"
-                           {{ 'ROLE_ADMIN' in user.roles ? 'checked' : '' }}
+                           {{ user.id and 'ROLE_ADMIN' in user.roles ? 'checked' : '' }}
                            class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
                     <label for="role_admin" class="ml-2 block text-sm text-gray-700">
                         <span class="font-medium">Administrateur</span>
@@ -110,7 +110,7 @@
                            name="roles[]" 
                            value="ROLE_SUPER_ADMIN" 
                            id="role_super_admin"
-                           {{ 'ROLE_SUPER_ADMIN' in user.roles ? 'checked' : '' }}
+                           {{ user.id and 'ROLE_SUPER_ADMIN' in user.roles ? 'checked' : '' }}
                            class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
                     <label for="role_super_admin" class="ml-2 block text-sm text-gray-700">
                         <span class="font-medium">Super Administrateur</span>
