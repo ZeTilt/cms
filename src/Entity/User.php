@@ -38,6 +38,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     private string $status = 'pending';
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $emailVerified = false;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $emailVerificationToken = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -221,5 +227,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isRejected(): bool
     {
         return $this->status === 'rejected';
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->emailVerified;
+    }
+
+    public function setEmailVerified(bool $emailVerified): static
+    {
+        $this->emailVerified = $emailVerified;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getEmailVerificationToken(): ?string
+    {
+        return $this->emailVerificationToken;
+    }
+
+    public function setEmailVerificationToken(?string $emailVerificationToken): static
+    {
+        $this->emailVerificationToken = $emailVerificationToken;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function generateEmailVerificationToken(): string
+    {
+        $this->emailVerificationToken = bin2hex(random_bytes(32));
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this->emailVerificationToken;
     }
 }

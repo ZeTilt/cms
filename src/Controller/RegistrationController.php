@@ -8,14 +8,18 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class RegistrationController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
+        private MailerInterface $mailer
     ) {}
 
     #[Route('/inscription', name: 'app_register')]
@@ -42,6 +46,10 @@ class RegistrationController extends AbstractController
             $user->setLastName($request->request->get('lastName'));
             $user->setStatus('pending'); // En attente de validation
             $user->setActive(false); // Inactif jusqu'à validation
+            $user->setEmailVerified(false); // Email non vérifié
+
+            // Générer le token de vérification
+            $token = $user->generateEmailVerificationToken();
 
             // Hasher le mot de passe
             $plainPassword = $request->request->get('password');
@@ -64,7 +72,10 @@ class RegistrationController extends AbstractController
 
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Votre inscription a été envoyée ! Un administrateur validera votre compte sous peu.');
+            // Envoyer l'email de vérification
+            $this->sendVerificationEmail($user);
+
+            $this->addFlash('success', 'Inscription réussie ! Vérifiez votre boîte email pour confirmer votre adresse.');
             return $this->redirectToRoute('app_login');
         }
 
@@ -99,5 +110,49 @@ class RegistrationController extends AbstractController
         $attribute->setAttributeValue('1');
         
         $this->entityManager->persist($attribute);
+    }
+
+    #[Route('/verify-email/{token}', name: 'app_verify_email')]
+    public function verifyEmail(string $token): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)
+            ->findOneBy(['emailVerificationToken' => $token]);
+
+        if (!$user) {
+            $this->addFlash('error', 'Token de vérification invalide ou expiré.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifier l'email
+        $user->setEmailVerified(true);
+        $user->setEmailVerificationToken(null); // Supprimer le token après utilisation
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Adresse email vérifiée ! Votre compte est maintenant en attente de validation par un administrateur.');
+        return $this->redirectToRoute('app_login');
+    }
+
+    private function sendVerificationEmail(User $user): void
+    {
+        $verificationUrl = $this->generateUrl('app_verify_email', 
+            ['token' => $user->getEmailVerificationToken()], 
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $email = (new Email())
+            ->from('noreply@club-venetes.fr')
+            ->to($user->getEmail())
+            ->subject('Vérification de votre adresse email - Club Subaquatique des Vénètes')
+            ->html($this->renderView('emails/verify_email.html.twig', [
+                'user' => $user,
+                'verification_url' => $verificationUrl
+            ]));
+
+        try {
+            $this->mailer->send($email);
+        } catch (\Exception $e) {
+            // Log l'erreur mais ne pas bloquer l'inscription
+            // En production, vous voudriez logger cela proprement
+        }
     }
 }
