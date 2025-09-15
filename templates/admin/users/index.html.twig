@@ -60,6 +60,9 @@
                             Rôles
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Niveau plongée
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Créé le
                         </th>
                         <th scope="col" class="relative px-6 py-3">
@@ -103,6 +106,9 @@
                                         {% endif %}
                                     {% endfor %}
                                 </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ user.divingLevel ?? '-' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ user.createdAt ? user.createdAt|date('d/m/Y à H:i') : '-' }}
