@@ -75,13 +75,13 @@
                                     <div class="flex-shrink-0 h-10 w-10">
                                         <div class="h-10 w-10 rounded-full bg-club-orange flex items-center justify-center">
                                             <span class="text-sm font-medium text-white">
-                                                {{ user.name ? user.name|slice(0, 1)|upper : user.email|slice(0, 1)|upper }}
+                                                {{ user.firstName ? user.firstName|slice(0, 1)|upper : user.email|slice(0, 1)|upper }}
                                             </span>
                                         </div>
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{ user.name ?? 'Utilisateur' }}
+                                            {{ user.fullName ?? 'Utilisateur' }}
                                         </div>
                                         {% if user == app.user %}
                                             <div class="text-sm text-club-orange font-medium">Vous</div>
