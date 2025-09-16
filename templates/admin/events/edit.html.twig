@@ -235,132 +235,137 @@
         <!-- Conditions d'inscription -->
         <div class="bg-white shadow-sm rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-medium text-gray-900">Conditions d'inscription</h2>
-                <p class="mt-1 text-sm text-gray-500">Définissez les prérequis pour participer à cet événement</p>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-medium text-gray-900">Conditions d'inscription</h2>
+                        <p class="mt-1 text-sm text-gray-500">Définissez les prérequis pour participer à cet événement</p>
+                    </div>
+                    {% if not isNew %}
+                    <button type="button" onclick="showAddConditionForm()" 
+                            class="inline-flex items-center px-3 py-2 bg-club-orange text-white text-sm font-medium rounded-md hover:bg-club-orange-dark">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Ajouter une condition
+                    </button>
+                    {% endif %}
+                </div>
             </div>
             
-            <div class="px-6 py-4 space-y-6">
-                <!-- Niveau de plongée minimum -->
-                <div>
-                    <label for="min_diving_level" class="block text-sm font-medium text-gray-700 mb-2">
-                        Niveau de plongée minimum requis
-                    </label>
-                    <select id="min_diving_level" name="min_diving_level"
-                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
-                        <option value="">-- Aucune restriction --</option>
-                        <optgroup label="Plongeur">
-                            <option value="N1" {{ event.minDivingLevel == 'N1' ? 'selected' : '' }}>N1 - Plongeur Encadré 20m</option>
-                            <option value="N2" {{ event.minDivingLevel == 'N2' ? 'selected' : '' }}>N2 - Plongeur Autonome 20m / Encadré 40m</option>
-                            <option value="N3" {{ event.minDivingLevel == 'N3' ? 'selected' : '' }}>N3 - Plongeur Autonome 60m</option>
-                            <option value="N4" {{ event.minDivingLevel == 'N4' ? 'selected' : '' }}>N4 - Guide de Palanquée</option>
-                            <option value="N5" {{ event.minDivingLevel == 'N5' ? 'selected' : '' }}>N5 - Directeur de Plongée</option>
-                        </optgroup>
-                        <optgroup label="Plongeur (Ancien système)">
-                            <option value="P1" {{ event.minDivingLevel == 'P1' ? 'selected' : '' }}>P1 - Premier Degré</option>
-                            <option value="P2" {{ event.minDivingLevel == 'P2' ? 'selected' : '' }}>P2 - Deuxième Degré</option>
-                            <option value="P3" {{ event.minDivingLevel == 'P3' ? 'selected' : '' }}>P3 - Troisième Degré</option>
-                            <option value="P4" {{ event.minDivingLevel == 'P4' ? 'selected' : '' }}>P4 - Quatrième Degré</option>
-                            <option value="P5" {{ event.minDivingLevel == 'P5' ? 'selected' : '' }}>P5 - Cinquième Degré</option>
-                        </optgroup>
-                        <optgroup label="Encadrement">
-                            <option value="E1" {{ event.minDivingLevel == 'E1' ? 'selected' : '' }}>E1 - Initiateur</option>
-                            <option value="E2" {{ event.minDivingLevel == 'E2' ? 'selected' : '' }}>E2 - Moniteur Fédéral 1er Degré</option>
-                            <option value="E3" {{ event.minDivingLevel == 'E3' ? 'selected' : '' }}>E3 - Moniteur Fédéral 2ème Degré</option>
-                            <option value="E4" {{ event.minDivingLevel == 'E4' ? 'selected' : '' }}>E4 - Moniteur Fédéral 3ème Degré</option>
-                        </optgroup>
-                        <optgroup label="Secours">
-                            <option value="RIFAP" {{ event.minDivingLevel == 'RIFAP' ? 'selected' : '' }}>RIFAP</option>
-                            <option value="RIFAP_recyclage" {{ event.minDivingLevel == 'RIFAP_recyclage' ? 'selected' : '' }}>RIFAP Recyclage</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <!-- Âge -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="min_age" class="block text-sm font-medium text-gray-700 mb-2">
-                            Âge minimum (années)
-                        </label>
-                        <input type="number" id="min_age" name="min_age" 
-                               value="{{ event.minAge ?? '' }}" 
-                               min="8" max="99"
-                               placeholder="Ex: 16"
-                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+            <div class="px-6 py-4">
+                {% if isNew %}
+                    <!-- Nouvel événement - besoin d'enregistrer d'abord -->
+                    <div class="text-center py-8 text-gray-500">
+                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="mt-2 text-sm">Enregistrez d'abord l'événement pour pouvoir définir des conditions d'inscription.</p>
                     </div>
-                    <div>
-                        <label for="max_age" class="block text-sm font-medium text-gray-700 mb-2">
-                            Âge maximum (années)
-                        </label>
-                        <input type="number" id="max_age" name="max_age" 
-                               value="{{ event.maxAge ?? '' }}" 
-                               min="8" max="99"
-                               placeholder="Ex: 65"
-                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
-                    </div>
-                </div>
-
-                <!-- Certificat médical -->
-                <div>
-                    <div class="flex items-center mb-4">
-                        <input type="checkbox" 
-                               name="requires_medical_certificate" 
-                               id="requires_medical_certificate" 
-                               value="1"
-                               {{ event.requiresMedicalCertificate ? 'checked' : '' }}
-                               onchange="toggleMedicalCertificateFields(this.checked)"
-                               class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
-                        <label for="requires_medical_certificate" class="ml-2 block text-sm font-medium text-gray-900">
-                            Certificat médical requis
-                        </label>
-                    </div>
+                {% else %}
+                    <!-- Événement existant - toujours afficher le formulaire -->
+                    {% set activeConditions = event.activeConditions %}
                     
-                    <div id="medical_certificate_fields" style="display: {{ event.requiresMedicalCertificate ? 'block' : 'none' }}">
-                        <div class="ml-6">
-                            <label for="medical_certificate_validity_days" class="block text-sm font-medium text-gray-700 mb-2">
-                                Validité du certificat médical (jours)
-                            </label>
-                            <input type="number" 
-                                   name="medical_certificate_validity_days" 
-                                   id="medical_certificate_validity_days" 
-                                   value="{{ event.medicalCertificateValidityDays ?? 365 }}"
-                                   min="30" max="1095"
-                                   placeholder="365"
-                                   class="block w-32 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
-                            <p class="mt-1 text-xs text-gray-500">Par défaut : 365 jours (1 an)</p>
+                    <!-- Affichage des conditions existantes -->
+                    {% if activeConditions|length > 0 %}
+                    <div class="space-y-3 mb-4">
+                        <h4 class="text-sm font-medium text-gray-900">Conditions actives ({{ activeConditions|length }}) :</h4>
+                        <div id="conditions-list" class="space-y-2">
+                            {% for condition in activeConditions %}
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg" data-condition-id="{{ condition.id }}">
+                                    <div class="flex-1">
+                                        <span class="text-sm font-medium text-gray-900">{{ condition.displayName }}</span>
+                                        {% if condition.errorMessage %}
+                                            <p class="text-xs text-gray-500 mt-1">{{ condition.errorMessage }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                        <button type="button" onclick="editCondition({{ condition.id }})" 
+                                                class="text-club-orange hover:text-club-orange-dark text-xs">
+                                            Modifier
+                                        </button>
+                                        <button type="button" onclick="deleteCondition({{ condition.id }})" 
+                                                class="text-red-600 hover:text-red-800 text-xs">
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
-                </div>
-
-                <!-- Test de natation -->
-                <div>
-                    <div class="flex items-center">
-                        <input type="checkbox" 
-                               name="requires_swimming_test" 
-                               id="requires_swimming_test" 
-                               value="1"
-                               {{ event.requiresSwimmingTest ? 'checked' : '' }}
-                               class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
-                        <label for="requires_swimming_test" class="ml-2 block text-sm font-medium text-gray-900">
-                            Test de natation requis
-                        </label>
+                    {% else %}
+                    <div class="text-center py-4 mb-4">
+                        <p class="text-sm text-gray-500">Aucune condition définie - cet événement est accessible à tous.</p>
                     </div>
-                    <p class="mt-1 text-sm text-gray-500 ml-6">
-                        Le participant doit avoir réussi le test de natation du club
-                    </p>
-                </div>
-
-                <!-- Conditions supplémentaires -->
-                <div>
-                    <label for="additional_requirements" class="block text-sm font-medium text-gray-700 mb-2">
-                        Conditions supplémentaires
-                    </label>
-                    <textarea id="additional_requirements" name="additional_requirements" rows="3"
-                              placeholder="Ex: Avoir son propre matériel, expérience en plongée de nuit requise..."
-                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">{{ event.additionalRequirements ?? '' }}</textarea>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Décrivez les conditions particulières non couvertes par les champs ci-dessus
-                    </p>
-                </div>
+                    {% endif %}
+                    
+                    <!-- Formulaire d'ajout (TOUJOURS présent pour les événements existants) -->
+                    <div class="{% if activeConditions|length > 0 %}border-t pt-4{% endif %}">
+                        <button type="button" id="add-condition-btn" onclick="showAddConditionForm()" 
+                                class="inline-flex items-center px-3 py-2 bg-club-orange text-white text-sm font-medium rounded-md hover:bg-club-orange-dark">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Ajouter une condition
+                        </button>
+                        
+                        <div id="add-condition-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
+                            <form id="quick-condition-form" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Type d'entité</label>
+                                        <select id="quick-entity-class" class="block w-full text-sm border-gray-300 rounded-md">
+                                            <option value="">Sélectionner...</option>
+                                            <option value="App\\Entity\\User">Utilisateur</option>
+                                            <option value="App\\Entity\\Event">Événement</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Attribut</label>
+                                        <select id="quick-attribute" class="block w-full text-sm border-gray-300 rounded-md" disabled>
+                                            <option value="">Choisir d'abord une entité...</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Opérateur</label>
+                                        <select id="quick-operator" class="block w-full text-sm border-gray-300 rounded-md" disabled>
+                                            <option value="">Choisir d'abord un attribut...</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Valeur</label>
+                                        <div id="quick-value-container">
+                                            <select id="quick-value-select" class="block w-full text-sm border-gray-300 rounded-md" disabled>
+                                                <option value="">Choisir d'abord un attribut...</option>
+                                            </select>
+                                            <input type="text" id="quick-value-input" class="hidden block w-full text-sm border-gray-300 rounded-md" disabled 
+                                                   placeholder="Entrer une valeur...">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Message d'erreur (optionnel)</label>
+                                    <input type="text" id="quick-error-message" class="block w-full text-sm border-gray-300 rounded-md" 
+                                           placeholder="Message personnalisé si la condition n'est pas respectée">
+                                </div>
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" onclick="hideAddConditionForm()" 
+                                            class="px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                        Annuler
+                                    </button>
+                                    <button type="submit" 
+                                            class="px-3 py-2 text-sm bg-club-orange text-white rounded-md hover:bg-club-orange-dark">
+                                        Ajouter
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
 
                 <!-- Statut (pour modification seulement) -->
                 {% if not isNew %}
@@ -433,15 +438,335 @@ function toggleWeekdayFields(recurrenceType) {
     }
 }
 
-function toggleMedicalCertificateFields(requiresCertificate) {
-    const fields = document.getElementById('medical_certificate_fields');
-    fields.style.display = requiresCertificate ? 'block' : 'none';
+
+// === Gestion des conditions intégrées ===
+
+// Fonction de debug pour tester les routes
+window.debugConditions = function() {
+    const eventId = {{ event.id }};
+    console.log('Testing routes for eventId:', eventId);
+    
+    // Test des attributs
+    fetch(`/admin/events/${eventId}/conditions/attributes/App\\Entity\\User`)
+        .then(response => {
+            console.log('Attributes response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Attributes data:', data);
+        })
+        .catch(error => {
+            console.error('Attributes error:', error);
+        });
+    
+    // Test des valeurs
+    fetch(`/admin/events/${eventId}/conditions/values/App\\Entity\\User/diving_level`)
+        .then(response => {
+            console.log('Values response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Values data:', data);
+        })
+        .catch(error => {
+            console.error('Values error:', error);
+        });
+};
+
+function showAddConditionForm() {
+    console.log('showAddConditionForm called');
+    const btn = document.getElementById('add-condition-btn');
+    const form = document.getElementById('add-condition-form');
+    console.log('Button found:', !!btn);
+    console.log('Form found:', !!form);
+    
+    if (btn) btn.style.display = 'none';
+    if (form) form.classList.remove('hidden');
 }
+
+function hideAddConditionForm() {
+    document.getElementById('add-condition-btn').style.display = 'block';
+    document.getElementById('add-condition-form').classList.add('hidden');
+    // Reset form
+    document.getElementById('quick-condition-form').reset();
+    resetQuickForm();
+}
+
+function resetQuickForm() {
+    document.getElementById('quick-attribute').innerHTML = '<option value="">Choisir d\'abord une entité...</option>';
+    document.getElementById('quick-attribute').disabled = true;
+    document.getElementById('quick-operator').innerHTML = '<option value="">Choisir d\'abord un attribut...</option>';
+    document.getElementById('quick-operator').disabled = true;
+    document.getElementById('quick-value-select').innerHTML = '<option value="">Choisir d\'abord un attribut...</option>';
+    document.getElementById('quick-value-select').disabled = true;
+    document.getElementById('quick-value-input').disabled = true;
+    document.getElementById('quick-value-select').classList.remove('hidden');
+    document.getElementById('quick-value-input').classList.add('hidden');
+}
+
+function loadQuickAttributes(entityClass) {
+    console.log('loadQuickAttributes called with:', entityClass);
+    if (!entityClass) {
+        resetQuickForm();
+        return;
+    }
+    
+    const eventId = {{ event.id }};
+    const url = `/admin/events/${eventId}/conditions/attributes/${encodeURIComponent(entityClass)}`;
+    console.log('Fetching attributes from:', url);
+    
+    fetch(url)
+        .then(response => {
+            console.log('Attributes response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Attributes data received:', data);
+            const attributeSelect = document.getElementById('quick-attribute');
+            attributeSelect.innerHTML = '<option value="">Sélectionner un attribut...</option>';
+            
+            for (const [key, label] of Object.entries(data.attributes)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = label;
+                attributeSelect.appendChild(option);
+            }
+            
+            attributeSelect.disabled = false;
+            console.log('Attributes loaded successfully');
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des attributs:', error);
+        });
+}
+
+function showValueInput() {
+    document.getElementById('quick-value-select').classList.add('hidden');
+    document.getElementById('quick-value-input').classList.remove('hidden');
+    document.getElementById('quick-value-input').disabled = false;
+    document.getElementById('quick-value-input').focus();
+}
+
+function hideValueInput() {
+    document.getElementById('quick-value-input').classList.add('hidden');
+    document.getElementById('quick-value-select').classList.remove('hidden');
+    document.getElementById('quick-value-input').value = '';
+}
+
+function loadQuickValues(entityClass, attributeName) {
+    console.log('loadQuickValues called with:', entityClass, attributeName);
+    if (!entityClass || !attributeName) {
+        document.getElementById('quick-operator').innerHTML = '<option value="">Choisir d\'abord un attribut...</option>';
+        document.getElementById('quick-operator').disabled = true;
+        return;
+    }
+    
+    const eventId = {{ event.id }};
+    const url = `/admin/events/${eventId}/conditions/values/${encodeURIComponent(entityClass)}/${encodeURIComponent(attributeName)}`;
+    console.log('Fetching values from:', url);
+    
+    fetch(url)
+        .then(response => {
+            console.log('Values response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Values data received:', data);
+            // Charger les opérateurs suggérés
+            const operatorSelect = document.getElementById('quick-operator');
+            operatorSelect.innerHTML = '<option value="">Sélectionner un opérateur...</option>';
+            
+            for (const [key, label] of Object.entries(data.suggested_operators)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = label;
+                operatorSelect.appendChild(option);
+            }
+            operatorSelect.disabled = false;
+            
+            // Gérer les valeurs - toujours privilégier le dropdown
+            const valueInput = document.getElementById('quick-value-input');
+            const valueSelect = document.getElementById('quick-value-select');
+            
+            // Reset de base
+            valueSelect.innerHTML = '<option value="">Sélectionner une valeur...</option>';
+            
+            if (Object.keys(data.values).length > 0) {
+                // Utiliser un select avec les valeurs prédéfinies
+                for (const [key, label] of Object.entries(data.values)) {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = label;
+                    valueSelect.appendChild(option);
+                }
+                // Ajouter option "Autre valeur" pour permettre la saisie libre
+                const otherOption = document.createElement('option');
+                otherOption.value = '__OTHER__';
+                otherOption.textContent = '--- Autre valeur ---';
+                valueSelect.appendChild(otherOption);
+                
+                valueSelect.classList.remove('hidden');
+                valueInput.classList.add('hidden');
+                valueSelect.disabled = false;
+            } else {
+                // Aucune valeur prédéfinie - permettre uniquement la saisie libre
+                const freeTextOption = document.createElement('option');
+                freeTextOption.value = '__FREE_TEXT__';
+                freeTextOption.textContent = '--- Saisie libre ---';
+                valueSelect.appendChild(freeTextOption);
+                
+                valueSelect.classList.remove('hidden');
+                valueInput.classList.add('hidden');
+                valueSelect.disabled = false;
+                
+                // Auto-sélectionner l'option saisie libre
+                valueSelect.value = '__FREE_TEXT__';
+                // Montrer immédiatement l'input
+                showValueInput();
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des valeurs:', error);
+        });
+}
+
+function deleteCondition(conditionId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette condition ?')) {
+        return;
+    }
+    
+    const eventId = {{ event.id }};
+    fetch(`/admin/events/${eventId}/conditions/${conditionId}/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `_token=${encodeURIComponent('{{ csrf_token('delete_condition_' ~ 'CONDITION_ID') }}'.replace('CONDITION_ID', conditionId))}`
+    })
+    .then(response => {
+        if (response.ok) {
+            // Supprimer l'élément de l'interface
+            const element = document.querySelector(`[data-condition-id="${conditionId}"]`);
+            if (element) {
+                element.remove();
+            }
+            // Recharger la page pour mettre à jour l'état
+            window.location.reload();
+        } else {
+            alert('Erreur lors de la suppression de la condition');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la suppression de la condition');
+    });
+}
+
+function editCondition(conditionId) {
+    // Pour l'instant, rediriger vers l'interface complète
+    const eventId = {{ event.id }};
+    window.location.href = `/admin/events/${eventId}/conditions/${conditionId}/edit`;
+}
+
+// Gestionnaires d'événements pour le formulaire rapide
+document.addEventListener('DOMContentLoaded', function() {
+    // Chargement des attributs quand l'entité change
+    const entitySelect = document.getElementById('quick-entity-class');
+    if (entitySelect) {
+        entitySelect.addEventListener('change', function() {
+            loadQuickAttributes(this.value);
+        });
+    }
+    
+    // Chargement des valeurs quand l'attribut change
+    const attributeSelect = document.getElementById('quick-attribute');
+    if (attributeSelect) {
+        attributeSelect.addEventListener('change', function() {
+            const entityClass = document.getElementById('quick-entity-class').value;
+            loadQuickValues(entityClass, this.value);
+        });
+    }
+    
+    // Gestion du changement de sélection dans les valeurs
+    const valueSelect = document.getElementById('quick-value-select');
+    if (valueSelect) {
+        valueSelect.addEventListener('change', function() {
+            if (this.value === '__OTHER__' || this.value === '__FREE_TEXT__') {
+                showValueInput();
+            } else {
+                hideValueInput();
+            }
+        });
+    }
+    
+    // Soumission du formulaire rapide
+    const quickForm = document.getElementById('quick-condition-form');
+    if (quickForm) {
+        quickForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const entityClass = document.getElementById('quick-entity-class').value;
+            const attribute = document.getElementById('quick-attribute').value;
+            const operator = document.getElementById('quick-operator').value;
+            const valueInput = document.getElementById('quick-value-input');
+            const valueSelect = document.getElementById('quick-value-select');
+            
+            // Déterminer la valeur selon l'état du formulaire
+            let value = '';
+            if (!valueSelect.classList.contains('hidden')) {
+                const selectedValue = valueSelect.value;
+                if (selectedValue === '__OTHER__' || selectedValue === '__FREE_TEXT__') {
+                    value = valueInput.value;
+                } else {
+                    value = selectedValue;
+                }
+            } else {
+                value = valueInput.value;
+            }
+            
+            const errorMessage = document.getElementById('quick-error-message').value;
+            
+            if (!entityClass || !attribute || !operator) {
+                alert('Veuillez remplir tous les champs requis');
+                return;
+            }
+            
+            const eventId = {{ event.id }};
+            fetch(`/admin/events/${eventId}/conditions/new`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `entity_class=${encodeURIComponent(entityClass)}&attribute_name=${encodeURIComponent(attribute)}&operator=${encodeURIComponent(operator)}&value=${encodeURIComponent(value)}&error_message=${encodeURIComponent(errorMessage)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Recharger la page pour voir la nouvelle condition
+                    window.location.reload();
+                } else {
+                    alert('Erreur lors de l\'ajout de la condition');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'ajout de la condition');
+            });
+        });
+    }
+});
 
 // Initialiser l'état au chargement
 document.addEventListener('DOMContentLoaded', function() {
-    const recurrenceType = document.getElementById('recurrence_type').value;
-    toggleWeekdayFields(recurrenceType);
+    const recurrenceType = document.getElementById('recurrence_type');
+    if (recurrenceType) {
+        toggleWeekdayFields(recurrenceType.value);
+    }
 });
 </script>
 {% endblock %}

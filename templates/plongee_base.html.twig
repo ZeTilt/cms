@@ -160,15 +160,27 @@
                             Actualités
                         </a>
 
-                        <!-- Inscription -->
-                        <a href="{{ path('app_register') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
-                            S'inscrire
-                        </a>
+                        {% if app.user %}
+                            <!-- Mon profil -->
+                            <a href="{{ path('user_attributes_index') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                Mon profil
+                            </a>
 
-                        <!-- Accès membre -->
-                        <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
-                            Accès membre
-                        </a>
+                            <!-- Accès membre -->
+                            <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                Accès membre
+                            </a>
+                        {% else %}
+                            <!-- Inscription -->
+                            <a href="{{ path('app_register') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                S'inscrire
+                            </a>
+
+                            <!-- Accès membre -->
+                            <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                Accès membre
+                            </a>
+                        {% endif %}
 
                         <!-- Contact -->
                         <a href="#contact" class="bg-club-orange text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-club-orange-dark">

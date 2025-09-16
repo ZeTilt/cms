@@ -1,0 +1,117 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier l'attribut {{ definition.label }}{% endblock %}
+
+{% block body %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900">Modifier l'attribut</h1>
+                <p class="mt-1 text-sm text-gray-600">{{ definition.name }} ({{ definition.label }})</p>
+            </div>
+            <a href="{{ path('admin_attribute_definitions_index') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                ← Retour
+            </a>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <form method="post" class="space-y-6">
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nom technique
+                    </label>
+                    <input type="text" value="{{ definition.name }}" disabled 
+                           class="block w-full rounded-md border-gray-300 bg-gray-100 text-gray-500 shadow-sm">
+                    <p class="mt-1 text-xs text-gray-500">Le nom technique ne peut pas être modifié</p>
+                </div>
+
+                <div>
+                    <label for="label" class="block text-sm font-medium text-gray-700 mb-2">
+                        Libellé <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="label" id="label" required value="{{ definition.label }}"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+                </div>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Type d'entité
+                    </label>
+                    <input type="text" value="{{ definition.entityType == 'App\\Entity\\User' ? 'Utilisateur' : 'Événement' }}" disabled 
+                           class="block w-full rounded-md border-gray-300 bg-gray-100 text-gray-500 shadow-sm">
+                    <p class="mt-1 text-xs text-gray-500">Le type d'entité ne peut pas être modifié</p>
+                </div>
+
+                <div>
+                    <label for="field_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Type de champ <span class="text-red-500">*</span>
+                    </label>
+                    <select name="field_type" id="field_type" required onchange="toggleOptionsField()"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+                        {% for value, label in fieldTypes %}
+                            <option value="{{ value }}" {{ definition.fieldType == value ? 'selected' : '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div id="options-container" {{ definition.fieldType in ['select', 'radio'] ? '' : 'style="display: none;"' }}>
+                <label for="options" class="block text-sm font-medium text-gray-700 mb-2">
+                    Options disponibles
+                </label>
+                <textarea name="options" id="options" rows="6"
+                          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">{{ optionsText }}</textarea>
+                <p class="mt-1 text-xs text-gray-500">Une option par ligne, format : clé = valeur affichée</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <input type="checkbox" name="required" id="required" {{ definition.required ? 'checked' : '' }}
+                           class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                    <label for="required" class="ml-2 text-sm text-gray-700">
+                        Champ obligatoire
+                    </label>
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" name="active" id="active" {{ definition.active ? 'checked' : '' }}
+                           class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                    <label for="active" class="ml-2 text-sm text-gray-700">
+                        Actif
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <a href="{{ path('admin_attribute_definitions_index') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    Annuler
+                </a>
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                    Sauvegarder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleOptionsField() {
+    const fieldType = document.getElementById('field_type').value;
+    const optionsContainer = document.getElementById('options-container');
+    
+    if (fieldType === 'select' || fieldType === 'radio') {
+        optionsContainer.style.display = 'block';
+    } else {
+        optionsContainer.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

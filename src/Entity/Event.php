@@ -78,26 +78,8 @@ class Event
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'parentEvent', cascade: ['persist', 'remove'])]
     private Collection $generatedEvents;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $minDivingLevel = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $minAge = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $maxAge = null;
-
-    #[ORM\Column]
-    private ?bool $requiresMedicalCertificate = false;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $medicalCertificateValidityDays = null;
-
-    #[ORM\Column]
-    private ?bool $requiresSwimmingTest = false;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $additionalRequirements = null;
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventCondition::class, cascade: ['persist', 'remove'])]
+    private Collection $conditions;
 
     public function __construct()
     {
@@ -107,8 +89,7 @@ class Event
         $this->currentParticipants = 0;
         $this->isRecurring = false;
         $this->generatedEvents = new ArrayCollection();
-        $this->requiresMedicalCertificate = false;
-        $this->requiresSwimmingTest = false;
+        $this->conditions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -436,167 +417,57 @@ class Event
         return $this->parentEvent !== null;
     }
 
-    public function getMinDivingLevel(): ?string
+    /**
+     * @return Collection<int, EventCondition>
+     */
+    public function getConditions(): Collection
     {
-        return $this->minDivingLevel;
+        return $this->conditions;
     }
 
-    public function setMinDivingLevel(?string $minDivingLevel): static
+    public function addCondition(EventCondition $condition): static
     {
-        $this->minDivingLevel = $minDivingLevel;
+        if (!$this->conditions->contains($condition)) {
+            $this->conditions->add($condition);
+            $condition->setEvent($this);
+        }
+
         return $this;
     }
 
-    public function getMinAge(): ?int
+    public function removeCondition(EventCondition $condition): static
     {
-        return $this->minAge;
-    }
+        if ($this->conditions->removeElement($condition)) {
+            if ($condition->getEvent() === $this) {
+                $condition->setEvent(null);
+            }
+        }
 
-    public function setMinAge(?int $minAge): static
-    {
-        $this->minAge = $minAge;
         return $this;
     }
 
-    public function getMaxAge(): ?int
+    /**
+     * Retourne toutes les conditions actives
+     */
+    public function getActiveConditions(): Collection
     {
-        return $this->maxAge;
+        return $this->conditions->filter(function(EventCondition $condition) {
+            return $condition->isActive();
+        });
     }
 
-    public function setMaxAge(?int $maxAge): static
-    {
-        $this->maxAge = $maxAge;
-        return $this;
-    }
-
-    public function requiresMedicalCertificate(): ?bool
-    {
-        return $this->requiresMedicalCertificate;
-    }
-
-    public function setRequiresMedicalCertificate(bool $requiresMedicalCertificate): static
-    {
-        $this->requiresMedicalCertificate = $requiresMedicalCertificate;
-        return $this;
-    }
-
-    public function getMedicalCertificateValidityDays(): ?int
-    {
-        return $this->medicalCertificateValidityDays;
-    }
-
-    public function setMedicalCertificateValidityDays(?int $medicalCertificateValidityDays): static
-    {
-        $this->medicalCertificateValidityDays = $medicalCertificateValidityDays;
-        return $this;
-    }
-
-    public function requiresSwimmingTest(): ?bool
-    {
-        return $this->requiresSwimmingTest;
-    }
-
-    public function setRequiresSwimmingTest(bool $requiresSwimmingTest): static
-    {
-        $this->requiresSwimmingTest = $requiresSwimmingTest;
-        return $this;
-    }
-
-    public function getAdditionalRequirements(): ?string
-    {
-        return $this->additionalRequirements;
-    }
-
-    public function setAdditionalRequirements(?string $additionalRequirements): static
-    {
-        $this->additionalRequirements = $additionalRequirements;
-        return $this;
-    }
-
+    /**
+     * Vérifie l'éligibilité d'un utilisateur selon les conditions définies
+     */
     public function checkUserEligibility($user): array
     {
         $issues = [];
         
-        // Check diving level if user has method available
-        if ($this->minDivingLevel && method_exists($user, 'getDivingLevel')) {
-            $userDivingLevel = $user->getDivingLevel();
-            if ($userDivingLevel) {
-                $divingLevels = [
-                    'N1' => 1, 'N2' => 2, 'N3' => 3, 'N4' => 4, 'N5' => 5,
-                    'P1' => 1, 'P2' => 2, 'P3' => 3, 'P4' => 4, 'P5' => 5,
-                    'E1' => 6, 'E2' => 7, 'E3' => 8, 'E4' => 9,
-                    'MF1' => 10, 'MF2' => 11,
-                    'RIFAP' => 12, 'RIFAP_recyclage' => 12
-                ];
-                
-                $userLevel = $divingLevels[$userDivingLevel] ?? 0;
-                $requiredLevel = $divingLevels[$this->minDivingLevel] ?? 0;
-                
-                if ($userLevel < $requiredLevel) {
-                    $issues[] = "Niveau de plongée requis : {$this->minDivingLevel} (vous avez : {$userDivingLevel})";
-                }
-            } else {
-                $issues[] = "Niveau de plongée requis : {$this->minDivingLevel} (niveau non renseigné)";
-            }
-        } elseif ($this->minDivingLevel) {
-            $issues[] = "Niveau de plongée requis : {$this->minDivingLevel} (niveau non disponible dans votre profil)";
-        }
-        
-        // Check age if user has birth date method available
-        if (($this->minAge !== null || $this->maxAge !== null) && method_exists($user, 'getBirthDate')) {
-            $birthDate = $user->getBirthDate();
-            if ($birthDate) {
-                $age = $birthDate->diff(new \DateTime())->y;
-                if ($this->minAge !== null && $age < $this->minAge) {
-                    $issues[] = "Âge minimum requis : {$this->minAge} ans (vous avez : {$age} ans)";
-                }
-                if ($this->maxAge !== null && $age > $this->maxAge) {
-                    $issues[] = "Âge maximum autorisé : {$this->maxAge} ans (vous avez : {$age} ans)";
-                }
-            } else {
-                if ($this->minAge !== null) {
-                    $issues[] = "Âge minimum requis : {$this->minAge} ans (date de naissance non renseignée)";
-                }
-                if ($this->maxAge !== null) {
-                    $issues[] = "Âge maximum autorisé : {$this->maxAge} ans (date de naissance non renseignée)";
-                }
-            }
-        } elseif ($this->minAge !== null || $this->maxAge !== null) {
-            if ($this->minAge !== null) {
-                $issues[] = "Âge minimum requis : {$this->minAge} ans (date de naissance non disponible dans votre profil)";
-            }
-            if ($this->maxAge !== null) {
-                $issues[] = "Âge maximum autorisé : {$this->maxAge} ans (date de naissance non disponible dans votre profil)";
-            }
-        }
-        
-        // Check medical certificate
-        if ($this->requiresMedicalCertificate) {
-            if (method_exists($user, 'getMedicalCertificateDate')) {
-                $certDate = $user->getMedicalCertificateDate();
-                if ($certDate) {
-                    $validityDays = $this->medicalCertificateValidityDays ?? 365;
-                    $expiryDate = clone $certDate;
-                    $expiryDate->add(new \DateInterval("P{$validityDays}D"));
-                    if ($expiryDate < new \DateTime()) {
-                        $issues[] = "Certificat médical expiré (valide jusqu'au : " . $expiryDate->format('d/m/Y') . ")";
-                    }
-                } else {
-                    $issues[] = "Certificat médical requis (non renseigné)";
-                }
-            } else {
-                $issues[] = "Certificat médical requis (information non disponible dans votre profil)";
-            }
-        }
-        
-        // Check swimming test
-        if ($this->requiresSwimmingTest) {
-            if (method_exists($user, 'hasValidSwimmingTest')) {
-                if (!$user->hasValidSwimmingTest()) {
-                    $issues[] = "Test de natation requis";
-                }
-            } else {
-                $issues[] = "Test de natation requis (information non disponible dans votre profil)";
+        foreach ($this->getActiveConditions() as $condition) {
+            if (!$condition->checkEntityCondition($user)) {
+                $errorMessage = $condition->getErrorMessage() ?: 
+                    "Condition non respectée : {$condition->getDisplayName()}";
+                $issues[] = $errorMessage;
             }
         }
         
@@ -608,14 +479,12 @@ class Event
         return empty($this->checkUserEligibility($user));
     }
 
+    /**
+     * Vérifie si l'événement a des conditions d'accès définies
+     */
     public function hasRequirements(): bool
     {
-        return !empty($this->minDivingLevel) 
-            || $this->minAge !== null 
-            || $this->maxAge !== null 
-            || $this->requiresMedicalCertificate 
-            || $this->requiresSwimmingTest 
-            || !empty($this->additionalRequirements);
+        return !$this->getActiveConditions()->isEmpty();
     }
 
     public function __toString(): string

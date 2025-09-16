@@ -1,0 +1,239 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes informations{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-2xl font-semibold text-gray-900">Mes informations</h1>
+                <p class="mt-1 text-sm text-gray-600">Gérez vos informations personnelles et de plongée</p>
+            </div>
+
+            <div class="p-6">
+                {% for flash_error in app.flashes('error') %}
+                    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ flash_error }}
+                    </div>
+                {% endfor %}
+
+                {% for flash_success in app.flashes('success') %}
+                    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                        {{ flash_success }}
+                    </div>
+                {% endfor %}
+
+                <!-- Informations de base -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Informations de base</h2>
+                    <div class="bg-gray-50 rounded-lg p-4 grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nom complet</label>
+                            <div class="mt-1 text-sm text-gray-900">{{ user.fullName ?? 'Non renseigné' }}</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Email</label>
+                            <div class="mt-1 text-sm text-gray-900">{{ user.email }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attributs personnalisés -->
+                {% if definitions is not empty %}
+                    <div class="mb-8">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Informations complémentaires</h2>
+                        
+                        {% if currentAttributes is not empty %}
+                            <div class="grid gap-4 md:grid-cols-2 mb-6">
+                                {% for definition in definitions %}
+                                    {% set attribute = currentAttributes[definition.name] is defined ? currentAttributes[definition.name] : null %}
+                                    {% if attribute %}
+                                        <div class="bg-gray-50 rounded-lg p-4">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex-1">
+                                                    <h3 class="font-medium text-gray-900">{{ definition.label }}</h3>
+                                                    <div class="mt-1 text-sm text-gray-600">
+                                                        {% if definition.fieldType == 'select' and definition.options %}
+                                                            {{ definition.options[attribute.attributeValue] ?? attribute.attributeValue }}
+                                                        {% elseif definition.fieldType == 'checkbox' %}
+                                                            {{ attribute.attributeValue == '1' ? 'Oui' : 'Non' }}
+                                                        {% else %}
+                                                            {{ attribute.attributeValue }}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="mt-1 text-xs text-gray-400">
+                                                        Modifié le {{ attribute.updatedAt|date('d/m/Y à H:i') }}
+                                                    </div>
+                                                </div>
+                                                <form method="post" action="{{ path('user_attributes_delete', {id: attribute.id}) }}" 
+                                                      class="inline" onsubmit="return confirm('Supprimer cette information ?')">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_user_attribute_' ~ attribute.id) }}">
+                                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Formulaire d'ajout/modification -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-md font-medium text-gray-900 mb-4">Ajouter ou modifier une information</h3>
+                            
+                            <form method="post" class="space-y-6">
+                                <div class="grid gap-6 md:grid-cols-2">
+                                    <div>
+                                        <label for="attribute_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Information à renseigner
+                                        </label>
+                                        <select name="attribute_name" id="attribute_name" required 
+                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
+                                                onchange="updateValueField()">
+                                            <option value="">Choisir une information...</option>
+                                            {% for definition in definitions %}
+                                                <option value="{{ definition.name }}" 
+                                                        data-type="{{ definition.fieldType }}" 
+                                                        data-options="{{ definition.options ? definition.options|json_encode|e('html_attr') : '' }}"
+                                                        data-current="{{ currentAttributes[definition.name] is defined ? currentAttributes[definition.name].attributeValue : '' }}">
+                                                    {{ definition.label }}{% if definition.required %} *{% endif %}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label for="attribute_value" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Valeur
+                                        </label>
+                                        <div id="value-container">
+                                            <input type="text" name="attribute_value" id="attribute_value" required 
+                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
+                                                   placeholder="Saisir la valeur...">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end">
+                                    <button type="submit" 
+                                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                                        Sauvegarder
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune information complémentaire disponible</h3>
+                        <p class="mt-1 text-sm text-gray-500">Les administrateurs n'ont pas encore configuré d'attributs personnalisés.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateValueField() {
+    const select = document.getElementById('attribute_name');
+    const container = document.getElementById('value-container');
+    const option = select.options[select.selectedIndex];
+    
+    if (!option.value) {
+        container.innerHTML = `
+            <input type="text" name="attribute_value" id="attribute_value" required 
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
+                   placeholder="Saisir la valeur...">
+        `;
+        return;
+    }
+    
+    const type = option.dataset.type;
+    const options = option.dataset.options ? JSON.parse(option.dataset.options) : null;
+    const currentValue = option.dataset.current;
+    
+    if (type === 'select' && options) {
+        let html = `
+            <select name="attribute_value" id="attribute_value" required 
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+                <option value="">Choisir une valeur...</option>
+        `;
+        
+        for (const [key, label] of Object.entries(options)) {
+            const selected = currentValue === key ? ' selected' : '';
+            html += `<option value="${key}"${selected}>${label}</option>`;
+        }
+        
+        html += '</select>';
+        container.innerHTML = html;
+    } else if (type === 'radio' && options) {
+        let html = '<div class="space-y-2">';
+        
+        for (const [key, label] of Object.entries(options)) {
+            const checked = currentValue === key ? ' checked' : '';
+            html += `
+                <div class="flex items-center">
+                    <input type="radio" name="attribute_value" value="${key}" id="radio_${key}"${checked}
+                           class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300">
+                    <label for="radio_${key}" class="ml-2 text-sm text-gray-700">${label}</label>
+                </div>
+            `;
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+    } else if (type === 'checkbox') {
+        const checked = currentValue === '1' ? ' checked' : '';
+        container.innerHTML = `
+            <div class="flex items-center">
+                <input type="hidden" name="attribute_value" value="0">
+                <input type="checkbox" name="attribute_value" value="1" id="attribute_value"${checked}
+                       class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                <label for="attribute_value" class="ml-2 text-sm text-gray-700">Oui</label>
+            </div>
+        `;
+    } else if (type === 'date') {
+        container.innerHTML = `
+            <input type="date" name="attribute_value" id="attribute_value" required value="${currentValue}"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+        `;
+    } else if (type === 'tel') {
+        container.innerHTML = `
+            <input type="tel" name="attribute_value" id="attribute_value" required value="${currentValue}"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
+                   placeholder="Ex: 06 12 34 56 78">
+        `;
+    } else if (type === 'email') {
+        container.innerHTML = `
+            <input type="email" name="attribute_value" id="attribute_value" required value="${currentValue}"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+        `;
+    } else if (type === 'number') {
+        container.innerHTML = `
+            <input type="number" name="attribute_value" id="attribute_value" required value="${currentValue}"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+        `;
+    } else if (type === 'textarea') {
+        container.innerHTML = `
+            <textarea name="attribute_value" id="attribute_value" required rows="3"
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">${currentValue}</textarea>
+        `;
+    } else {
+        container.innerHTML = `
+            <input type="text" name="attribute_value" id="attribute_value" required value="${currentValue}"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+        `;
+    }
+}
+</script>
+{% endblock %}

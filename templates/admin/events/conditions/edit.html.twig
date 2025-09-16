@@ -1,0 +1,157 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier condition - {{ event.title }}{% endblock %}
+
+{% block body %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900">Modifier la condition</h1>
+                <p class="mt-1 text-sm text-gray-600">Événement : <strong>{{ event.title }}</strong></p>
+            </div>
+            <a href="{{ path('admin_event_conditions_index', {eventId: event.id}) }}" 
+               class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700">
+                Annuler
+            </a>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <form method="post" class="space-y-6">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label for="entity_class" class="block text-sm font-medium text-gray-700">
+                        Type d'entité
+                    </label>
+                    <select id="entity_class" name="entity_class" required 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+                        <option value="">Sélectionner une entité...</option>
+                        {% for class, label in availableEntities %}
+                            <option value="{{ class }}" {% if condition.entityClass == class %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="attribute_name" class="block text-sm font-medium text-gray-700">
+                        Attribut
+                    </label>
+                    <select id="attribute_name" name="attribute_name" required 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="operator" class="block text-sm font-medium text-gray-700">
+                        Opérateur
+                    </label>
+                    <select id="operator" name="operator" required 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange">
+                        <option value="">Sélectionner un opérateur...</option>
+                        {% for op, label in availableOperators %}
+                            <option value="{{ op }}" {% if condition.operator == op %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="value" class="block text-sm font-medium text-gray-700">
+                        Valeur
+                    </label>
+                    <input type="text" id="value" name="value" value="{{ condition.value }}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
+                           placeholder="Valeur à comparer">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Pour les opérateurs "in" et "not_in", séparez les valeurs par des virgules
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <label for="error_message" class="block text-sm font-medium text-gray-700">
+                    Message d'erreur personnalisé
+                </label>
+                <textarea id="error_message" name="error_message" rows="3" 
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
+                          placeholder="Message affiché si la condition n'est pas respectée (optionnel)">{{ condition.errorMessage }}</textarea>
+                <p class="mt-1 text-xs text-gray-500">
+                    Si vide, un message par défaut sera généré automatiquement
+                </p>
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" id="is_active" name="is_active" 
+                       {% if condition.active %}checked{% endif %}
+                       class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                    Condition active
+                </label>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <a href="{{ path('admin_event_conditions_index', {eventId: event.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Annuler
+                </a>
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 bg-club-orange text-white text-sm font-medium rounded-md hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                    Enregistrer les modifications
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const entitySelect = document.getElementById('entity_class');
+    const attributeSelect = document.getElementById('attribute_name');
+    const currentAttribute = '{{ condition.attributeName }}';
+    
+    function loadAttributes(entityClass, selectedAttribute = null) {
+        if (!entityClass) {
+            attributeSelect.innerHTML = '<option value="">Choisir d\'abord une entité...</option>';
+            attributeSelect.disabled = true;
+            return;
+        }
+        
+        fetch(`{{ path('admin_event_conditions_get_attributes', {eventId: event.id, entityClass: '__ENTITY_CLASS__'}) }}`.replace('__ENTITY_CLASS__', encodeURIComponent(entityClass)))
+            .then(response => response.json())
+            .then(data => {
+                attributeSelect.innerHTML = '<option value="">Sélectionner un attribut...</option>';
+                
+                for (const [key, label] of Object.entries(data.attributes)) {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = label;
+                    if (selectedAttribute === key) {
+                        option.selected = true;
+                    }
+                    attributeSelect.appendChild(option);
+                }
+                
+                attributeSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des attributs:', error);
+                attributeSelect.innerHTML = '<option value="">Erreur lors du chargement</option>';
+            });
+    }
+    
+    // Charger les attributs au chargement de la page
+    if (entitySelect.value) {
+        loadAttributes(entitySelect.value, currentAttribute);
+    }
+    
+    entitySelect.addEventListener('change', function() {
+        loadAttributes(this.value);
+    });
+});
+</script>
+{% endblock %}

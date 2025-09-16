@@ -1,0 +1,116 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Conditions d'accès - {{ event.title }}{% endblock %}
+
+{% block body %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900">Conditions d'accès</h1>
+                <p class="mt-1 text-sm text-gray-600">Événement : <strong>{{ event.title }}</strong></p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ path('admin_event_conditions_new', {eventId: event.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 bg-club-orange text-white text-sm font-medium rounded-md hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Ajouter une condition
+                </a>
+                <a href="{{ path('admin_events_edit', {id: event.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700">
+                    Retour à l'événement
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6">
+        {% if conditions is empty %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune condition définie</h3>
+                <p class="mt-1 text-sm text-gray-500">Cet événement n'a pas de conditions d'accès spécifiques.</p>
+                <div class="mt-6">
+                    <a href="{{ path('admin_event_conditions_new', {eventId: event.id}) }}" 
+                       class="inline-flex items-center px-4 py-2 bg-club-orange text-white text-sm font-medium rounded-md hover:bg-club-orange-dark">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Ajouter la première condition
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message d'erreur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créée le</th>
+                            <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for condition in conditions %}
+                            <tr class="{% if not condition.active %}opacity-50{% endif %}">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ condition.displayName }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-500">
+                                        {{ condition.errorMessage|default('Message par défaut') }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if condition.active %}
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                            Inactive
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ condition.createdAt|date('d/m/Y H:i') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <a href="{{ path('admin_event_conditions_edit', {eventId: event.id, id: condition.id}) }}" 
+                                           class="text-club-orange hover:text-club-orange-dark">
+                                            Modifier
+                                        </a>
+                                        
+                                        <form method="post" action="{{ path('admin_event_conditions_toggle', {eventId: event.id, id: condition.id}) }}" 
+                                              class="inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('toggle_condition_' ~ condition.id) }}">
+                                            <button type="submit" class="text-blue-600 hover:text-blue-900">
+                                                {% if condition.active %}Désactiver{% else %}Activer{% endif %}
+                                            </button>
+                                        </form>
+                                        
+                                        <form method="post" action="{{ path('admin_event_conditions_delete', {eventId: event.id, id: condition.id}) }}" 
+                                              class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette condition ?')">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_condition_' ~ condition.id) }}">
+                                            <button type="submit" class="text-red-600 hover:text-red-900">
+                                                Supprimer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
