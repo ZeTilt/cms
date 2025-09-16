@@ -13,7 +13,7 @@ class EventCondition
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Event::class)]
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'conditions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
