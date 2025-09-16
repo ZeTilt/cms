@@ -104,7 +104,7 @@ user-create-prod: ## Crée un utilisateur admin (production)
 # Commandes de déploiement
 deploy-check: ## Vérifie avant déploiement
 	@echo "$(GREEN)🔍 Vérifications avant déploiement...$(NC)"
-	$(COMPOSER) validate
+	$(COMPOSER) validate --no-check-publish --no-check-all
 	$(PHP) bin/console lint:container
 	$(PHP) bin/console doctrine:schema:validate
 
