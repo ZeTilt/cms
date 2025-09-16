@@ -20,10 +20,7 @@ final class Version20250916095925 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE attribute_definitions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(100) NOT NULL, label VARCHAR(200) NOT NULL, entity_type VARCHAR(50) NOT NULL, field_type VARCHAR(20) NOT NULL, options CLOB DEFAULT NULL --(DC2Type:json)
-        , required BOOLEAN NOT NULL, active BOOLEAN NOT NULL, created_at DATETIME NOT NULL --(DC2Type:datetime_immutable)
-        , updated_at DATETIME DEFAULT NULL --(DC2Type:datetime_immutable)
-        )');
+        $this->addSql('CREATE TABLE attribute_definitions (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(100) NOT NULL, label VARCHAR(200) NOT NULL, entity_type VARCHAR(50) NOT NULL, field_type VARCHAR(20) NOT NULL, options JSON DEFAULT NULL, required TINYINT(1) NOT NULL, active TINYINT(1) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
     }
 
     public function down(Schema $schema): void
