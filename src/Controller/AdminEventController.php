@@ -67,13 +67,6 @@ class AdminEventController extends AbstractController
             $event->setMaxParticipants($request->request->get('max_participants') ? (int)$request->request->get('max_participants') : null);
             
             // Gérer les conditions d'inscription
-            $event->setMinDivingLevel($request->request->get('min_diving_level') ?: null);
-            $event->setMinAge($request->request->get('min_age') ? (int)$request->request->get('min_age') : null);
-            $event->setMaxAge($request->request->get('max_age') ? (int)$request->request->get('max_age') : null);
-            $event->setRequiresMedicalCertificate($request->request->getBoolean('requires_medical_certificate', false));
-            $event->setMedicalCertificateValidityDays($request->request->get('medical_certificate_validity_days') ? (int)$request->request->get('medical_certificate_validity_days') : null);
-            $event->setRequiresSwimmingTest($request->request->getBoolean('requires_swimming_test', false));
-            $event->setAdditionalRequirements($request->request->get('additional_requirements') ?: null);
             
             $this->entityManager->persist($event);
             $this->entityManager->flush();
@@ -126,13 +119,6 @@ class AdminEventController extends AbstractController
             $event->setStatus($request->request->get('status', 'active'));
             
             // Gérer les conditions d'inscription
-            $event->setMinDivingLevel($request->request->get('min_diving_level') ?: null);
-            $event->setMinAge($request->request->get('min_age') ? (int)$request->request->get('min_age') : null);
-            $event->setMaxAge($request->request->get('max_age') ? (int)$request->request->get('max_age') : null);
-            $event->setRequiresMedicalCertificate($request->request->getBoolean('requires_medical_certificate', false));
-            $event->setMedicalCertificateValidityDays($request->request->get('medical_certificate_validity_days') ? (int)$request->request->get('medical_certificate_validity_days') : null);
-            $event->setRequiresSwimmingTest($request->request->getBoolean('requires_swimming_test', false));
-            $event->setAdditionalRequirements($request->request->get('additional_requirements') ?: null);
             
             $this->entityManager->flush();
             
