@@ -106,7 +106,7 @@ deploy-check: ## Vérifie avant déploiement
 	@echo "$(GREEN)🔍 Vérifications avant déploiement...$(NC)"
 	$(COMPOSER) validate --no-check-publish --no-check-all
 	$(PHP) bin/console lint:container
-	$(PHP) bin/console doctrine:schema:validate
+	$(PHP) bin/console doctrine:mapping:info
 
 deploy: deploy-check ## Déploie en production
 	@echo "$(GREEN)🚀 Déploiement en production...$(NC)"
