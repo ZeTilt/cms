@@ -89,6 +89,11 @@ db-drop: ## Supprime la base de données
 	@echo "$(RED)⚠️  Suppression de la base de données...$(NC)"
 	$(PHP) bin/console doctrine:database:drop --force --if-exists
 
+db-truncate: ## Vide toutes les tables sans les supprimer
+	@echo "$(YELLOW)🗑️  Vidage de toutes les tables...$(NC)"
+	$(PHP) bin/console doctrine:schema:drop --full-database --force
+	$(PHP) bin/console doctrine:migrations:migrate --no-interaction
+
 db-reset: db-drop db-create migrate ## Recrée complètement la base
 	@echo "$(GREEN)🔄 Base de données recréée$(NC)"
 
