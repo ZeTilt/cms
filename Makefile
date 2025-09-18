@@ -137,9 +137,15 @@ deploy-fresh-db: ## Déploiement avec base de données complètement fraîche
 	$(PHP) bin/console doctrine:database:drop --force --if-exists --env=prod
 	$(PHP) bin/console doctrine:database:create --env=prod
 	$(PHP) bin/console doctrine:schema:create --env=prod
+	@echo "$(GREEN)📦 Installation temporaire des dépendances de dev pour les fixtures...$(NC)"
+	$(COMPOSER) install --optimize-autoloader
+	$(PHP) bin/console cache:clear --env=prod
 	@echo "$(GREEN)📦 Chargement des données initiales...$(NC)"
 	$(PHP) bin/console doctrine:fixtures:load --no-interaction --env=prod
 	$(PHP) bin/console doctrine:query:sql "INSERT INTO modules (name, display_name, description, active, config, created_at, updated_at) VALUES ('blog', 'Blog & Articles', 'Gestion du contenu blog et articles', 1, '{}', NOW(), NOW())" --env=prod
+	@echo "$(GREEN)🧹 Nettoyage : désinstallation des dépendances de dev...$(NC)"
+	$(COMPOSER) install --no-dev --optimize-autoloader
+	$(PHP) bin/console cache:clear --env=prod
 
 status: ## Affiche le statut du projet
 	@echo "$(GREEN)📊 Statut du projet$(NC)"
