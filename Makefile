@@ -121,11 +121,25 @@ deploy: deploy-check ## Déploie en production
 	$(PHP) bin/console doctrine:migrations:migrate --no-interaction --env=prod
 	@echo "$(GREEN)✅ Déploiement terminé$(NC)"
 
-deploy-with-data: deploy ## Déploie en production avec les données initiales
-	@echo "$(GREEN)📊 Chargement des données initiales...$(NC)"
+deploy-with-data: deploy-fresh-db ## Déploie en production avec base de données complètement fraîche
+	@echo "$(GREEN)✅ Déploiement avec données terminé$(NC)"
+
+deploy-fresh-db: ## Déploiement avec base de données complètement fraîche
+	@echo "$(GREEN)🔍 Vérifications avant déploiement...$(NC)"
+	$(COMPOSER) validate --no-check-publish --no-check-all
+	$(PHP) bin/console lint:container
+	$(PHP) bin/console doctrine:mapping:info
+	@echo "$(GREEN)🚀 Déploiement en production...$(NC)"
+	git pull origin main
+	$(COMPOSER) install --no-dev --optimize-autoloader
+	$(PHP) bin/console cache:clear --env=prod
+	@echo "$(RED)⚠️  SUPPRESSION COMPLÈTE DE LA BASE...$(NC)"
+	$(PHP) bin/console doctrine:database:drop --force --if-exists --env=prod
+	$(PHP) bin/console doctrine:database:create --env=prod
+	$(PHP) bin/console doctrine:schema:create --env=prod
+	@echo "$(GREEN)📦 Chargement des données initiales...$(NC)"
 	$(PHP) bin/console doctrine:fixtures:load --no-interaction --env=prod
-	$(PHP) bin/console doctrine:query:sql "INSERT INTO modules (name, display_name, description, active, config, created_at, updated_at) VALUES ('blog', 'Blog & Articles', 'Gestion du contenu blog et articles', 1, '{}', NOW(), NOW())" --env=prod 2>/dev/null || true
-	@echo "$(GREEN)✅ Données chargées$(NC)"
+	$(PHP) bin/console doctrine:query:sql "INSERT INTO modules (name, display_name, description, active, config, created_at, updated_at) VALUES ('blog', 'Blog & Articles', 'Gestion du contenu blog et articles', 1, '{}', NOW(), NOW())" --env=prod
 
 status: ## Affiche le statut du projet
 	@echo "$(GREEN)📊 Statut du projet$(NC)"
