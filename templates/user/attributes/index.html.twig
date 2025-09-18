@@ -162,6 +162,8 @@ function updateValueField() {
     const options = option.dataset.options ? JSON.parse(option.dataset.options) : null;
     const currentValue = option.dataset.current;
     
+    console.log('Debug:', {type, options, currentValue}); // Debug log
+    
     if (type === 'select' && options) {
         let html = `
             <select name="attribute_value" id="attribute_value" required 

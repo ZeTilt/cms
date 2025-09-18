@@ -10,13 +10,14 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('assets/carousel.js') }}"></script>
+    <script src="{{ asset('assets/youtube-thumbnails.js') }}"></script>
 {% endblock %}
 
 {% block body %}
 <div class="bg-white px-6 py-32 lg:px-8">
     <div class="mx-auto max-w-3xl text-base leading-7 text-gray-700">
         <div class="mb-8">
-            <a href="{{ path('public_blog_list') }}" class="inline-flex items-center text-sm font-medium text-club-orange hover:text-club-orange-dark">
+            <a href="{{ path('blog_index') }}" class="inline-flex items-center text-sm font-medium text-club-orange hover:text-club-orange-dark">
                 <svg class="-ml-1 mr-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -68,7 +69,7 @@
         {% endif %}
 
         <div class="mt-16 prose prose-lg max-w-none article-content">
-            {{ article.content|raw }}
+            {{ article.content|youtube_thumbnails }}
         </div>
 
         <div class="mt-16 border-t border-gray-200 pt-8">
@@ -97,7 +98,7 @@
         </div>
 
         <div class="mt-8 text-center">
-            <a href="{{ path('public_blog_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <a href="{{ path('blog_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>

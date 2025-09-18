@@ -32,11 +32,8 @@ class Event
     private ?string $location = null;
 
     #[ORM\ManyToOne(targetEntity: EventType::class, inversedBy: 'events')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?EventType $eventType = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $type = null;
 
     #[ORM\Column(length: 20)]
     private ?string $status = null;
@@ -44,11 +41,9 @@ class Event
     #[ORM\Column(nullable: true)]
     private ?int $maxParticipants = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $currentParticipants = null;
-
-    #[ORM\Column(length: 7, nullable: true)]
-    private ?string $color = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $contactPerson = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -81,15 +76,18 @@ class Event
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventCondition::class, cascade: ['persist', 'remove'])]
     private Collection $conditions;
 
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventParticipation::class, cascade: ['persist', 'remove'])]
+    private Collection $participations;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->status = 'active';
-        $this->currentParticipants = 0;
         $this->isRecurring = false;
         $this->generatedEvents = new ArrayCollection();
         $this->conditions = new ArrayCollection();
+        $this->participations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -165,15 +163,9 @@ class Event
 
     public function getType(): ?string
     {
-        // Retourner le code du type d'événement si disponible, sinon l'ancien champ
-        return $this->eventType?->getCode() ?? $this->type;
+        return $this->eventType?->getCode();
     }
 
-    public function setType(?string $type): static
-    {
-        $this->type = $type;
-        return $this;
-    }
 
     public function getStatus(): ?string
     {
@@ -197,27 +189,16 @@ class Event
         return $this;
     }
 
-    public function getCurrentParticipants(): ?int
+    public function getCurrentParticipants(): int
     {
-        return $this->currentParticipants;
-    }
-
-    public function setCurrentParticipants(?int $currentParticipants): static
-    {
-        $this->currentParticipants = $currentParticipants;
-        return $this;
+        return $this->participations->filter(function(EventParticipation $participation) {
+            return $participation->isActive();
+        })->count();
     }
 
     public function getColor(): ?string
     {
-        // Retourner la couleur du type d'événement si disponible, sinon l'ancien champ
-        return $this->eventType?->getColor() ?? $this->color;
-    }
-
-    public function setColor(?string $color): static
-    {
-        $this->color = $color;
-        return $this;
+        return $this->eventType?->getColor();
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -244,7 +225,7 @@ class Event
 
     public function isFullyBooked(): bool
     {
-        return $this->maxParticipants !== null && $this->currentParticipants >= $this->maxParticipants;
+        return $this->maxParticipants !== null && $this->getCurrentParticipants() >= $this->maxParticipants;
     }
 
     public function getAvailableSpots(): ?int
@@ -252,25 +233,12 @@ class Event
         if ($this->maxParticipants === null) {
             return null;
         }
-        return max(0, $this->maxParticipants - $this->currentParticipants);
+        return max(0, $this->maxParticipants - $this->getCurrentParticipants());
     }
 
     public function getTypeDisplayName(): string
     {
-        // Retourner le nom du type d'événement si disponible, sinon mapper l'ancien champ
-        if ($this->eventType) {
-            return $this->eventType->getName();
-        }
-        
-        return match($this->type) {
-            'training' => 'Formation',
-            'dive' => 'Plongée',
-            'trip' => 'Sortie',
-            'meeting' => 'Réunion',
-            'maintenance' => 'Maintenance',
-            'event' => 'Événement',
-            default => 'Activité'
-        };
+        return $this->eventType?->getName() ?? 'Inconnu';
     }
 
     public function getStatusDisplayName(): string
@@ -485,6 +453,83 @@ class Event
     public function hasRequirements(): bool
     {
         return !$this->getActiveConditions()->isEmpty();
+    }
+
+    public function getContactPerson(): ?User
+    {
+        return $this->contactPerson;
+    }
+
+    public function setContactPerson(?User $contactPerson): static
+    {
+        $this->contactPerson = $contactPerson;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventParticipation>
+     */
+    public function getParticipations(): Collection
+    {
+        return $this->participations;
+    }
+
+    public function addParticipation(EventParticipation $participation): static
+    {
+        if (!$this->participations->contains($participation)) {
+            $this->participations->add($participation);
+            $participation->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipation(EventParticipation $participation): static
+    {
+        if ($this->participations->removeElement($participation)) {
+            if ($participation->getEvent() === $this) {
+                $participation->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Vérifie si un utilisateur est déjà inscrit à l'événement
+     */
+    public function isUserRegistered(User $user): bool
+    {
+        return $this->participations->exists(function($key, EventParticipation $participation) use ($user) {
+            return $participation->getParticipant() === $user && $participation->isActive();
+        });
+    }
+
+    /**
+     * Vérifie si l'événement est complet
+     */
+    public function isFull(): bool
+    {
+        return $this->maxParticipants !== null && $this->getCurrentParticipants() >= $this->maxParticipants;
+    }
+
+    /**
+     * Retourne le contact effectif de l'événement
+     * - Si une personne contact est définie, on l'utilise
+     * - Sinon on cherche le directeur de plongée si c'est une activité de plongée
+     * - Sinon on utilise les coordonnées du club (via la config)
+     */
+    public function getEffectiveContact(): ?User
+    {
+        if ($this->contactPerson) {
+            return $this->contactPerson;
+        }
+
+        // Si c'est une plongée et qu'il n'y a pas de contact défini,
+        // on devrait retourner le directeur de plongée
+        // TODO: implémenter la logique pour récupérer le directeur de plongée
+        
+        return null;
     }
 
     public function __toString(): string

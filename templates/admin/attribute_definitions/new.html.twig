@@ -1,22 +1,38 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Nouvel attribut{% endblock %}
+{% block page_title %}Nouvel Attribut{% endblock %}
 
-{% block body %}
-<div class="bg-white rounded-lg shadow-sm border border-gray-200">
-    <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Nouvel attribut</h1>
-                <p class="mt-1 text-sm text-gray-600">Créer une nouvelle définition d'attribut</p>
-            </div>
-            <a href="{{ path('admin_attribute_definitions_index') }}" 
-               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                ← Retour
-            </a>
-        </div>
+{% block page_actions %}
+<a href="{{ path('admin_attribute_definitions_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+    Retour
+</a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <a href="{{ path('admin_attribute_definitions_index') }}" class="text-gray-500 hover:text-gray-700">Attributs</a>
+</li>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">Nouveau</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-sm rounded-lg">
+
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">Créer une nouvelle définition d'attribut</h2>
+        <p class="mt-1 text-sm text-gray-600">Les attributs permettent d'ajouter des champs personnalisés aux entités</p>
     </div>
-
     <div class="p-6">
         <form method="post" class="space-y-6">
             <div class="grid gap-6 md:grid-cols-2">
@@ -24,10 +40,10 @@
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                         Nom technique <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="name" id="name" required 
-                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
-                           placeholder="Ex: diving_level">
-                    <p class="mt-1 text-xs text-gray-500">Nom utilisé en interne, sans espaces ni caractères spéciaux</p>
+                    <input type="text" name="name" id="name" required readonly
+                           class="block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-club-orange focus:ring-club-orange"
+                           placeholder="Généré automatiquement...">
+                    <p class="mt-1 text-xs text-gray-500">Généré automatiquement à partir du libellé</p>
                 </div>
 
                 <div>
@@ -36,7 +52,9 @@
                     </label>
                     <input type="text" name="label" id="label" required 
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange"
-                           placeholder="Ex: Niveau de plongée">
+                           placeholder="Ex: Niveau de plongée"
+                           oninput="generateTechnicalName()">
+                    <p class="mt-1 text-xs text-gray-500">Nom affiché à l'utilisateur</p>
                 </div>
             </div>
 
@@ -98,8 +116,23 @@
         </form>
     </div>
 </div>
+{% endblock %}
 
+{% block javascripts %}
 <script>
+function generateTechnicalName() {
+    const label = document.getElementById('label').value;
+    const name = label
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
+    
+    document.getElementById('name').value = name;
+}
+
 function toggleOptionsField() {
     const fieldType = document.getElementById('field_type').value;
     const optionsContainer = document.getElementById('options-container');
@@ -110,5 +143,10 @@ function toggleOptionsField() {
         optionsContainer.style.display = 'none';
     }
 }
+
+// Initialiser le toggle au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    toggleOptionsField();
+});
 </script>
 {% endblock %}

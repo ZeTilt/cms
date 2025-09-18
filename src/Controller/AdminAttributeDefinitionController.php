@@ -38,6 +38,11 @@ class AdminAttributeDefinitionController extends AbstractController
             $fieldType = $request->request->get('field_type', 'text');
             $required = $request->request->has('required');
 
+            // Générer automatiquement le nom technique si vide
+            if (empty($name) && !empty($label)) {
+                $name = $this->generateTechnicalName($label);
+            }
+
             $definition = new AttributeDefinition();
             $definition->setName($name)
                 ->setLabel($label)
@@ -167,5 +172,25 @@ class AdminAttributeDefinitionController extends AbstractController
             'checkbox' => 'Case à cocher',
             'textarea' => 'Texte long',
         ];
+    }
+
+    private function generateTechnicalName(string $label): string
+    {
+        // Convertir en minuscules
+        $name = strtolower($label);
+        
+        // Supprimer les accents
+        $name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
+        
+        // Remplacer tout caractère non alphanumérique par des underscores
+        $name = preg_replace('/[^a-z0-9]/', '_', $name);
+        
+        // Supprimer les underscores multiples
+        $name = preg_replace('/_+/', '_', $name);
+        
+        // Supprimer les underscores en début et fin
+        $name = trim($name, '_');
+        
+        return $name;
     }
 }

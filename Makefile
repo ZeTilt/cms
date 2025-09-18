@@ -167,11 +167,28 @@ setup-plongee: ## Configuration spécifique plongée
 	$(PHP) bin/console app:create-plongee-pages
 	$(PHP) bin/console app:create-plongee-events
 
-# Backup
+# Backup et dump
 backup: ## Crée une sauvegarde de la base
 	@echo "$(GREEN)💾 Création d'une sauvegarde...$(NC)"
 	@mkdir -p backups
 	$(PHP) bin/console app:backup-database backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
+
+dump-local: ## Dump de la base locale MySQL
+	@echo "$(GREEN)📦 Dump de la base locale...$(NC)"
+	@mkdir -p dumps
+	@mysqldump -u empo8897_venetes_preprod -p'Vén3t3sPréPr0d' --single-transaction --no-tablespaces empo8897_venetes_preprod > dumps/local_$(shell date +%Y%m%d_%H%M%S).sql 2>/dev/null || true
+	@echo "$(GREEN)✅ Dump créé dans dumps/$(NC)"
+
+dump-data-only: ## Dump des données uniquement (sans structure)
+	@echo "$(GREEN)📦 Dump des données seulement...$(NC)"
+	@mkdir -p dumps
+	@mysqldump -u empo8897_venetes_preprod -p'Vén3t3sPréPr0d' --no-create-info --single-transaction empo8897_venetes_preprod > dumps/data_$(shell date +%Y%m%d_%H%M%S).sql
+	@echo "$(GREEN)✅ Dump des données créé dans dumps/$(NC)"
+
+restore-local: ## Restaure un dump dans la base locale (usage: make restore-local DUMP=fichier.sql)
+	@echo "$(GREEN)📥 Restauration de $(DUMP)...$(NC)"
+	@mysql -u empo8897_venetes_preprod -p'Vén3t3sPréPr0d' empo8897_venetes_preprod < $(DUMP)
+	@echo "$(GREEN)✅ Base restaurée$(NC)"
 
 # Aide par défaut
 default: help

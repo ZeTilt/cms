@@ -58,10 +58,6 @@ class EventRegistrationController extends AbstractController
         $participation->setParticipant($user);
 
         $this->entityManager->persist($participation);
-
-        // Update event participant count
-        $event->setCurrentParticipants($event->getCurrentParticipants() + 1);
-
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Votre inscription a été enregistrée avec succès !');
@@ -83,9 +79,6 @@ class EventRegistrationController extends AbstractController
 
         // Cancel participation
         $participation->setStatus('cancelled');
-
-        // Update event participant count
-        $event->setCurrentParticipants(max(0, $event->getCurrentParticipants() - 1));
 
         $this->entityManager->flush();
 

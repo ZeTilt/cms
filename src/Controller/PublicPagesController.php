@@ -19,23 +19,24 @@ class PublicPagesController extends AbstractController
     ) {
     }
 
-    #[Route('/blog', name: 'public_blog_list')]
-    public function blogList(): Response
-    {
-        $blogPosts = $this->entityManager->getRepository(Page::class)
-            ->createQueryBuilder('p')
-            ->where('p.type = :type')
-            ->andWhere('p.status = :status')
-            ->setParameter('type', 'blog')
-            ->setParameter('status', 'published')
-            ->orderBy('p.publishedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+    // Disabled to avoid conflict with BlogController
+    // #[Route('/blog', name: 'public_blog_list')]
+    // public function blogList(): Response
+    // {
+    //     $blogPosts = $this->entityManager->getRepository(Page::class)
+    //         ->createQueryBuilder('p')
+    //         ->where('p.type = :type')
+    //         ->andWhere('p.status = :status')
+    //         ->setParameter('type', 'blog')
+    //         ->setParameter('status', 'published')
+    //         ->orderBy('p.publishedAt', 'DESC')
+    //         ->getQuery()
+    //         ->getResult();
 
-        return $this->render('public/blog/list.html.twig', [
-            'posts' => $blogPosts,
-        ]);
-    }
+    //     return $this->render('public/blog/list.html.twig', [
+    //         'posts' => $blogPosts,
+    //     ]);
+    // }
 
     #[Route('/article/{slug}', name: 'public_article_show')]
     public function articleShow(string $slug): Response
@@ -61,15 +62,16 @@ class PublicPagesController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/{slug}', name: 'public_blog_show')]
-    public function blogShow(string $slug): Response
-    {
-        $page = $this->findPublishedPage($slug, 'blog');
+    // Disabled to avoid conflict with BlogController
+    // #[Route('/blog/{slug}', name: 'public_blog_show')]
+    // public function blogShow(string $slug): Response
+    // {
+    //     $page = $this->findPublishedPage($slug, 'blog');
 
-        return $this->render('public/blog/show.html.twig', [
-            'page' => $page,
-        ]);
-    }
+    //     return $this->render('public/blog/show.html.twig', [
+    //         'page' => $page,
+    //     ]);
+    // }
 
     #[Route('/{slug}', name: 'public_page_show', priority: -1)]
     public function pageShow(string $slug): Response
