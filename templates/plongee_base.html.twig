@@ -215,9 +215,16 @@
                                 Mon profil
                             </a>
 
-                            <!-- Accès membre -->
-                            <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
-                                Accès membre
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <!-- Administration (pour admin seulement) -->
+                                <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                    Administration
+                                </a>
+                            {% endif %}
+
+                            <!-- Déconnexion -->
+                            <a href="{{ path('app_logout') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                Déconnexion
                             </a>
                         {% else %}
                             <!-- Inscription -->
@@ -225,9 +232,9 @@
                                 S'inscrire
                             </a>
 
-                            <!-- Accès membre -->
-                            <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
-                                Accès membre
+                            <!-- Connexion -->
+                            <a href="{{ path('app_login') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                Se connecter
                             </a>
                         {% endif %}
 
