@@ -217,15 +217,15 @@
 
                             {% if is_granted('ROLE_ADMIN') %}
                                 <!-- Administration (pour admin seulement) -->
-                                <a href="{{ path('admin_dashboard') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
+                                <a href="{{ path('admin_dashboard') }}" class="bg-club-blue text-white hover:bg-club-blue-dark px-4 py-2 rounded-md text-sm font-medium">
                                     Administration
                                 </a>
+                            {% else %}
+                                <!-- Déconnexion (pour utilisateurs non-admin) -->
+                                <a href="{{ path('app_logout') }}" class="bg-gray-600 text-white hover:bg-gray-700 px-4 py-2 rounded-md text-sm font-medium">
+                                    Déconnexion
+                                </a>
                             {% endif %}
-
-                            <!-- Déconnexion -->
-                            <a href="{{ path('app_logout') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
-                                Déconnexion
-                            </a>
                         {% else %}
                             <!-- Inscription -->
                             <a href="{{ path('app_register') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
