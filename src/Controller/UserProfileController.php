@@ -22,13 +22,18 @@ class UserProfileController extends AbstractController
     #[Route('', name: 'user_profile_index')]
     public function index(): Response
     {
-        $user = $this->getUser();
-        $divingLevels = $this->divingLevelRepository->findAllOrdered();
+        try {
+            $user = $this->getUser();
+            $divingLevels = $this->divingLevelRepository->findAllOrdered();
 
-        return $this->render('user/profile/index.html.twig', [
-            'user' => $user,
-            'divingLevels' => $divingLevels,
-        ]);
+            return $this->render('user/profile/index.html.twig', [
+                'user' => $user,
+                'divingLevels' => $divingLevels,
+            ]);
+        } catch (\Exception $e) {
+            // Debug temporaire
+            return new Response('Erreur: ' . $e->getMessage());
+        }
     }
 
     #[Route('/diving-level', name: 'user_profile_diving_level', methods: ['POST'])]
