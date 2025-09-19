@@ -3,13 +3,15 @@
 namespace App\Service;
 
 use App\Service\SiteConfigService;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 
 class PageContentRenderer
 {
     public function __construct(
-        private SiteConfigService $siteConfigService
+        private SiteConfigService $siteConfigService,
+        private UrlGeneratorInterface $urlGenerator
     ) {
     }
 
@@ -22,6 +24,11 @@ class PageContentRenderer
         // Add site_config function
         $twig->addFunction(new \Twig\TwigFunction('site_config', function (string $key, ?string $default = null) {
             return $this->siteConfigService->get($key, $default);
+        }));
+
+        // Add path function for routing
+        $twig->addFunction(new \Twig\TwigFunction('path', function (string $route, array $parameters = []) {
+            return $this->urlGenerator->generate($route, $parameters);
         }));
 
         try {
