@@ -1,0 +1,146 @@
+{% extends 'plongee_base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block main_content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- En-tête -->
+    <div class="bg-white shadow-sm rounded-lg mb-8">
+        <div class="px-6 py-6 border-b border-gray-200">
+            <div class="flex items-center">
+                <div class="h-12 w-12 rounded-full bg-club-orange flex items-center justify-center">
+                    <span class="text-lg font-medium text-white">
+                        {{ user.displayName|slice(0, 1)|upper }}
+                    </span>
+                </div>
+                <div class="ml-4">
+                    <h1 class="text-2xl font-bold text-gray-900">{{ user.displayName }}</h1>
+                    <p class="text-sm text-gray-500">{{ user.email }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations de base -->
+        <div class="px-6 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                        {% if user.status == 'approved' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                ✓ Approuvé
+                            </span>
+                        {% elseif user.status == 'pending' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                ⏳ En attente
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                ❌ {{ user.status|title }}
+                            </span>
+                        {% endif %}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Membre depuis</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ user.createdAt|date('d/m/Y') }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Dernière mise à jour</dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                        {% if user.updatedAt %}
+                            {{ user.updatedAt|date('d/m/Y') }}
+                        {% else %}
+                            Non modifié
+                        {% endif %}
+                    </dd>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Niveau de plongée -->
+    <div class="bg-white shadow-sm rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">🏊 Niveau de Plongée</h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Définissez votre niveau de plongée pour accéder aux événements correspondants.
+            </p>
+        </div>
+
+        <div class="px-6 py-6">
+            <form method="POST" action="{{ path('user_profile_diving_level') }}" class="space-y-4">
+                <div>
+                    <label for="diving_level_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mon niveau actuel
+                    </label>
+                    <select name="diving_level_id" id="diving_level_id"
+                            class="block w-full md:w-96 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <option value="">-- Sélectionner mon niveau --</option>
+                        {% for level in divingLevels %}
+                            <option value="{{ level.id }}"
+                                    {{ user.highestDivingLevel and user.highestDivingLevel.id == level.id ? 'selected' : '' }}>
+                                {{ level.name }}
+                                {% if level.description %}
+                                    - {{ level.description }}
+                                {% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    {% if user.highestDivingLevel %}
+                        <p class="mt-2 text-sm text-green-600">
+                            ✓ Niveau actuel : <strong>{{ user.highestDivingLevel.name }}</strong>
+                        </p>
+                    {% else %}
+                        <p class="mt-2 text-sm text-yellow-600">
+                            ⚠️ Aucun niveau défini - vous ne pourrez pas vous inscrire aux événements avec niveau minimum requis
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        <p><strong>Pourquoi définir mon niveau ?</strong></p>
+                        <ul class="mt-1 list-disc list-inside space-y-1">
+                            <li>Accès aux événements correspondant à votre niveau</li>
+                            <li>Visibilité pour les directeurs de plongée</li>
+                            <li>Respect des conditions de sécurité du club</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Autres attributs (si système d'attributs existant) -->
+    {% if is_granted('ROLE_USER') %}
+    <div class="bg-white shadow-sm rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">📋 Autres Informations</h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Gérez vos autres informations de profil.
+            </p>
+        </div>
+
+        <div class="px-6 py-4">
+            <a href="{{ path('user_attributes_index') }}"
+               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Gérer mes attributs
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
