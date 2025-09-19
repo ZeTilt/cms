@@ -6,6 +6,20 @@
     <link rel="icon" href="{{ asset('assets/favicon.png') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% block meta_description %}Club de plongée sous-marine à Vannes - Formations FFESSM, sorties mer, voyages plongée{% endblock %}">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#f97316">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CSV Plongée">
+    <meta name="msapplication-TileColor" content="#1e3a8a">
+
+    <!-- PWA Icons -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('pwa-icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('pwa-icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('pwa-icons/icon-152x152.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('pwa-icons/icon-152x152.png') }}">
     
     {% block stylesheets %}
         <script src="https://cdn.tailwindcss.com"></script>
@@ -394,6 +408,69 @@
                     }
                 });
             });
+        });
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Empêche le navigateur d'afficher automatiquement la popup
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Affiche un bouton d'installation personnalisé
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            // Crée un bouton d'installation discret
+            const installButton = document.createElement('button');
+            installButton.innerHTML = '📱 Installer l\'app';
+            installButton.className = 'fixed bottom-4 right-4 bg-club-orange text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm font-medium hover:bg-club-orange-dark transition-colors';
+            installButton.id = 'install-button';
+
+            installButton.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response: ${outcome}`);
+                    deferredPrompt = null;
+                    installButton.remove();
+                }
+            });
+
+            // Ajoute le bouton au DOM s'il n'existe pas déjà
+            if (!document.getElementById('install-button')) {
+                document.body.appendChild(installButton);
+
+                // Cache le bouton après 10 secondes
+                setTimeout(() => {
+                    if (installButton.parentNode) {
+                        installButton.style.opacity = '0.7';
+                    }
+                }, 10000);
+            }
+        }
+
+        // Gère l'installation réussie
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App installed successfully');
+            const installButton = document.getElementById('install-button');
+            if (installButton) {
+                installButton.remove();
+            }
         });
     </script>
 </body>

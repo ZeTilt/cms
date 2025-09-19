@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Fond club-blue -->
+  <rect width="512" height="512" fill="#1e3a8a" rx="60"/>
+
+  <!-- Vagues stylisées en club-orange -->
+  <path d="M0 350 Q128 300 256 350 T512 350 L512 400 Q384 450 256 400 T0 400 Z" fill="#f97316" opacity="0.8"/>
+  <path d="M0 380 Q128 330 256 380 T512 380 L512 430 Q384 480 256 430 T0 430 Z" fill="#f97316" opacity="0.6"/>
+
+  <!-- Plongeur silhouette -->
+  <g fill="#ffffff">
+    <!-- Corps -->
+    <ellipse cx="256" cy="200" rx="35" ry="80"/>
+    <!-- Tête avec masque -->
+    <circle cx="256" cy="140" r="25"/>
+    <!-- Détails masque -->
+    <circle cx="256" cy="140" r="20" fill="#1e3a8a" opacity="0.3"/>
+    <!-- Bras -->
+    <ellipse cx="220" cy="180" rx="12" ry="35" transform="rotate(-20 220 180)"/>
+    <ellipse cx="292" cy="180" rx="12" ry="35" transform="rotate(20 292 180)"/>
+    <!-- Jambes avec palmes -->
+    <ellipse cx="240" cy="260" rx="10" ry="40" transform="rotate(-10 240 260)"/>
+    <ellipse cx="272" cy="260" rx="10" ry="40" transform="rotate(10 272 260)"/>
+    <!-- Palmes -->
+    <ellipse cx="235" cy="305" rx="15" ry="8" fill="#f97316"/>
+    <ellipse cx="277" cy="305" rx="15" ry="8" fill="#f97316"/>
+  </g>
+
+  <!-- Bulles -->
+  <circle cx="200" cy="120" r="4" fill="#ffffff" opacity="0.7"/>
+  <circle cx="210" cy="100" r="3" fill="#ffffff" opacity="0.6"/>
+  <circle cx="180" cy="110" r="2" fill="#ffffff" opacity="0.8"/>
+  <circle cx="190" cy="85" r="2" fill="#ffffff" opacity="0.5"/>
+
+  <!-- Texte CSV -->
+  <text x="256" y="450" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="bold">CSV</text>
+</svg>
