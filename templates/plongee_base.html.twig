@@ -241,9 +241,9 @@
                                 </a>
                             {% endif %}
                         {% else %}
-                            <!-- Inscription -->
+                            <!-- Créer un compte -->
                             <a href="{{ path('app_register') }}" class="text-gray-700 hover:text-club-orange px-3 py-2 rounded-md text-sm font-medium">
-                                S'inscrire
+                                Créer un compte
                             </a>
 
                             <!-- Connexion -->
@@ -260,12 +260,105 @@
 
                     <!-- Mobile menu button -->
                     <div class="md:hidden">
-                        <button x-data="{ open: false }" @click="open = !open" class="text-gray-700 hover:text-club-orange">
+                        <button id="mobile-menu-button" class="text-gray-700 hover:text-club-orange p-2">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Mobile menu (hidden par défaut) -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+                    <!-- Accueil -->
+                    <a href="{{ path('app_home') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                        Accueil
+                    </a>
+
+                    <!-- Notre club mobile -->
+                    <div class="relative">
+                        <button class="mobile-dropdown-toggle flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                            Notre club
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <div class="mobile-dropdown-menu hidden pl-4">
+                            <a href="{{ path('public_page_show', {slug: 'qui-sommes-nous'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Qui sommes nous</a>
+                            <a href="{{ path('public_page_show', {slug: 'ou-nous-trouver'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Où nous trouver</a>
+                            <a href="{{ path('public_page_show', {slug: 'tarifs-2025'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Tarifs 2025</a>
+                            <a href="{{ path('public_page_show', {slug: 'nos-partenaires'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Nos partenaires</a>
+                        </div>
+                    </div>
+
+                    <!-- Nos activités mobile -->
+                    <div class="relative">
+                        <button class="mobile-dropdown-toggle flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                            Nos activités
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <div class="mobile-dropdown-menu hidden pl-4">
+                            <div class="py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Formations</div>
+                            <a href="{{ path('public_page_show', {slug: 'formation-niveau-1'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Niveau 1</a>
+                            <a href="{{ path('public_page_show', {slug: 'formation-niveau-2-et-3'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Niveau 2 et 3</a>
+                            <a href="{{ path('public_page_show', {slug: 'guide-de-palanquee'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Guide de palanquée</a>
+                            <a href="{{ path('public_page_show', {slug: 'autres-formations'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Autres formations</a>
+                            <div class="py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Activités</div>
+                            <a href="{{ path('public_page_show', {slug: 'les-sorties'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Les sorties</a>
+                            <a href="{{ path('public_page_show', {slug: 'plongeurs-exterieurs'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Plongeurs extérieurs</a>
+                            <a href="{{ path('public_page_show', {slug: 'apnee'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Apnée</a>
+                            <a href="{{ path('public_page_show', {slug: 'la-piscine'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">La piscine</a>
+                            <a href="{{ path('public_page_show', {slug: 'gonflage'}) }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-club-orange">Gonflage</a>
+                        </div>
+                    </div>
+
+                    <!-- Calendrier -->
+                    <a href="{{ path('public_calendar') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                        Calendrier
+                    </a>
+
+                    <!-- Actualités -->
+                    <a href="{{ path('blog_index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                        Actualités
+                    </a>
+
+                    {% if app.user %}
+                        <!-- Mon profil -->
+                        <a href="{{ path('user_attributes_index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                            Mon profil
+                        </a>
+
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <!-- Administration -->
+                            <a href="{{ path('admin_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium bg-club-blue text-white">
+                                Administration
+                            </a>
+                        {% else %}
+                            <!-- Déconnexion -->
+                            <a href="{{ path('app_logout') }}" class="block px-3 py-2 rounded-md text-base font-medium bg-gray-600 text-white">
+                                Déconnexion
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <!-- Créer un compte -->
+                        <a href="{{ path('app_register') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                            Créer un compte
+                        </a>
+
+                        <!-- Se connecter -->
+                        <a href="{{ path('app_login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-club-orange hover:bg-gray-50">
+                            Se connecter
+                        </a>
+                    {% endif %}
+
+                    <!-- Contact -->
+                    <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium bg-club-orange text-white">
+                        Contact
+                    </a>
                 </div>
             </div>
         </nav>
@@ -356,7 +449,37 @@
     </footer>
 
     <script>
-        // Gestion des dropdowns
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Mobile dropdown toggles
+            const mobileDropdownToggles = document.querySelectorAll('.mobile-dropdown-toggle');
+            mobileDropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const menu = this.nextElementSibling;
+                    if (menu) {
+                        menu.classList.toggle('hidden');
+                        // Rotation de la flèche
+                        const svg = this.querySelector('svg');
+                        if (svg) {
+                            svg.style.transform = menu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                            svg.style.transition = 'transform 0.2s';
+                        }
+                    }
+                });
+            });
+        });
+
+        // Gestion des dropdowns desktop
         document.addEventListener('DOMContentLoaded', function() {
             const dropdowns = document.querySelectorAll('.dropdown');
             
