@@ -65,10 +65,6 @@ class RegistrationController extends AbstractController
             if ($request->request->get('diving_level')) {
                 $this->saveDivingLevel($user, $request->request->get('diving_level'));
             }
-            
-            if ($request->request->get('is_freediver')) {
-                $this->saveFreediverStatus($user, true);
-            }
 
             $this->entityManager->flush();
 
@@ -94,20 +90,6 @@ class RegistrationController extends AbstractController
         $attribute->setAttributeName('diving_level');
         $attribute->setAttributeType('text');
         $attribute->setAttributeValue($divingLevel);
-        
-        $this->entityManager->persist($attribute);
-    }
-
-    private function saveFreediverStatus(User $user, bool $isFreediver): void
-    {
-        if (!$isFreediver) return;
-
-        $attribute = new \App\Entity\EntityAttribute();
-        $attribute->setEntityType('User');
-        $attribute->setEntityId($user->getId());
-        $attribute->setAttributeName('is_freediver');
-        $attribute->setAttributeType('boolean');
-        $attribute->setAttributeValue('1');
         
         $this->entityManager->persist($attribute);
     }
