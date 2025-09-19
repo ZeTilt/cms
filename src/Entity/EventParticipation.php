@@ -13,7 +13,7 @@ class EventParticipation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Event::class)]
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'participations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
@@ -33,10 +33,17 @@ class EventParticipation
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $notes = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $meetingPoint = null; // 'club' ou 'site'
+
+    #[ORM\Column]
+    private ?bool $isWaitingList = false;
+
     public function __construct()
     {
         $this->registrationDate = new \DateTimeImmutable();
         $this->status = 'registered';
+        $this->isWaitingList = false;
     }
 
     public function getId(): ?int
@@ -125,5 +132,36 @@ class EventParticipation
     public function isActive(): bool
     {
         return in_array($this->status, ['registered', 'confirmed']);
+    }
+
+    public function getMeetingPoint(): ?string
+    {
+        return $this->meetingPoint;
+    }
+
+    public function setMeetingPoint(?string $meetingPoint): static
+    {
+        $this->meetingPoint = $meetingPoint;
+        return $this;
+    }
+
+    public function isWaitingList(): ?bool
+    {
+        return $this->isWaitingList;
+    }
+
+    public function setIsWaitingList(bool $isWaitingList): static
+    {
+        $this->isWaitingList = $isWaitingList;
+        return $this;
+    }
+
+    public function getMeetingPointDisplayName(): string
+    {
+        return match($this->meetingPoint) {
+            'club' => 'RDV au club',
+            'site' => 'RDV sur site',
+            default => 'Non défini'
+        };
     }
 }

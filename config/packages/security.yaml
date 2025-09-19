@@ -1,8 +1,9 @@
 security:
     # Role hierarchy
     role_hierarchy:
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_USER]
-        ROLE_ADMIN: [ROLE_USER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_DP, ROLE_USER]
+        ROLE_ADMIN: [ROLE_DP, ROLE_USER]
+        ROLE_DP: [ROLE_USER]
     
     password_hashers:
         App\Entity\User:

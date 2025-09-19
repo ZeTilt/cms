@@ -50,6 +50,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne(targetEntity: DivingLevel::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?DivingLevel $highestDivingLevel = null;
+
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Gallery::class, orphanRemoval: true)]
     private Collection $galleries;
 
@@ -227,6 +231,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isRejected(): bool
     {
         return $this->status === 'rejected';
+    }
+
+    public function getHighestDivingLevel(): ?DivingLevel
+    {
+        return $this->highestDivingLevel;
+    }
+
+    public function setHighestDivingLevel(?DivingLevel $highestDivingLevel): static
+    {
+        $this->highestDivingLevel = $highestDivingLevel;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
     }
 
     public function isEmailVerified(): bool

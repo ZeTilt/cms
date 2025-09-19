@@ -36,12 +36,6 @@ class EventRegistrationController extends AbstractController
             return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
         }
 
-        // Check if event is full
-        if ($event->isFullyBooked()) {
-            $this->addFlash('error', 'Cet événement est complet.');
-            return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
-        }
-
         // Check user eligibility
         $eligibilityIssues = $event->checkUserEligibility($user);
         if (!empty($eligibilityIssues)) {
@@ -57,10 +51,24 @@ class EventRegistrationController extends AbstractController
         $participation->setEvent($event);
         $participation->setParticipant($user);
 
+        // Set meeting point if provided
+        $meetingPoint = $request->request->get('meeting_point');
+        if ($meetingPoint && in_array($meetingPoint, ['club', 'site'])) {
+            $participation->setMeetingPoint($meetingPoint);
+        }
+
+        // Check if event is full - if so, add to waiting list
+        $isWaitingList = $event->isFullyBooked();
+        $participation->setIsWaitingList($isWaitingList);
+
         $this->entityManager->persist($participation);
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'Votre inscription a été enregistrée avec succès !');
+        if ($isWaitingList) {
+            $this->addFlash('warning', 'L\'événement est complet. Vous avez été ajouté à la liste d\'attente.');
+        } else {
+            $this->addFlash('success', 'Votre inscription a été enregistrée avec succès !');
+        }
 
         return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
     }
@@ -79,6 +87,16 @@ class EventRegistrationController extends AbstractController
 
         // Cancel participation
         $participation->setStatus('cancelled');
+
+        // Check if there are people on the waiting list to promote
+        $waitingListParticipations = $event->getWaitingListParticipations();
+        if (!$waitingListParticipations->isEmpty()) {
+            // Promote the first person from waiting list
+            $firstWaiting = $waitingListParticipations->first();
+            $firstWaiting->setIsWaitingList(false);
+
+            $this->addFlash('info', 'Une personne de la liste d\'attente a été automatiquement inscrite.');
+        }
 
         $this->entityManager->flush();
 

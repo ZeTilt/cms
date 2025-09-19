@@ -63,6 +63,9 @@
                             Participants
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            RDV/Niveau
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Statut
                         </th>
                         <th scope="col" class="relative px-6 py-3">
@@ -121,9 +124,43 @@
                                             <div class="bg-club-orange h-2 rounded-full" style="width: {{ percentage }}%"></div>
                                         </div>
                                     </div>
+                                    {% if event.waitingListCount > 0 %}
+                                        <div class="text-xs text-yellow-600 mt-1">
+                                            + {{ event.waitingListCount }} en attente
+                                        </div>
+                                    {% endif %}
                                 {% else %}
                                     <span class="text-gray-400">Libre</span>
                                 {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div class="space-y-1">
+                                    {% if event.clubMeetingTime %}
+                                        <div class="flex items-center">
+                                            <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                                                🏠 {{ event.clubMeetingTime|date('H:i') }}
+                                            </span>
+                                            <span class="ml-1 text-xs text-gray-500">
+                                                ({{ event.clubMeetingParticipants|length }})
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                    {% if event.siteMeetingTime %}
+                                        <div class="flex items-center">
+                                            <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                                                🌊 {{ event.siteMeetingTime|date('H:i') }}
+                                            </span>
+                                            <span class="ml-1 text-xs text-gray-500">
+                                                ({{ event.siteMeetingParticipants|length }})
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                    {% if event.minDivingLevel %}
+                                        <div class="text-xs text-gray-600">
+                                            Min: {{ event.minDivingLevel.name }}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if event.status == 'active' %}

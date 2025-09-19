@@ -52,8 +52,10 @@ class EventParticipationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('ep')
             ->andWhere('ep.event = :event')
             ->andWhere('ep.status IN (:activeStatuses)')
+            ->andWhere('ep.isWaitingList = :notWaitingList')
             ->setParameter('event', $event)
             ->setParameter('activeStatuses', ['registered', 'confirmed'])
+            ->setParameter('notWaitingList', false)
             ->getQuery()
             ->getResult();
     }
@@ -64,8 +66,10 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->select('COUNT(ep.id)')
             ->andWhere('ep.event = :event')
             ->andWhere('ep.status IN (:activeStatuses)')
+            ->andWhere('ep.isWaitingList = :notWaitingList')
             ->setParameter('event', $event)
             ->setParameter('activeStatuses', ['registered', 'confirmed'])
+            ->setParameter('notWaitingList', false)
             ->getQuery()
             ->getSingleScalarResult();
     }

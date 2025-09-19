@@ -1,0 +1,220 @@
+{% extends 'dp/base.html.twig' %}
+
+{% block page_title %}{{ isNew ? 'Nouvel Événement' : 'Modifier l\'Événement' }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <a href="{{ path('dp_events_list') }}" class="text-gray-500 hover:text-gray-700">Événements</a>
+</li>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">{{ isNew ? 'Nouveau' : 'Modifier' }}</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <form method="POST" class="space-y-6">
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Informations de l'événement</h2>
+            </div>
+
+            <div class="px-6 py-4 space-y-6">
+                <!-- Titre -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Titre de l'événement *
+                    </label>
+                    <input type="text" id="title" name="title"
+                           value="{{ event.title ?? '' }}"
+                           required
+                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    <textarea id="description" name="description" rows="4"
+                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">{{ event.description ?? '' }}</textarea>
+                </div>
+
+                <!-- Dates et heures -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="start_date" class="block text-sm font-medium text-gray-700 mb-2">
+                            Date et heure de début *
+                        </label>
+                        <input type="datetime-local" id="start_date" name="start_date"
+                               value="{{ event.startDate ? event.startDate|date('Y-m-d\\TH:i') : '' }}"
+                               required
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="end_date" class="block text-sm font-medium text-gray-700 mb-2">
+                            Date et heure de fin
+                        </label>
+                        <input type="datetime-local" id="end_date" name="end_date"
+                               value="{{ event.endDate ? event.endDate|date('Y-m-d\\TH:i') : '' }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Lieu -->
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+                        Lieu
+                    </label>
+                    <input type="text" id="location" name="location"
+                           value="{{ event.location ?? '' }}"
+                           placeholder="Ex: Piscine Océanis, Port de Vannes..."
+                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                </div>
+
+                <!-- Type d'événement -->
+                <div>
+                    <label for="event_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Type d'événement *
+                    </label>
+                    {% if eventTypes|length > 0 %}
+                        <select id="event_type" name="event_type_id" required
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                            <option value="">-- Sélectionner un type d'événement --</option>
+                            {% for eventType in eventTypes %}
+                                <option value="{{ eventType.id }}"
+                                        data-color="{{ eventType.color }}"
+                                        {{ event.eventType and event.eventType.id == eventType.id ? 'selected' : '' }}>
+                                    {{ eventType.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-yellow-800">Aucun type d'événement disponible</h3>
+                                    <div class="mt-2 text-sm text-yellow-700">
+                                        <p>Contactez un administrateur pour créer des types d'événements.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Nombre maximum de participants -->
+                <div>
+                    <label for="max_participants" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nombre maximum de participants
+                    </label>
+                    <input type="number" id="max_participants" name="max_participants"
+                           value="{{ event.maxParticipants ?? '' }}"
+                           min="1"
+                           placeholder="Laisser vide pour un nombre illimité"
+                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-sm text-gray-500">
+                        Si l'événement est complet, les nouveaux inscrits seront automatiquement mis en liste d'attente.
+                    </p>
+                </div>
+
+                <!-- Niveau minimum requis -->
+                <div>
+                    <label for="min_diving_level" class="block text-sm font-medium text-gray-700 mb-2">
+                        Niveau minimum requis
+                    </label>
+                    <select id="min_diving_level" name="min_diving_level_id"
+                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <option value="">-- Aucun niveau minimum --</option>
+                        {% for level in divingLevels %}
+                            <option value="{{ level.id }}"
+                                    {{ event.minDivingLevel and event.minDivingLevel.id == level.id ? 'selected' : '' }}>
+                                {{ level.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Les plongeurs n'ayant pas le niveau requis ne pourront pas s'inscrire.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Rendez-vous -->
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Heures de rendez-vous</h2>
+                <p class="mt-1 text-sm text-gray-500">
+                    Définissez les heures de RDV au club et/ou sur site. Les participants pourront choisir leur point de rendez-vous lors de l'inscription.
+                </p>
+            </div>
+
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- RDV Club -->
+                    <div>
+                        <label for="club_meeting_time" class="block text-sm font-medium text-gray-700 mb-2">
+                            🏠 Heure de RDV au club
+                        </label>
+                        <input type="time" id="club_meeting_time" name="club_meeting_time"
+                               value="{{ event.clubMeetingTime ? event.clubMeetingTime|date('H:i') : '' }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <p class="mt-1 text-sm text-gray-500">Pour ceux qui partent depuis le club</p>
+                    </div>
+
+                    <!-- RDV Site -->
+                    <div>
+                        <label for="site_meeting_time" class="block text-sm font-medium text-gray-700 mb-2">
+                            🌊 Heure de RDV sur site
+                        </label>
+                        <input type="time" id="site_meeting_time" name="site_meeting_time"
+                               value="{{ event.siteMeetingTime ? event.siteMeetingTime|date('H:i') : '' }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <p class="mt-1 text-sm text-gray-500">Pour ceux qui vont directement sur site</p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">Note</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p>Si vous ne définissez qu'une seule heure, tous les participants se retrouveront au même endroit.
+                                Si vous définissez les deux, les participants pourront choisir leur point de rendez-vous lors de l'inscription.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end space-x-4">
+            <a href="{{ path('dp_events_list') }}"
+               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Annuler
+            </a>
+            <button type="submit"
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark">
+                {{ isNew ? 'Créer l\'événement' : 'Mettre à jour' }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

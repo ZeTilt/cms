@@ -158,6 +158,11 @@ class RecurringEventService
         $newEvent->setEventType($parentEvent->getEventType());
         $newEvent->setMaxParticipants($parentEvent->getMaxParticipants());
         $newEvent->setStatus($parentEvent->getStatus());
+
+        // Copier les nouveaux champs de plongée
+        $newEvent->setMinDivingLevel($parentEvent->getMinDivingLevel());
+        $newEvent->setClubMeetingTime($parentEvent->getClubMeetingTime());
+        $newEvent->setSiteMeetingTime($parentEvent->getSiteMeetingTime());
         
         // Définir les dates
         $newEvent->setStartDate($startDate);

@@ -123,15 +123,100 @@
                     {% endif %}
                 </div>
 
+                <!-- Nombre maximum de participants -->
+                <div>
+                    <label for="max_participants" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nombre maximum de participants
+                    </label>
+                    <input type="number" id="max_participants" name="max_participants"
+                           value="{{ event.maxParticipants ?? '' }}"
+                           min="1"
+                           placeholder="Laisser vide pour un nombre illimité"
+                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-sm text-gray-500">
+                        Si l'événement est complet, les nouveaux inscrits seront automatiquement mis en liste d'attente.
+                    </p>
+                </div>
+
+                <!-- Niveau minimum requis -->
+                <div>
+                    <label for="min_diving_level" class="block text-sm font-medium text-gray-700 mb-2">
+                        Niveau minimum requis
+                    </label>
+                    <select id="min_diving_level" name="min_diving_level_id"
+                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <option value="">-- Aucun niveau minimum --</option>
+                        {% for level in divingLevels|default([]) %}
+                            <option value="{{ level.id }}"
+                                    {{ event.minDivingLevel and event.minDivingLevel.id == level.id ? 'selected' : '' }}>
+                                {{ level.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Les plongeurs n'ayant pas le niveau requis ne pourront pas s'inscrire.
+                    </p>
+                </div>
+
+                <!-- Heures de rendez-vous -->
+                <div class="sm:col-span-2">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Heures de rendez-vous</h3>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Définissez les heures de RDV au club et/ou sur site. Les participants pourront choisir leur point de rendez-vous lors de l'inscription.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- RDV Club -->
+                            <div>
+                                <label for="club_meeting_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                    🏠 Heure de RDV au club
+                                </label>
+                                <input type="time" id="club_meeting_time" name="club_meeting_time"
+                                       value="{{ event.clubMeetingTime ? event.clubMeetingTime|date('H:i') : '' }}"
+                                       class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                                <p class="mt-1 text-sm text-gray-500">Pour ceux qui partent depuis le club</p>
+                            </div>
+
+                            <!-- RDV Site -->
+                            <div>
+                                <label for="site_meeting_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                    🌊 Heure de RDV sur site
+                                </label>
+                                <input type="time" id="site_meeting_time" name="site_meeting_time"
+                                       value="{{ event.siteMeetingTime ? event.siteMeetingTime|date('H:i') : '' }}"
+                                       class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                                <p class="mt-1 text-sm text-gray-500">Pour ceux qui vont directement sur site</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 bg-blue-50 border border-blue-200 rounded-md p-3">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-blue-800">Note</h3>
+                                    <div class="mt-2 text-sm text-blue-700">
+                                        <p>Si vous ne définissez qu'une seule heure, tous les participants se retrouveront au même endroit.
+                                        Si vous définissez les deux, les participants pourront choisir leur point de rendez-vous lors de l'inscription.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Récurrence -->
                 <div class="sm:col-span-2">
                     <div class="flex items-center mb-4">
-                        <input type="checkbox" 
-                               name="is_recurring" 
-                               id="is_recurring" 
+                        <input type="checkbox"
+                               name="is_recurring"
+                               id="is_recurring"
                                value="1"
                                {{ event.isRecurring ? 'checked' : '' }}
-                               onchange="toggleRecurrenceFields(this.checked)"
                                class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
                         <label for="is_recurring" class="ml-2 block text-sm font-medium text-gray-900">
                             Événement récurrent
@@ -146,7 +231,6 @@
                                     Fréquence
                                 </label>
                                 <select name="recurrence_type" id="recurrence_type"
-                                        onchange="toggleWeekdayFields(this.value)"
                                         class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
                                     <option value="weekly" {{ event.recurrenceType == 'weekly' ? 'selected' : '' }}>Hebdomadaire</option>
                                     <option value="monthly" {{ event.recurrenceType == 'monthly' ? 'selected' : '' }}>Mensuel</option>
@@ -213,21 +297,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Participants -->
-                <div>
-                    <label for="max_participants" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre maximum de participants
-                    </label>
-                    <input type="number" id="max_participants" name="max_participants" 
-                           value="{{ event.maxParticipants ?? '' }}" 
-                           min="1" max="100"
-                           placeholder="Laisser vide pour aucune limite"
-                           class="block w-32 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
-                    <p class="mt-1 text-sm text-gray-500">
-                        Si défini, les utilisateurs pourront voir le nombre de places disponibles
-                    </p>
                 </div>
             </div>
         </div>
@@ -418,354 +487,67 @@
 
 <script>
 function toggleRecurrenceFields(isRecurring) {
+    console.log('toggleRecurrenceFields called with:', isRecurring);
     const fields = document.getElementById('recurrence_fields');
-    fields.style.display = isRecurring ? 'block' : 'none';
+    if (fields) {
+        fields.style.display = isRecurring ? 'block' : 'none';
+        console.log('Recurrence fields display set to:', fields.style.display);
+    } else {
+        console.error('recurrence_fields element not found');
+    }
 }
 
 function toggleWeekdayFields(recurrenceType) {
+    console.log('toggleWeekdayFields called with:', recurrenceType);
     const weekdaysField = document.getElementById('weekdays_field');
     const intervalLabel = document.getElementById('interval_label');
-    
-    if (recurrenceType === 'weekly') {
-        weekdaysField.style.display = 'block';
-        intervalLabel.textContent = 'semaine(s)';
-    } else if (recurrenceType === 'monthly') {
-        weekdaysField.style.display = 'none';
-        intervalLabel.textContent = 'mois';
-    } else if (recurrenceType === 'daily') {
-        weekdaysField.style.display = 'none';
-        intervalLabel.textContent = 'jour(s)';
-    }
-}
 
-
-// === Gestion des conditions intégrées ===
-
-// Fonction de debug pour tester les routes
-window.debugConditions = function() {
-    const eventId = {{ event.id }};
-    console.log('Testing routes for eventId:', eventId);
-    
-    // Test des attributs
-    fetch(`/admin/events/${eventId}/conditions/attributes/App\\Entity\\User`)
-        .then(response => {
-            console.log('Attributes response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Attributes data:', data);
-        })
-        .catch(error => {
-            console.error('Attributes error:', error);
-        });
-    
-    // Test des valeurs
-    fetch(`/admin/events/${eventId}/conditions/values/App\\Entity\\User/diving_level`)
-        .then(response => {
-            console.log('Values response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Values data:', data);
-        })
-        .catch(error => {
-            console.error('Values error:', error);
-        });
-};
-
-function showAddConditionForm() {
-    console.log('showAddConditionForm called');
-    const btn = document.getElementById('add-condition-btn');
-    const form = document.getElementById('add-condition-form');
-    console.log('Button found:', !!btn);
-    console.log('Form found:', !!form);
-    
-    if (btn) btn.style.display = 'none';
-    if (form) form.classList.remove('hidden');
-}
-
-function hideAddConditionForm() {
-    document.getElementById('add-condition-btn').style.display = 'block';
-    document.getElementById('add-condition-form').classList.add('hidden');
-    // Reset form
-    document.getElementById('quick-condition-form').reset();
-    resetQuickForm();
-}
-
-function resetQuickForm() {
-    document.getElementById('quick-attribute').innerHTML = '<option value="">Choisir d\'abord une entité...</option>';
-    document.getElementById('quick-attribute').disabled = true;
-    document.getElementById('quick-operator').innerHTML = '<option value="">Choisir d\'abord un attribut...</option>';
-    document.getElementById('quick-operator').disabled = true;
-    document.getElementById('quick-value-select').innerHTML = '<option value="">Choisir d\'abord un attribut...</option>';
-    document.getElementById('quick-value-select').disabled = true;
-    document.getElementById('quick-value-input').disabled = true;
-    document.getElementById('quick-value-select').classList.remove('hidden');
-    document.getElementById('quick-value-input').classList.add('hidden');
-}
-
-function loadQuickAttributes(entityClass) {
-    console.log('loadQuickAttributes called with:', entityClass);
-    if (!entityClass) {
-        resetQuickForm();
-        return;
-    }
-    
-    const eventId = {{ event.id }};
-    const url = `/admin/events/${eventId}/conditions/attributes/${encodeURIComponent(entityClass)}`;
-    console.log('Fetching attributes from:', url);
-    
-    fetch(url)
-        .then(response => {
-            console.log('Attributes response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Attributes data received:', data);
-            const attributeSelect = document.getElementById('quick-attribute');
-            attributeSelect.innerHTML = '<option value="">Sélectionner un attribut...</option>';
-            
-            for (const [key, label] of Object.entries(data.attributes)) {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = label;
-                attributeSelect.appendChild(option);
-            }
-            
-            attributeSelect.disabled = false;
-            console.log('Attributes loaded successfully');
-        })
-        .catch(error => {
-            console.error('Erreur lors du chargement des attributs:', error);
-        });
-}
-
-function showValueInput() {
-    document.getElementById('quick-value-select').classList.add('hidden');
-    document.getElementById('quick-value-input').classList.remove('hidden');
-    document.getElementById('quick-value-input').disabled = false;
-    document.getElementById('quick-value-input').focus();
-}
-
-function hideValueInput() {
-    document.getElementById('quick-value-input').classList.add('hidden');
-    document.getElementById('quick-value-select').classList.remove('hidden');
-    document.getElementById('quick-value-input').value = '';
-}
-
-function loadQuickValues(entityClass, attributeName) {
-    console.log('loadQuickValues called with:', entityClass, attributeName);
-    if (!entityClass || !attributeName) {
-        document.getElementById('quick-operator').innerHTML = '<option value="">Choisir d\'abord un attribut...</option>';
-        document.getElementById('quick-operator').disabled = true;
-        return;
-    }
-    
-    const eventId = {{ event.id }};
-    const url = `/admin/events/${eventId}/conditions/values/${encodeURIComponent(entityClass)}/${encodeURIComponent(attributeName)}`;
-    console.log('Fetching values from:', url);
-    
-    fetch(url)
-        .then(response => {
-            console.log('Values response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Values data received:', data);
-            // Charger les opérateurs suggérés
-            const operatorSelect = document.getElementById('quick-operator');
-            operatorSelect.innerHTML = '<option value="">Sélectionner un opérateur...</option>';
-            
-            for (const [key, label] of Object.entries(data.suggested_operators)) {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = label;
-                operatorSelect.appendChild(option);
-            }
-            operatorSelect.disabled = false;
-            
-            // Gérer les valeurs - toujours privilégier le dropdown
-            const valueInput = document.getElementById('quick-value-input');
-            const valueSelect = document.getElementById('quick-value-select');
-            
-            // Reset de base
-            valueSelect.innerHTML = '<option value="">Sélectionner une valeur...</option>';
-            
-            if (Object.keys(data.values).length > 0) {
-                // Utiliser un select avec les valeurs prédéfinies
-                for (const [key, label] of Object.entries(data.values)) {
-                    const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = label;
-                    valueSelect.appendChild(option);
-                }
-                // Ajouter option "Autre valeur" pour permettre la saisie libre
-                const otherOption = document.createElement('option');
-                otherOption.value = '__OTHER__';
-                otherOption.textContent = '--- Autre valeur ---';
-                valueSelect.appendChild(otherOption);
-                
-                valueSelect.classList.remove('hidden');
-                valueInput.classList.add('hidden');
-                valueSelect.disabled = false;
-            } else {
-                // Aucune valeur prédéfinie - permettre uniquement la saisie libre
-                const freeTextOption = document.createElement('option');
-                freeTextOption.value = '__FREE_TEXT__';
-                freeTextOption.textContent = '--- Saisie libre ---';
-                valueSelect.appendChild(freeTextOption);
-                
-                valueSelect.classList.remove('hidden');
-                valueInput.classList.add('hidden');
-                valueSelect.disabled = false;
-                
-                // Auto-sélectionner l'option saisie libre
-                valueSelect.value = '__FREE_TEXT__';
-                // Montrer immédiatement l'input
-                showValueInput();
-            }
-        })
-        .catch(error => {
-            console.error('Erreur lors du chargement des valeurs:', error);
-        });
-}
-
-function deleteCondition(conditionId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette condition ?')) {
-        return;
-    }
-    
-    const eventId = {{ event.id }};
-    fetch(`/admin/events/${eventId}/conditions/${conditionId}/delete`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `_token=${encodeURIComponent('{{ csrf_token('delete_condition_' ~ 'CONDITION_ID') }}'.replace('CONDITION_ID', conditionId))}`
-    })
-    .then(response => {
-        if (response.ok) {
-            // Supprimer l'élément de l'interface
-            const element = document.querySelector(`[data-condition-id="${conditionId}"]`);
-            if (element) {
-                element.remove();
-            }
-            // Recharger la page pour mettre à jour l'état
-            window.location.reload();
-        } else {
-            alert('Erreur lors de la suppression de la condition');
+    if (weekdaysField && intervalLabel) {
+        if (recurrenceType === 'weekly') {
+            weekdaysField.style.display = 'block';
+            intervalLabel.textContent = 'semaine(s)';
+        } else if (recurrenceType === 'monthly') {
+            weekdaysField.style.display = 'none';
+            intervalLabel.textContent = 'mois';
+        } else if (recurrenceType === 'daily') {
+            weekdaysField.style.display = 'none';
+            intervalLabel.textContent = 'jour(s)';
         }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Erreur lors de la suppression de la condition');
-    });
+        console.log('Weekdays field display:', weekdaysField.style.display);
+    } else {
+        console.error('weekdays_field or interval_label elements not found');
+    }
 }
 
-function editCondition(conditionId) {
-    // Pour l'instant, rediriger vers l'interface complète
-    const eventId = {{ event.id }};
-    window.location.href = `/admin/events/${eventId}/conditions/${conditionId}/edit`;
-}
 
-// Gestionnaires d'événements pour le formulaire rapide
+// === Gestion de la récurrence uniquement ===
 document.addEventListener('DOMContentLoaded', function() {
-    // Chargement des attributs quand l'entité change
-    const entitySelect = document.getElementById('quick-entity-class');
-    if (entitySelect) {
-        entitySelect.addEventListener('change', function() {
-            loadQuickAttributes(this.value);
-        });
-    }
-    
-    // Chargement des valeurs quand l'attribut change
-    const attributeSelect = document.getElementById('quick-attribute');
-    if (attributeSelect) {
-        attributeSelect.addEventListener('change', function() {
-            const entityClass = document.getElementById('quick-entity-class').value;
-            loadQuickValues(entityClass, this.value);
-        });
-    }
-    
-    // Gestion du changement de sélection dans les valeurs
-    const valueSelect = document.getElementById('quick-value-select');
-    if (valueSelect) {
-        valueSelect.addEventListener('change', function() {
-            if (this.value === '__OTHER__' || this.value === '__FREE_TEXT__') {
-                showValueInput();
-            } else {
-                hideValueInput();
-            }
-        });
-    }
-    
-    // Soumission du formulaire rapide
-    const quickForm = document.getElementById('quick-condition-form');
-    if (quickForm) {
-        quickForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const entityClass = document.getElementById('quick-entity-class').value;
-            const attribute = document.getElementById('quick-attribute').value;
-            const operator = document.getElementById('quick-operator').value;
-            const valueInput = document.getElementById('quick-value-input');
-            const valueSelect = document.getElementById('quick-value-select');
-            
-            // Déterminer la valeur selon l'état du formulaire
-            let value = '';
-            if (!valueSelect.classList.contains('hidden')) {
-                const selectedValue = valueSelect.value;
-                if (selectedValue === '__OTHER__' || selectedValue === '__FREE_TEXT__') {
-                    value = valueInput.value;
-                } else {
-                    value = selectedValue;
-                }
-            } else {
-                value = valueInput.value;
-            }
-            
-            const errorMessage = document.getElementById('quick-error-message').value;
-            
-            if (!entityClass || !attribute || !operator) {
-                alert('Veuillez remplir tous les champs requis');
-                return;
-            }
-            
-            const eventId = {{ event.id }};
-            fetch(`/admin/events/${eventId}/conditions/new`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `entity_class=${encodeURIComponent(entityClass)}&attribute_name=${encodeURIComponent(attribute)}&operator=${encodeURIComponent(operator)}&value=${encodeURIComponent(value)}&error_message=${encodeURIComponent(errorMessage)}`
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Recharger la page pour voir la nouvelle condition
-                    window.location.reload();
-                } else {
-                    alert('Erreur lors de l\'ajout de la condition');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                alert('Erreur lors de l\'ajout de la condition');
-            });
-        });
-    }
-});
+    console.log('DOM loaded, initializing recurrence controls');
 
-// Initialiser l'état au chargement
-document.addEventListener('DOMContentLoaded', function() {
+    // Gestion du checkbox de récurrence
+    const recurringCheckbox = document.getElementById('is_recurring');
+    if (recurringCheckbox) {
+        console.log('Found recurring checkbox, adding event listener');
+        recurringCheckbox.addEventListener('change', function() {
+            console.log('Checkbox changed, value:', this.checked);
+            toggleRecurrenceFields(this.checked);
+        });
+    } else {
+        console.error('Recurring checkbox not found!');
+    }
+
+    // Gestion du select de type de récurrence
     const recurrenceType = document.getElementById('recurrence_type');
     if (recurrenceType) {
+        console.log('Found recurrence type select, adding event listener');
+        recurrenceType.addEventListener('change', function() {
+            console.log('Recurrence type changed, value:', this.value);
+            toggleWeekdayFields(this.value);
+        });
+        // Initialiser l'état
         toggleWeekdayFields(recurrenceType.value);
+    } else {
+        console.log('Recurrence type select not found (normal for initial state)');
     }
 });
 </script>

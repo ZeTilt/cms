@@ -79,6 +79,16 @@ class Event
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventParticipation::class, cascade: ['persist', 'remove'])]
     private Collection $participations;
 
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $clubMeetingTime = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $siteMeetingTime = null;
+
+    #[ORM\ManyToOne(targetEntity: DivingLevel::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?DivingLevel $minDivingLevel = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -510,7 +520,67 @@ class Event
      */
     public function isFull(): bool
     {
-        return $this->maxParticipants !== null && $this->getCurrentParticipants() >= $this->maxParticipants;
+        return $this->maxParticipants !== null && $this->getActiveParticipants() >= $this->maxParticipants;
+    }
+
+    /**
+     * Retourne le nombre de participants actifs (non en liste d'attente)
+     */
+    public function getActiveParticipants(): int
+    {
+        return $this->participations->filter(function(EventParticipation $participation) {
+            return $participation->isActive() && !$participation->isWaitingList();
+        })->count();
+    }
+
+    /**
+     * Retourne le nombre de participants en liste d'attente
+     */
+    public function getWaitingListCount(): int
+    {
+        return $this->participations->filter(function(EventParticipation $participation) {
+            return $participation->isActive() && $participation->isWaitingList();
+        })->count();
+    }
+
+    /**
+     * Retourne les participants actifs (confirmés)
+     */
+    public function getActiveParticipationsList(): Collection
+    {
+        return $this->participations->filter(function(EventParticipation $participation) {
+            return $participation->isActive() && !$participation->isWaitingList();
+        });
+    }
+
+    /**
+     * Retourne les participants en liste d'attente
+     */
+    public function getWaitingListParticipations(): Collection
+    {
+        return $this->participations->filter(function(EventParticipation $participation) {
+            return $participation->isActive() && $participation->isWaitingList();
+        });
+    }
+
+    /**
+     * Retourne les participants au RDV club
+     */
+    public function getClubMeetingParticipants(): Collection
+    {
+        return $this->participations->filter(function(EventParticipation $participation) {
+            return $participation->isActive() && !$participation->isWaitingList() && $participation->getMeetingPoint() === 'club';
+        });
+    }
+
+    /**
+     * Retourne les participants au RDV sur site
+     */
+    public function getSiteMeetingParticipants(): Collection
+    {
+        return $this->participations->filter(function(EventParticipation $participation) {
+            return $participation->isActive() && !$participation->isWaitingList() && $participation->getMeetingPoint() === 'site';
+        });
     }
 
     /**
@@ -530,6 +600,54 @@ class Event
         // TODO: implémenter la logique pour récupérer le directeur de plongée
         
         return null;
+    }
+
+    public function getClubMeetingTime(): ?\DateTimeInterface
+    {
+        return $this->clubMeetingTime;
+    }
+
+    public function setClubMeetingTime(?\DateTimeInterface $clubMeetingTime): static
+    {
+        $this->clubMeetingTime = $clubMeetingTime;
+        return $this;
+    }
+
+    public function getSiteMeetingTime(): ?\DateTimeInterface
+    {
+        return $this->siteMeetingTime;
+    }
+
+    public function setSiteMeetingTime(?\DateTimeInterface $siteMeetingTime): static
+    {
+        $this->siteMeetingTime = $siteMeetingTime;
+        return $this;
+    }
+
+    public function getMinDivingLevel(): ?DivingLevel
+    {
+        return $this->minDivingLevel;
+    }
+
+    public function setMinDivingLevel(?DivingLevel $minDivingLevel): static
+    {
+        $this->minDivingLevel = $minDivingLevel;
+        return $this;
+    }
+
+    /**
+     * Vérifie si un utilisateur peut s'inscrire (niveau suffisant)
+     */
+    public function canUserRegister(User $user): bool
+    {
+        // Si pas de niveau minimum requis, tout le monde peut s'inscrire
+        if (!$this->minDivingLevel) {
+            return true;
+        }
+
+        // TODO: Récupérer le niveau de l'utilisateur depuis les EntityAttributes
+        // et comparer avec le niveau minimum requis
+        return true; // Temporaire
     }
 
     public function __toString(): string
