@@ -7,6 +7,7 @@ use App\Entity\EventParticipation;
 use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -17,11 +18,11 @@ class EventRegistrationController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private EventParticipationRepository $participationRepository
+        private EventParticipationRepository $participationRepository,
     ) {}
 
     #[Route('/{id}/register', name: 'event_register', methods: ['POST'])]
-    public function register(Event $event): Response
+    public function register(Event $event, Request $request): Response
     {
         $user = $this->getUser();
 

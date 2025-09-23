@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\EventParticipation;
 use App\Repository\EventRepository;
 use App\Repository\EventTypeRepository;
 use App\Repository\DivingLevelRepository;
+use App\Repository\EventParticipationRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -21,6 +25,8 @@ class DpEventController extends AbstractController
         private EventRepository $eventRepository,
         private EventTypeRepository $eventTypeRepository,
         private DivingLevelRepository $divingLevelRepository,
+        private EventParticipationRepository $participationRepository,
+        private UserRepository $userRepository,
         private EntityManagerInterface $entityManager
     ) {}
 
@@ -178,7 +184,7 @@ class DpEventController extends AbstractController
     #[Route('/{id}/participants', name: 'dp_events_participants')]
     public function participants(Event $event): Response
     {
-        $activeParticipants = $event->getActiveParticipants();
+        $activeParticipants = $event->getActiveParticipationsList();
         $waitingList = $event->getWaitingListParticipations();
         $clubMeetingParticipants = $event->getClubMeetingParticipants();
         $siteMeetingParticipants = $event->getSiteMeetingParticipants();
@@ -190,5 +196,114 @@ class DpEventController extends AbstractController
             'clubMeetingParticipants' => $clubMeetingParticipants,
             'siteMeetingParticipants' => $siteMeetingParticipants,
         ]);
+    }
+
+    #[Route('/{id}/add-participant', name: 'dp_events_add_participant', methods: ['POST'])]
+    public function addParticipant(Event $event, Request $request): Response
+    {
+        $userId = $request->request->get('user_id');
+
+        if (!$userId) {
+            $this->addFlash('error', 'Veuillez sélectionner un participant.');
+            return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
+        }
+
+        $user = $this->userRepository->find($userId);
+
+        if (!$user) {
+            $this->addFlash('error', 'Utilisateur introuvable.');
+            return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
+        }
+
+        // Vérifier si déjà inscrit
+        $existingParticipation = $this->participationRepository->findByEventAndUser($event, $user);
+        if ($existingParticipation && $existingParticipation->isActive()) {
+            $this->addFlash('warning', $user->getDisplayName() . ' est déjà inscrit à cet événement.');
+            return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
+        }
+
+        // Créer la participation
+        $participation = new EventParticipation();
+        $participation->setEvent($event);
+        $participation->setParticipant($user);
+
+        // Gérer le point de rendez-vous
+        $meetingPoint = $request->request->get('meeting_point');
+        if ($meetingPoint && in_array($meetingPoint, ['club', 'site'])) {
+            $participation->setMeetingPoint($meetingPoint);
+        }
+
+        // Vérifier si l'événement est complet
+        $isWaitingList = $event->isFullyBooked();
+        $participation->setIsWaitingList($isWaitingList);
+
+        $this->entityManager->persist($participation);
+        $this->entityManager->flush();
+
+        if ($isWaitingList) {
+            $this->addFlash('warning', $user->getDisplayName() . ' a été ajouté à la liste d\'attente.');
+        } else {
+            $this->addFlash('success', $user->getDisplayName() . ' a été inscrit avec succès !');
+        }
+
+        return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/remove-participant/{participationId}', name: 'dp_events_remove_participant', methods: ['POST'])]
+    public function removeParticipant(Event $event, int $participationId): Response
+    {
+        $participation = $this->participationRepository->find($participationId);
+
+        if (!$participation || $participation->getEvent() !== $event) {
+            $this->addFlash('error', 'Participation introuvable.');
+            return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
+        }
+
+        $participantName = $participation->getParticipant()->getDisplayName();
+
+        // Annuler la participation
+        $participation->setStatus('cancelled');
+
+        // Promouvoir quelqu'un de la liste d'attente si nécessaire
+        if (!$participation->isWaitingList()) {
+            $waitingListParticipations = $event->getWaitingListParticipations();
+            if (!$waitingListParticipations->isEmpty()) {
+                $firstWaiting = $waitingListParticipations->first();
+                $firstWaiting->setIsWaitingList(false);
+                $this->addFlash('info', $firstWaiting->getParticipant()->getDisplayName() . ' a été promu de la liste d\'attente.');
+            }
+        }
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', $participantName . ' a été désinscrit.');
+
+        return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
+    }
+}
+
+#[Route('/dp/api')]
+#[IsGranted('ROLE_DP')]
+class DpApiController extends AbstractController
+{
+    public function __construct(
+        private UserRepository $userRepository
+    ) {}
+
+    #[Route('/users', name: 'dp_api_users', methods: ['GET'])]
+    public function getUsers(): JsonResponse
+    {
+        $users = $this->userRepository->findAll();
+        $usersData = [];
+
+        foreach ($users as $user) {
+            $usersData[] = [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'displayName' => $user->getDisplayName(),
+            ];
+        }
+
+        return new JsonResponse($usersData);
     }
 }
