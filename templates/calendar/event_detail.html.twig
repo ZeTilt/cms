@@ -91,7 +91,7 @@
                                 
                                 <div class="text-center mb-4">
                                     <div class="text-3xl font-bold text-club-orange">
-                                        {{ event.currentParticipants }}
+                                        {{ event.activeParticipants }}
                                     </div>
                                     <div class="text-sm text-gray-500">
                                         sur {{ event.maxParticipants }} places
@@ -100,7 +100,7 @@
 
                                 <!-- Barre de progression -->
                                 <div class="mb-4">
-                                    {% set percentage = event.maxParticipants > 0 ? (event.currentParticipants / event.maxParticipants * 100) : 0 %}
+                                    {% set percentage = event.maxParticipants > 0 ? (event.activeParticipants / event.maxParticipants * 100) : 0 %}
                                     <div class="w-full bg-gray-200 rounded-full h-3">
                                         <div class="bg-club-orange h-3 rounded-full transition-all duration-300" 
                                              style="width: {{ percentage }}%"></div>
