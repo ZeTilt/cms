@@ -323,12 +323,12 @@
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-8 w-8 bg-club-orange/20 rounded-full flex items-center justify-center mr-3">
                                                 <span class="text-club-orange font-semibold text-sm">
-                                                    {{ participation.participant.displayName|slice(0, 1)|upper }}
+                                                    {{ participation.participant.fullName|slice(0, 1)|upper }}
                                                 </span>
                                             </div>
                                             <div>
                                                 <div class="font-medium text-gray-900">
-                                                    {{ participation.participant.displayName }}
+                                                    {{ participation.participant.fullName }}
                                                 </div>
                                                 {% if participation.participant.highestDivingLevel %}
                                                     <div class="text-sm text-gray-500">
@@ -364,7 +364,7 @@
                                                     {{ loop.index }}
                                                 </span>
                                                 <div class="font-medium text-gray-700">
-                                                    {{ participation.participant.displayName }}
+                                                    {{ participation.participant.fullName }}
                                                 </div>
                                             </div>
                                         {% endfor %}

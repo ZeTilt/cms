@@ -218,7 +218,7 @@ class DpEventController extends AbstractController
         // Vérifier si déjà inscrit
         $existingParticipation = $this->participationRepository->findByEventAndUser($event, $user);
         if ($existingParticipation && $existingParticipation->isActive()) {
-            $this->addFlash('warning', $user->getDisplayName() . ' est déjà inscrit à cet événement.');
+            $this->addFlash('warning', $user->getFullName() . ' est déjà inscrit à cet événement.');
             return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
         }
 
@@ -241,9 +241,9 @@ class DpEventController extends AbstractController
         $this->entityManager->flush();
 
         if ($isWaitingList) {
-            $this->addFlash('warning', $user->getDisplayName() . ' a été ajouté à la liste d\'attente.');
+            $this->addFlash('warning', $user->getFullName() . ' a été ajouté à la liste d\'attente.');
         } else {
-            $this->addFlash('success', $user->getDisplayName() . ' a été inscrit avec succès !');
+            $this->addFlash('success', $user->getFullName() . ' a été inscrit avec succès !');
         }
 
         return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
@@ -259,7 +259,7 @@ class DpEventController extends AbstractController
             return $this->redirectToRoute('dp_events_participants', ['id' => $event->getId()]);
         }
 
-        $participantName = $participation->getParticipant()->getDisplayName();
+        $participantName = $participation->getParticipant()->getFullName();
 
         // Annuler la participation
         $participation->setStatus('cancelled');
@@ -270,7 +270,7 @@ class DpEventController extends AbstractController
             if (!$waitingListParticipations->isEmpty()) {
                 $firstWaiting = $waitingListParticipations->first();
                 $firstWaiting->setIsWaitingList(false);
-                $this->addFlash('info', $firstWaiting->getParticipant()->getDisplayName() . ' a été promu de la liste d\'attente.');
+                $this->addFlash('info', $firstWaiting->getParticipant()->getFullName() . ' a été promu de la liste d\'attente.');
             }
         }
 
@@ -300,7 +300,7 @@ class DpApiController extends AbstractController
             $usersData[] = [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
-                'displayName' => $user->getDisplayName(),
+                'displayName' => $user->getFullName(),
             ];
         }
 

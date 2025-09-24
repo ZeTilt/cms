@@ -245,13 +245,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="flex-shrink-0 h-8 w-8">
                                         <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
                                             <span class="text-sm font-medium text-gray-700">
-                                                {{ participation.participant.displayName|slice(0, 1)|upper }}
+                                                {{ participation.participant.fullName|slice(0, 1)|upper }}
                                             </span>
                                         </div>
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{ participation.participant.displayName }}
+                                            {{ participation.participant.fullName }}
                                         </div>
                                         <div class="text-sm text-gray-500">
                                             {{ participation.participant.email }}
@@ -351,13 +351,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="flex-shrink-0 h-8 w-8">
                                         <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
                                             <span class="text-sm font-medium text-gray-700">
-                                                {{ participation.participant.displayName|slice(0, 1)|upper }}
+                                                {{ participation.participant.fullName|slice(0, 1)|upper }}
                                             </span>
                                         </div>
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{ participation.participant.displayName }}
+                                            {{ participation.participant.fullName }}
                                         </div>
                                         <div class="text-sm text-gray-500">
                                             {{ participation.participant.email }}
