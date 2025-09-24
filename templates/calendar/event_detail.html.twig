@@ -374,43 +374,50 @@
                                 <h3 class="text-lg font-semibold text-gray-800 mb-3">
                                     ✅ Participants inscrits ({{ event.activeParticipationsList|length }})
                                 </h3>
-                                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
-                                        {% for participation in event.activeParticipationsList %}
-                                            <div class="p-4">
+                                <div class="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">
+                                    {% for participation in event.activeParticipationsList %}
+                                        <div class="p-4">
+                                            <div class="flex items-center justify-between">
                                                 <div class="flex items-center space-x-3">
-                                                    <div class="flex-shrink-0 h-8 w-8 bg-club-orange rounded-full flex items-center justify-center">
-                                                        <span class="text-sm font-medium text-white">
+                                                    <div class="flex-shrink-0 h-10 w-10 bg-club-orange rounded-full flex items-center justify-center">
+                                                        <span class="text-sm font-semibold text-white">
                                                             {{ participation.participant.fullName|slice(0, 1)|upper }}
                                                         </span>
                                                     </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <div class="text-sm font-medium text-gray-900 truncate">
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">
                                                             {{ participation.participant.fullName }}
                                                         </div>
-                                                        <div class="flex items-center space-x-2 mt-1">
+                                                        <div class="text-sm text-gray-500">
                                                             {% if participation.participant.highestDivingLevel %}
-                                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                                    {{ participation.participant.highestDivingLevel.name }}
-                                                                </span>
-                                                            {% endif %}
-                                                            {% if participation.meetingPoint %}
-                                                                {% if participation.meetingPoint == 'club' %}
-                                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                                                        🏠 Club
-                                                                    </span>
-                                                                {% elseif participation.meetingPoint == 'site' %}
-                                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                                                        🌊 Site
-                                                                    </span>
-                                                                {% endif %}
+                                                                Niveau {{ participation.participant.highestDivingLevel.name }}
+                                                            {% else %}
+                                                                Niveau non renseigné
                                                             {% endif %}
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="flex items-center space-x-2">
+                                                    {% if participation.participant.highestDivingLevel %}
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                                            {{ participation.participant.highestDivingLevel.name }}
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if participation.meetingPoint %}
+                                                        {% if participation.meetingPoint == 'club' %}
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                                                🏠 Club
+                                                            </span>
+                                                        {% elseif participation.meetingPoint == 'site' %}
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                                                🌊 Site
+                                                            </span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
                                             </div>
-                                        {% endfor %}
-                                    </div>
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         {% else %}
