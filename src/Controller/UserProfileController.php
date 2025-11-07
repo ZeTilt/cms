@@ -40,18 +40,11 @@ class UserProfileController extends AbstractController
             $divingLevels = $this->divingLevelRepository->findAllOrdered();
             $freedivingLevels = $this->freedivingLevelRepository->findAllOrdered();
 
-            $response = $this->render('user/profile/index.html.twig', [
+            return $this->render('user/profile/index.html.twig', [
                 'user' => $user,
                 'divingLevels' => $divingLevels,
                 'freedivingLevels' => $freedivingLevels,
             ]);
-
-            // Empêcher le cache pour que les tokens CSRF et les données soient toujours à jour
-            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-            $response->headers->set('Pragma', 'no-cache');
-            $response->headers->set('Expires', '0');
-
-            return $response;
         } catch (\Exception $e) {
             // Debug temporaire
             return new Response('Erreur: ' . $e->getMessage());
