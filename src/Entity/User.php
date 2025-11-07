@@ -44,6 +44,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $emailVerificationToken = null;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $resetPasswordToken = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $resetPasswordTokenExpiry = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -382,6 +388,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->emailVerificationToken = $emailVerificationToken;
         $this->updatedAt = new \DateTimeImmutable();
         return $this;
+    }
+
+    public function getResetPasswordToken(): ?string
+    {
+        return $this->resetPasswordToken;
+    }
+
+    public function setResetPasswordToken(?string $resetPasswordToken): static
+    {
+        $this->resetPasswordToken = $resetPasswordToken;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getResetPasswordTokenExpiry(): ?\DateTimeImmutable
+    {
+        return $this->resetPasswordTokenExpiry;
+    }
+
+    public function setResetPasswordTokenExpiry(?\DateTimeImmutable $resetPasswordTokenExpiry): static
+    {
+        $this->resetPasswordTokenExpiry = $resetPasswordTokenExpiry;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function isResetPasswordTokenValid(): bool
+    {
+        if (!$this->resetPasswordToken || !$this->resetPasswordTokenExpiry) {
+            return false;
+        }
+        return $this->resetPasswordTokenExpiry > new \DateTimeImmutable();
     }
 
     public function generateEmailVerificationToken(): string
