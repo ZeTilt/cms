@@ -15,6 +15,8 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/profile')]
 #[IsGranted('ROLE_USER')]
@@ -26,7 +28,8 @@ class UserProfileController extends AbstractController
         private FreedivingLevelRepository $freedivingLevelRepository,
         private SluggerInterface $slugger,
         private UserRepository $userRepository,
-        private MailerInterface $mailer
+        private MailerInterface $mailer,
+        private CsrfTokenManagerInterface $csrfTokenManager
     ) {}
 
     #[Route('', name: 'user_profile_index')]
@@ -78,6 +81,13 @@ class UserProfileController extends AbstractController
     #[Route('/medical-certificate', name: 'user_profile_medical_certificate', methods: ['POST'])]
     public function updateMedicalCertificate(Request $request): Response
     {
+        // Validation du token CSRF
+        $token = new CsrfToken('medical_certificate', $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
         $user = $this->getUser();
 
         // Gérer la date d'expiration
@@ -155,6 +165,13 @@ class UserProfileController extends AbstractController
     #[Route('/licence', name: 'user_profile_licence', methods: ['POST'])]
     public function updateLicence(Request $request): Response
     {
+        // Validation du token CSRF
+        $token = new CsrfToken('licence', $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
         $user = $this->getUser();
 
         // Gérer le numéro de licence
@@ -237,6 +254,13 @@ class UserProfileController extends AbstractController
     #[Route('/personal-info', name: 'user_profile_personal_info', methods: ['POST'])]
     public function updatePersonalInfo(Request $request): Response
     {
+        // Validation du token CSRF
+        $token = new CsrfToken('personal_info', $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
         $user = $this->getUser();
 
         // Téléphone mobile
@@ -270,6 +294,13 @@ class UserProfileController extends AbstractController
     #[Route('/activities', name: 'user_profile_activities', methods: ['POST'])]
     public function updateActivities(Request $request): Response
     {
+        // Validation du token CSRF
+        $token = new CsrfToken('profile_activities', $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
         $user = $this->getUser();
 
         // Mise à jour des cases à cocher d'activités
@@ -319,6 +350,13 @@ class UserProfileController extends AbstractController
     #[Route('/upload-avatar', name: 'user_profile_upload_avatar', methods: ['POST'])]
     public function uploadAvatar(Request $request): Response
     {
+        // Validation du token CSRF
+        $token = new CsrfToken('upload_avatar', $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
         $user = $this->getUser();
         $file = $request->files->get('avatar');
 
@@ -374,8 +412,15 @@ class UserProfileController extends AbstractController
     }
 
     #[Route('/delete-avatar', name: 'user_profile_delete_avatar', methods: ['POST'])]
-    public function deleteAvatar(): Response
+    public function deleteAvatar(Request $request): Response
     {
+        // Validation du token CSRF
+        $token = new CsrfToken('delete_avatar', $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
         $user = $this->getUser();
 
         if (!$user->getAvatarFile()) {
@@ -405,8 +450,15 @@ class UserProfileController extends AbstractController
     }
 
     #[Route('/remind-admins', name: 'user_profile_remind_admins', methods: ['POST'])]
-    public function remindAdmins(): Response
+    public function remindAdmins(Request $request): Response
     {
+        // Validation du token CSRF
+        $token = new CsrfToken('remind_admins', $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
         $user = $this->getUser();
 
         // Vérifier que le compte est bien en attente
