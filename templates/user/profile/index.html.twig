@@ -89,13 +89,6 @@
         </div>
     </div>
 
-    <!-- DEBUG: Affichage du statut -->
-    <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-8">
-        <p><strong>DEBUG - Statut actuel:</strong> {{ user.status }}</p>
-        <p><strong>DEBUG - isDiver:</strong> {{ user.isDiver ? 'OUI' : 'NON' }}</p>
-        <p><strong>DEBUG - Niveau plongée:</strong> {{ user.highestDivingLevel ? user.highestDivingLevel.name : 'Aucun' }}</p>
-    </div>
-
     <!-- Alerte compte en attente -->
     {% if user.status == 'pending' %}
     <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg mb-8 shadow-sm">
