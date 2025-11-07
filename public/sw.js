@@ -1,20 +1,25 @@
 // Service Worker pour PWA Club Subaquatique des Vénètes
-const CACHE_NAME = 'csv-plongee-v1';
-const urlsToCache = [
-  '/',
-  '/manifest.json'
+// Version 2 - Network First pour les pages HTML, Cache pour les assets
+const CACHE_NAME = 'csv-plongee-v2';
+const STATIC_CACHE = 'csv-static-v2';
+
+// Assets statiques à mettre en cache (images, CSS, JS, fonts)
+const staticAssets = [
+  '/manifest.json',
+  '/assets/logo sans fond.png',
+  '/pwa-icons/icon-192x192.png',
+  '/pwa-icons/icon-512x512.png'
 ];
 
 // Installation du service worker
 self.addEventListener('install', function(event) {
-  console.log('Service Worker: Installing...');
+  console.log('Service Worker v2: Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches.open(STATIC_CACHE)
       .then(function(cache) {
-        console.log('Cache ouvert');
-        // Mettre en cache les URLs une par une pour éviter l'échec total
+        console.log('Cache statique ouvert');
         return Promise.allSettled(
-          urlsToCache.map(url =>
+          staticAssets.map(url =>
             cache.add(url).catch(err => {
               console.warn('Failed to cache:', url, err);
               return null;
@@ -23,8 +28,7 @@ self.addEventListener('install', function(event) {
         );
       })
       .then(() => {
-        console.log('Service Worker: Installation complete');
-        // Forcer l'activation immédiate
+        console.log('Service Worker v2: Installation complete');
         return self.skipWaiting();
       })
   );
@@ -32,67 +36,90 @@ self.addEventListener('install', function(event) {
 
 // Activation du service worker
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker: Activating...');
+  console.log('Service Worker v2: Activating...');
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
         cacheNames.map(function(cacheName) {
-          if (cacheName !== CACHE_NAME) {
+          // Supprimer tous les anciens caches
+          if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE) {
             console.log('Suppression ancien cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     }).then(() => {
-      console.log('Service Worker: Activation complete');
-      // Prendre le contrôle immédiatement
+      console.log('Service Worker v2: Activation complete');
       return self.clients.claim();
     })
   );
 });
 
-// Interception des requêtes
+// Fonction pour déterminer si c'est un asset statique
+function isStaticAsset(url) {
+  return /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|pdf|webp)$/i.test(url);
+}
+
+// Interception des requêtes avec stratégie Network First pour HTML
 self.addEventListener('fetch', function(event) {
-  // Ignorer les requêtes non-HTTP (chrome-extension://, etc.)
+  // Ignorer les requêtes non-HTTP
   if (!event.request.url.startsWith('http')) {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Retourne la réponse en cache si elle existe
+  const url = new URL(event.request.url);
+
+  // STRATÉGIE 1: Cache First pour les assets statiques
+  if (isStaticAsset(url.pathname)) {
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
         if (response) {
           return response;
         }
-
-        // Sinon, effectue la requête réseau
         return fetch(event.request).then(function(response) {
-          // Vérifie si la réponse est valide
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(STATIC_CACHE).then(function(cache) {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // STRATÉGIE 2: Network First pour les pages HTML et les API
+  event.respondWith(
+    fetch(event.request)
+      .then(function(response) {
+        // Si la réponse est OK, on la retourne directement
+        if (response && response.status === 200) {
+          // On peut mettre en cache les pages HTML pour le mode offline
+          if (event.request.destination === 'document') {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(function(cache) {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        }
+        return response;
+      })
+      .catch(function() {
+        // En cas d'erreur réseau (offline), on utilise le cache
+        console.log('Network failed, using cache for:', event.request.url);
+        return caches.match(event.request).then(function(response) {
+          if (response) {
             return response;
           }
-
-          // Clone la réponse
-          var responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then(function(cache) {
-              // Vérifier que la requête est bien HTTP avant de la mettre en cache
-              if (event.request.url.startsWith('http')) {
-                cache.put(event.request, responseToCache);
-              }
-            });
-
-          return response;
-        }).catch(function() {
-          // En cas d'erreur réseau, retourne une page offline basique
+          // Si pas de cache non plus, retourner la page d'accueil en fallback
           if (event.request.destination === 'document') {
             return caches.match('/');
           }
         });
-      }
-    )
+      })
   );
 });
 
