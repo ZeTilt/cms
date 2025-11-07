@@ -36,5 +36,18 @@ services:
         arguments:
             $urlGenerator: '@router'
 
+    # Push Notification Service
+    App\Service\PushNotificationService:
+        arguments:
+            $vapidPublicKey: '%env(VAPID_PUBLIC_KEY)%'
+            $vapidPrivateKey: '%env(VAPID_PRIVATE_KEY)%'
+            $vapidSubject: '%env(VAPID_SUBJECT)%'
+
+    # Twig Extension for VAPID Public Key
+    App\Twig\VapidExtension:
+        arguments:
+            $vapidPublicKey: '%env(VAPID_PUBLIC_KEY)%'
+        tags: ['twig.extension']
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

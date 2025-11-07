@@ -47,7 +47,9 @@ class AdminEventTypeController extends AbstractController
             $eventType->setColor($request->request->get('color', '#FD7E29'));
             $eventType->setDescription($request->request->get('description'));
             $eventType->setActive($request->request->getBoolean('is_active', true));
-            
+            $eventType->setRequiresDivingDirector($request->request->getBoolean('requires_diving_director', false));
+            $eventType->setRequiresPilot($request->request->getBoolean('requires_pilot', false));
+
             // Vérifier que le code est unique
             $existingType = $this->eventTypeRepository->findByCode($code);
             if ($existingType) {
@@ -96,7 +98,9 @@ class AdminEventTypeController extends AbstractController
             $eventType->setColor($request->request->get('color', '#FD7E29'));
             $eventType->setDescription($request->request->get('description'));
             $eventType->setActive($request->request->getBoolean('is_active', true));
-            
+            $eventType->setRequiresDivingDirector($request->request->getBoolean('requires_diving_director', false));
+            $eventType->setRequiresPilot($request->request->getBoolean('requires_pilot', false));
+
             $this->entityManager->flush();
             
             $this->addFlash('success', 'Type d\'événement mis à jour avec succès !');

@@ -29,12 +29,6 @@ class Gallery
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $coverImage = null;
 
-    #[ORM\Column(length: 20, options: ['default' => 'public'])]
-    private string $visibility = 'public';
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $accessCode = null;
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -121,30 +115,6 @@ class Gallery
         return $this;
     }
 
-    public function getVisibility(): string
-    {
-        return $this->visibility;
-    }
-
-    public function setVisibility(string $visibility): static
-    {
-        $this->visibility = $visibility;
-
-        return $this;
-    }
-
-    public function getAccessCode(): ?string
-    {
-        return $this->accessCode;
-    }
-
-    public function setAccessCode(?string $accessCode): static
-    {
-        $this->accessCode = $accessCode;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -220,21 +190,6 @@ class Gallery
         $this->metadata = $metadata;
 
         return $this;
-    }
-
-    public function isPublic(): bool
-    {
-        return $this->visibility === 'public';
-    }
-
-    public function isPrivate(): bool
-    {
-        return $this->visibility === 'private';
-    }
-
-    public function requiresAccessCode(): bool
-    {
-        return $this->visibility === 'private' && !empty($this->accessCode);
     }
 
     public function getImageCount(): int

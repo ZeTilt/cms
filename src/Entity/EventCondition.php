@@ -169,7 +169,7 @@ class EventCondition
     private function getUserAttributeValue($user)
     {
         $attribute = $this->attributeName;
-        
+
         // Propriétés directes de User
         $directProperties = [
             'firstName' => fn($u) => $u->getFirstName(),
@@ -179,20 +179,17 @@ class EventCondition
             'active' => fn($u) => $u->isActive(),
             'emailVerified' => fn($u) => $u->isEmailVerified(),
         ];
-        
+
         if (isset($directProperties[$attribute])) {
             return $directProperties[$attribute]($user);
         }
-        
-        // Attributs EAV depuis la table entity_attributes
-        if ($user->getEntityAttributes()) {
-            foreach ($user->getEntityAttributes() as $entityAttribute) {
-                if ($entityAttribute->getAttributeName() === $attribute) {
-                    return $entityAttribute->getAttributeValue();
-                }
-            }
+
+        // Tenter d'accéder via getter
+        $methodName = 'get' . ucfirst($attribute);
+        if (method_exists($user, $methodName)) {
+            return $user->$methodName();
         }
-        
+
         return null;
     }
 
@@ -237,36 +234,24 @@ class EventCondition
     private function getEntityAttributeValue($entity)
     {
         $attribute = $this->attributeName;
-        
+
         // D'abord essayer les propriétés directes via les getters
         $methodName = 'get' . ucfirst($attribute);
         if (method_exists($entity, $methodName)) {
             return $entity->$methodName();
         }
-        
+
         // Essayer les méthodes is/has pour les booléens
         $isMethodName = 'is' . ucfirst($attribute);
         if (method_exists($entity, $isMethodName)) {
             return $entity->$isMethodName();
         }
-        
+
         $hasMethodName = 'has' . ucfirst($attribute);
         if (method_exists($entity, $hasMethodName)) {
             return $entity->$hasMethodName();
         }
-        
-        // Pour les entités avec système EAV (comme User)
-        if (method_exists($entity, 'getEntityAttributes')) {
-            $entityAttributes = $entity->getEntityAttributes();
-            if ($entityAttributes) {
-                foreach ($entityAttributes as $entityAttribute) {
-                    if ($entityAttribute->getAttributeName() === $attribute) {
-                        return $entityAttribute->getAttributeValue();
-                    }
-                }
-            }
-        }
-        
+
         return null;
     }
 }

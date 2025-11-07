@@ -6,6 +6,8 @@ use App\Entity\Event;
 use App\Repository\EventRepository;
 use App\Repository\EventTypeRepository;
 use App\Repository\DivingLevelRepository;
+use App\Repository\UserRepository;
+use App\Repository\BoatRepository;
 use App\Service\RecurringEventService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,18 +24,87 @@ class AdminEventController extends AbstractController
         private EventRepository $eventRepository,
         private EventTypeRepository $eventTypeRepository,
         private DivingLevelRepository $divingLevelRepository,
+        private UserRepository $userRepository,
+        private BoatRepository $boatRepository,
         private EntityManagerInterface $entityManager,
         private RecurringEventService $recurringEventService
     ) {}
 
     #[Route('', name: 'admin_events_list')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $showAll = $request->query->getBoolean('show_all', false);
         $events = $this->eventRepository->findBy([], ['startDate' => 'DESC']);
-        
+
+        // Si on ne veut pas tout afficher, filtrer les événements récurrents
+        if (!$showAll) {
+            $events = $this->filterRecurringEvents($events);
+        }
+
         return $this->render('admin/events/index.html.twig', [
             'events' => $events,
+            'showAll' => $showAll,
         ]);
+    }
+
+    /**
+     * Filtre les événements récurrents pour ne garder que la prochaine occurrence de chaque série
+     */
+    private function filterRecurringEvents(array $events): array
+    {
+        $now = new \DateTime();
+        $filtered = [];
+        $seriesProcessed = []; // Track which series we've already processed
+
+        foreach ($events as $event) {
+            // Si c'est un événement parent (récurrent)
+            if ($event->isRecurring()) {
+                // Chercher la prochaine occurrence de cette série (parent inclus)
+                $parentId = $event->getId();
+
+                if (!isset($seriesProcessed[$parentId])) {
+                    $nextOccurrence = null;
+
+                    // Vérifier si le parent lui-même est dans le futur
+                    if ($event->getStartDate()->getTimestamp() >= $now->getTimestamp()) {
+                        $nextOccurrence = $event;
+                    }
+
+                    // Chercher parmi les occurrences générées si elles sont plus proches
+                    foreach ($event->getGeneratedEvents() as $generated) {
+                        $generatedTime = $generated->getStartDate()->getTimestamp();
+                        if ($generatedTime >= $now->getTimestamp()) {
+                            if ($nextOccurrence === null || $generatedTime < $nextOccurrence->getStartDate()->getTimestamp()) {
+                                $nextOccurrence = $generated;
+                            }
+                        }
+                    }
+
+                    // Ajouter la prochaine occurrence trouvée (parent ou générée)
+                    if ($nextOccurrence) {
+                        $filtered[] = $nextOccurrence;
+                        $seriesProcessed[$parentId] = true;
+                    }
+                }
+                continue;
+            }
+
+            // Si c'est une occurrence générée, vérifier si on a déjà traité sa série
+            if ($event->isGeneratedEvent() && $event->getParentEvent()) {
+                $parentId = $event->getParentEvent()->getId();
+                // Si la série a déjà été traitée via le parent, on ignore cette occurrence
+                if (isset($seriesProcessed[$parentId])) {
+                    continue;
+                }
+            }
+
+            // Si ce n'est pas un événement récurrent (ni parent ni généré), l'ajouter normalement
+            if (!$event->isRecurring() && !$event->isGeneratedEvent()) {
+                $filtered[] = $event;
+            }
+        }
+
+        return $filtered;
     }
 
     #[Route('/new', name: 'admin_events_new')]
@@ -86,6 +157,37 @@ class AdminEventController extends AbstractController
                 $event->setSiteMeetingTime(new \DateTime($siteMeetingTime));
             }
 
+            // Gérer le besoin d'un pilote
+            $needsPilot = (bool) $request->request->get('needs_pilot');
+            $event->setNeedsPilot($needsPilot);
+
+            if ($needsPilot) {
+                $pilotId = $request->request->get('pilot_id');
+                if ($pilotId) {
+                    $pilot = $this->userRepository->find($pilotId);
+                    $event->setPilot($pilot);
+                }
+            } else {
+                $event->setPilot(null);
+            }
+
+            // Gérer le directeur de plongée
+            $divingDirectorId = $request->request->get('diving_director_id');
+            if ($divingDirectorId) {
+                $divingDirector = $this->userRepository->find($divingDirectorId);
+                $event->setDivingDirector($divingDirector);
+            } else {
+                // Par défaut, l'utilisateur connecté est le DP
+                $event->setDivingDirector($this->getUser());
+            }
+
+            // Gérer le bateau
+            $boatId = $request->request->get('boat_id');
+            if ($boatId) {
+                $boat = $this->boatRepository->find($boatId);
+                $event->setBoat($boat);
+            }
+
             $this->entityManager->persist($event);
             $this->entityManager->flush();
             
@@ -99,12 +201,18 @@ class AdminEventController extends AbstractController
         
         $eventTypes = $this->eventTypeRepository->findActive();
         $divingLevels = $this->divingLevelRepository->findAllOrdered();
+        $pilots = $this->userRepository->findPilots();
+        $divingDirectors = $this->userRepository->findDivingDirectors();
+        $boats = $this->boatRepository->findActive();
 
         return $this->render('admin/events/edit.html.twig', [
             'event' => $event,
             'isNew' => true,
             'eventTypes' => $eventTypes,
             'divingLevels' => $divingLevels,
+            'pilots' => $pilots,
+            'divingDirectors' => $divingDirectors,
+            'boats' => $boats,
         ]);
     }
 
@@ -162,6 +270,40 @@ class AdminEventController extends AbstractController
                 $event->setSiteMeetingTime(null);
             }
 
+            // Gérer le besoin d'un pilote
+            $needsPilot = (bool) $request->request->get('needs_pilot');
+            $event->setNeedsPilot($needsPilot);
+
+            if ($needsPilot) {
+                $pilotId = $request->request->get('pilot_id');
+                if ($pilotId) {
+                    $pilot = $this->userRepository->find($pilotId);
+                    $event->setPilot($pilot);
+                } else {
+                    $event->setPilot(null);
+                }
+            } else {
+                $event->setPilot(null);
+            }
+
+            // Gérer le directeur de plongée
+            $divingDirectorId = $request->request->get('diving_director_id');
+            if ($divingDirectorId) {
+                $divingDirector = $this->userRepository->find($divingDirectorId);
+                $event->setDivingDirector($divingDirector);
+            } else {
+                $event->setDivingDirector(null);
+            }
+
+            // Gérer le bateau
+            $boatId = $request->request->get('boat_id');
+            if ($boatId) {
+                $boat = $this->boatRepository->find($boatId);
+                $event->setBoat($boat);
+            } else {
+                $event->setBoat(null);
+            }
+
             $this->entityManager->flush();
             
             // Gérer la récurrence après la sauvegarde
@@ -174,12 +316,18 @@ class AdminEventController extends AbstractController
         
         $eventTypes = $this->eventTypeRepository->findActive();
         $divingLevels = $this->divingLevelRepository->findAllOrdered();
+        $pilots = $this->userRepository->findPilots();
+        $divingDirectors = $this->userRepository->findDivingDirectors();
+        $boats = $this->boatRepository->findActive();
 
         return $this->render('admin/events/edit.html.twig', [
             'event' => $event,
             'isNew' => false,
             'eventTypes' => $eventTypes,
             'divingLevels' => $divingLevels,
+            'pilots' => $pilots,
+            'divingDirectors' => $divingDirectors,
+            'boats' => $boats,
         ]);
     }
 

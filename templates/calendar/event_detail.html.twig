@@ -1,4 +1,5 @@
 {% extends 'plongee_base.html.twig' %}
+{% import '_macros/avatar.html.twig' as avatar_macro %}
 
 {% block title %}{{ event.title }} - Calendrier - Club Subaquatique des Vénètes{% endblock %}
 
@@ -42,48 +43,8 @@
             </div>
 
             <!-- Contenu -->
-            <div class="px-8 py-6">
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Informations principales -->
-                    <div class="md:col-span-2">
-                        {% if event.description %}
-                            <div class="mb-8">
-                                <h2 class="text-xl font-bold text-club-blue mb-4">Description</h2>
-                                <div class="prose max-w-none text-gray-700">
-                                    {{ event.description|nl2br }}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        <!-- Informations pratiques -->
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h3 class="text-lg font-semibold text-club-blue mb-3">📅 Horaires</h3>
-                                <div class="text-gray-700 space-y-1">
-                                    <div>
-                                        <strong>Début:</strong> {{ event.startDate|date('d/m/Y à H:i') }}
-                                    </div>
-                                    {% if event.endDate %}
-                                        <div>
-                                            <strong>Fin:</strong> {{ event.endDate|date('d/m/Y à H:i') }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            {% if event.location %}
-                                <div>
-                                    <h3 class="text-lg font-semibold text-club-blue mb-3">📍 Lieu</h3>
-                                    <div class="text-gray-700">
-                                        {{ event.location }}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Sidebar informations -->
-                    <div class="md:col-span-1">
+            <div class="px-8 py-6 space-y-6">
+                    <!-- Section Participation en pleine largeur -->
                         <!-- Participation -->
                         {% if event.maxParticipants %}
                             <div class="bg-gray-50 rounded-lg p-6 mb-6">
@@ -135,6 +96,40 @@
                                                         {{ event.availableSpots }} place(s) disponible(s)
                                                     </div>
                                                 <form method="POST" action="{{ path('event_register', {id: event.id}) }}" class="space-y-3">
+                                                    <!-- Nombre de places -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                            Nombre de places
+                                                        </label>
+                                                        <input type="number" name="quantity" min="1" max="10" value="1"
+                                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+                                                    </div>
+
+                                                    <!-- Type de participation si instructeur -->
+                                                    {% if app.user.isInstructor() %}
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                                Type de participation
+                                                            </label>
+                                                            <div class="space-y-2">
+                                                                <label class="flex items-center p-2 bg-white border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                                                                    <input type="radio" name="participation_type" value="instructor" checked class="mr-3 text-club-orange focus:ring-club-orange">
+                                                                    <div class="flex-1">
+                                                                        <div class="font-medium text-sm">👨‍🏫 Encadrant</div>
+                                                                        <div class="text-xs text-gray-500">Je participe en tant qu'encadrant</div>
+                                                                    </div>
+                                                                </label>
+                                                                <label class="flex items-center p-2 bg-white border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                                                                    <input type="radio" name="participation_type" value="autonomous" class="mr-3 text-club-orange focus:ring-club-orange">
+                                                                    <div class="flex-1">
+                                                                        <div class="font-medium text-sm">🤿 Autonome</div>
+                                                                        <div class="text-xs text-gray-500">Je participe de façon autonome</div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
                                                     <!-- Choix du point de rendez-vous si plusieurs options -->
                                                     {% if event.clubMeetingTime and event.siteMeetingTime %}
                                                         <div>
@@ -210,136 +205,121 @@
                             </div>
                         {% endif %}
 
-                        <!-- Informations complémentaires -->
-                        <div class="bg-gray-50 rounded-lg p-6">
-                            <h3 class="text-lg font-semibold text-club-blue mb-4">ℹ️ Informations</h3>
-                            
-                            <div class="space-y-3 text-sm">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-600">Type:</span>
-                                    <span class="font-medium">{{ event.typeDisplayName }}</span>
+                <!-- Informations de l'événement (en pleine largeur) -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Informations pratiques -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-club-blue mb-4">ℹ️ Informations pratiques</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-600 mb-2">📅 Horaires</h4>
+                                <div class="text-gray-700 space-y-1 text-sm">
+                                    <div><strong>Début:</strong> {{ event.startDate|date('d/m/Y à H:i') }}</div>
+                                    {% if event.endDate %}
+                                        <div><strong>Fin:</strong> {{ event.endDate|date('d/m/Y à H:i') }}</div>
+                                    {% endif %}
                                 </div>
-                                
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-600">Statut:</span>
-                                    <span class="font-medium">{{ event.statusDisplayName }}</span>
+                            </div>
+
+                            {% if event.location %}
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-600 mb-2">📍 Lieu</h4>
+                                    <div class="text-gray-700 text-sm">{{ event.location }}</div>
                                 </div>
+                            {% endif %}
 
-                                {% if event.type == 'dive' %}
-                                    <div class="pt-3 border-t border-gray-200">
-                                        <div class="text-xs text-gray-500 mb-2">Recommandations plongée:</div>
-                                        <ul class="text-xs text-gray-600 space-y-1">
-                                            <li>• Matériel de plongée complet</li>
-                                            <li>• Carnet de plongée</li>
-                                            <li>• Certificat médical valide</li>
-                                        </ul>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-600 mb-2">📋 Type et statut</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Type:</span>
+                                        <span class="font-medium">{{ event.typeDisplayName }}</span>
                                     </div>
-                                {% endif %}
-
-                                {% if event.type == 'training' %}
-                                    <div class="pt-3 border-t border-gray-200">
-                                        <div class="text-xs text-gray-500 mb-2">Matériel requis:</div>
-                                        <ul class="text-xs text-gray-600 space-y-1">
-                                            <li>• Manuel de formation</li>
-                                            <li>• Matériel de prise de notes</li>
-                                            <li>• Équipement selon formation</li>
-                                        </ul>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Statut:</span>
+                                        <span class="font-medium">{{ event.statusDisplayName }}</span>
                                     </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Conditions d'inscription -->
-                        {% if event.hasRequirements %}
-                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 mt-6">
-                            <h3 class="text-lg font-semibold text-club-orange mb-4">⚠️ Conditions requises</h3>
-                            
-                            <div class="space-y-3 text-sm">
-                                {% if event.minDivingLevel %}
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="text-gray-700">
-                                            <strong>Niveau minimum:</strong> {{ event.minDivingLevel }}
-                                        </span>
-                                    </div>
-                                {% endif %}
-
-                                {% if event.minAge or event.maxAge %}
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="text-gray-700">
-                                            <strong>Âge:</strong>
-                                            {% if event.minAge and event.maxAge %}
-                                                entre {{ event.minAge }} et {{ event.maxAge }} ans
-                                            {% elseif event.minAge %}
-                                                minimum {{ event.minAge }} ans
-                                            {% elseif event.maxAge %}
-                                                maximum {{ event.maxAge }} ans
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                {% endif %}
-
-                                {% if event.requiresMedicalCertificate %}
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="text-gray-700">
-                                            <strong>Certificat médical requis</strong>
-                                            {% if event.medicalCertificateValidityDays %}
-                                                (valide {{ event.medicalCertificateValidityDays }} jours)
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                {% endif %}
-
-                                {% if event.requiresSwimmingTest %}
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="text-gray-700">
-                                            <strong>Test de natation requis</strong>
-                                        </span>
-                                    </div>
-                                {% endif %}
-
-                                {% if event.additionalRequirements %}
-                                    <div class="mt-4 pt-3 border-t border-orange-200">
-                                        <div class="text-gray-700">
-                                            <strong>Conditions supplémentaires:</strong>
-                                            <div class="mt-2 text-sm bg-white p-3 rounded border">
-                                                {{ event.additionalRequirements|nl2br }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="mt-4 p-3 bg-orange-100 rounded text-xs text-orange-800">
-                                <strong>Important:</strong> Vérifiez que vous remplissez toutes les conditions avant de vous inscrire.
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Contact -->
-                        <div class="bg-club-blue/5 rounded-lg p-6 mt-6">
-                            <h3 class="text-lg font-semibold text-club-blue mb-4">📞 Contact</h3>
-                            <div class="text-sm text-gray-700 space-y-2">
-                                <p>Pour plus d'informations sur cet événement :</p>
-                                <div class="font-medium">
-                                    📧 contact@venetes-plongee.fr<br>
-                                    📱 02 97 XX XX XX
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Organisation (DP, Pilote, Bateau) -->
+                    {% if event.divingDirector or event.pilot or event.boat %}
+                        <div class="bg-gradient-to-br from-club-blue/5 to-club-blue/10 rounded-lg p-6 border border-club-blue/20">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-club-blue">👥 Organisation</h3>
+                                {% if app.user and event.divingDirector and app.user.id == event.divingDirector.id %}
+                                    <a href="{{ path('dp_events_participants', {id: event.id}) }}"
+                                       class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark transition-colors">
+                                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                        </svg>
+                                        Fiche DP
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="space-y-3">
+                                {% if event.divingDirector %}
+                                    <div class="flex items-start p-3 bg-white rounded-lg">
+                                        <span class="text-2xl mr-3">🤿</span>
+                                        <div class="flex-1">
+                                            <div class="text-xs font-medium text-gray-500 mb-1">Directeur de Plongée</div>
+                                            <div class="font-semibold text-club-blue">{{ event.divingDirector.fullName }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if event.pilot %}
+                                    <div class="flex items-start p-3 bg-white rounded-lg">
+                                        <span class="text-2xl mr-3">⛵</span>
+                                        <div class="flex-1">
+                                            <div class="text-xs font-medium text-gray-500 mb-1">Pilote</div>
+                                            <div class="font-semibold text-club-blue">{{ event.pilot.fullName }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if event.boat %}
+                                    <div class="flex items-start p-3 bg-white rounded-lg">
+                                        <span class="text-2xl mr-3">🚤</span>
+                                        <div class="flex-1">
+                                            <div class="text-xs font-medium text-gray-500 mb-1">Bateau</div>
+                                            <div class="font-semibold text-club-blue">{{ event.boat.name }}</div>
+                                            {% if event.boat.capacity %}
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    Capacité: {{ event.boat.capacity }} personnes
+                                                </div>
+                                            {% endif %}
+                                            {% if event.boat.description %}
+                                                <div class="text-xs text-gray-600 mt-1">{{ event.boat.description }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Contact si on a un DP -->
+                                {% if event.divingDirector %}
+                                    <div class="pt-3 border-t border-club-blue/20">
+                                        <div class="text-xs text-gray-600">
+                                            Pour toute question sur cet événement, contactez le Directeur de Plongée.
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
+
+                <!-- Description (si existe) -->
+                {% if event.description %}
+                    <div class="bg-white rounded-lg border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-club-blue mb-4">📝 Description</h3>
+                        <div class="prose max-w-none text-gray-700">
+                            {{ event.description|nl2br }}
+                        </div>
+                    </div>
+                {% endif %}
 
                 <!-- Section Participants -->
                 {% if event.activeParticipationsList|length > 0 or event.waitingListParticipations|length > 0 %}
@@ -394,11 +374,7 @@
                                         <div class="p-4">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center space-x-3">
-                                                    <div class="flex-shrink-0 h-10 w-10 bg-club-orange rounded-full flex items-center justify-center">
-                                                        <span class="text-sm font-semibold text-white">
-                                                            {{ participation.participant.fullName|slice(0, 1)|upper }}
-                                                        </span>
-                                                    </div>
+                                                    {{ avatar_macro.user_avatar(participation.participant, 'md') }}
                                                     <div>
                                                         <div class="font-medium text-gray-900">
                                                             {{ participation.participant.fullName }}

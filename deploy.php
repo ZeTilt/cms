@@ -12,6 +12,22 @@ if (!file_exists('.env.prod.local')) {
     exit(1);
 }
 
+// Vérifier les clés VAPID pour les notifications push
+echo "🔑 Vérification des clés VAPID...\n";
+$envContent = file_get_contents('.env.prod.local');
+if (strpos($envContent, 'VAPID_PUBLIC_KEY') === false ||
+    strpos($envContent, 'VAPID_PRIVATE_KEY') === false) {
+    echo "⚠️  Clés VAPID manquantes dans .env.prod.local!\n";
+    echo "   Les notifications push ne fonctionneront pas sans ces clés.\n";
+    echo "   Pour les générer, utilisez: npx web-push generate-vapid-keys --json\n";
+    echo "   Ajoutez-les dans .env.prod.local:\n";
+    echo "   VAPID_PUBLIC_KEY=votre_clé_publique\n";
+    echo "   VAPID_PRIVATE_KEY=votre_clé_privée\n";
+    echo "   VAPID_SUBJECT=mailto:contact@plongee-venetes.fr\n\n";
+} else {
+    echo "✅ Clés VAPID présentes\n";
+}
+
 // 2. Installation des dépendances (sans scripts auto)
 echo "📦 Installation des dépendances...\n";
 exec('composer install --no-dev --optimize-autoloader --no-scripts 2>&1', $output, $return);
@@ -91,7 +107,10 @@ $checks = [
     'vendor/autoload.php' => 'Autoloader Composer',
     'public/index.php' => 'Point d\'entrée',
     'var/cache' => 'Dossier cache',
-    'public/uploads' => 'Dossier uploads'
+    'public/uploads' => 'Dossier uploads',
+    'public/manifest.json' => 'Manifest PWA',
+    'public/sw.js' => 'Service Worker',
+    'public/js/push-notifications.js' => 'Script notifications push'
 ];
 
 foreach ($checks as $file => $desc) {
@@ -101,4 +120,37 @@ foreach ($checks as $file => $desc) {
         echo "   ❌ $desc manquant\n";
     }
 }
+
+// 9. Vérifications spécifiques PWA
+echo "\n📱 Vérifications PWA:\n";
+if (file_exists('public/manifest.json')) {
+    $manifest = json_decode(file_get_contents('public/manifest.json'), true);
+    if (isset($manifest['name'])) {
+        echo "   ✅ Manifest valide: {$manifest['name']}\n";
+    } else {
+        echo "   ⚠️  Manifest invalide\n";
+    }
+}
+
+if (file_exists('public/sw.js')) {
+    $swContent = file_get_contents('public/sw.js');
+    if (strpos($swContent, 'push') !== false) {
+        echo "   ✅ Service Worker avec support push\n";
+    } else {
+        echo "   ⚠️  Service Worker sans support push\n";
+    }
+}
+
+// 10. Rappel migrations PWA
+echo "\n📊 Migrations PWA:\n";
+echo "   Les tables suivantes doivent exister:\n";
+echo "   - push_subscriptions (abonnements notifications)\n";
+echo "   - notification_history (historique notifications)\n";
+echo "   Si les migrations ont échoué, relancez: php bin/console doctrine:migrations:migrate --env=prod\n";
+
+echo "\n✨ Checklist post-déploiement:\n";
+echo "   □ Tester les notifications push sur /profile\n";
+echo "   □ Vérifier que le service worker s'installe (DevTools > Application)\n";
+echo "   □ Créer un événement test et vérifier les notifications\n";
+echo "   □ Vérifier les logs: tail -f var/log/prod.log\n";
 ?>

@@ -148,20 +148,20 @@
                         Niveaux de Plongée
                     </a>
 
-                    <a href="{{ path('admin_attribute_definitions_index') }}"
-                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_attribute_definitions' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                        <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_attribute_definitions' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    <a href="{{ path('admin_freediving_levels_list') }}"
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_freediving_levels' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_freediving_levels' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/>
                         </svg>
-                        Définitions d'attributs
+                        Niveaux d'Apnée
                     </a>
 
-                    <a href="{{ path('admin_user_attributes_index') }}"
-                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_user_attributes' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                        <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_user_attributes' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    <a href="{{ path('admin_boats_list') }}"
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ app.request.get('_route') starts with 'admin_boats' ? 'bg-club-orange text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <svg class="mr-3 h-6 w-6 {{ app.request.get('_route') starts with 'admin_boats' ? 'text-white' : 'text-gray-400 group-hover:text-gray-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8h18M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8M9 3h6M9 8v10M15 8v10"/>
                         </svg>
-                        Attributs Utilisateurs
+                        Bateaux
                     </a>
                 </div>
             </div>

@@ -1,0 +1,35 @@
+{% macro user_avatar(user, size = 'md') %}
+    {# Définir les tailles #}
+    {% set sizes = {
+        'xs': 'h-6 w-6',
+        'sm': 'h-8 w-8',
+        'md': 'h-10 w-10',
+        'lg': 'h-12 w-12',
+        'xl': 'h-16 w-16',
+        'xxl': 'h-20 w-20'
+    } %}
+
+    {% set textSizes = {
+        'xs': 'text-xs',
+        'sm': 'text-xs',
+        'md': 'text-sm',
+        'lg': 'text-base',
+        'xl': 'text-lg',
+        'xxl': 'text-2xl'
+    } %}
+
+    {% set sizeClass = sizes[size] ?? sizes.md %}
+    {% set textSize = textSizes[size] ?? textSizes.md %}
+
+    {% if user.avatarFile %}
+        <img src="{{ asset('uploads/avatars/' ~ user.avatarFile) }}"
+             alt="Avatar {{ user.fullName }}"
+             class="{{ sizeClass }} rounded-full object-cover border-2 border-club-orange flex-shrink-0">
+    {% else %}
+        <div class="{{ sizeClass }} rounded-full bg-club-orange flex items-center justify-center border-2 border-club-orange flex-shrink-0">
+            <span class="{{ textSize }} font-semibold text-white">
+                {{ user.fullName|slice(0, 1)|upper }}
+            </span>
+        </div>
+    {% endif %}
+{% endmacro %}

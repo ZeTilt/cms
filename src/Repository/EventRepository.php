@@ -127,4 +127,22 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Trouve les événements à venir dans une plage de temps spécifique
+     * Utile pour les rappels programmés
+     */
+    public function findUpcomingEventsInRange(\DateTimeInterface $start, \DateTimeInterface $end): array
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.status = :status')
+            ->andWhere('e.startDate >= :start')
+            ->andWhere('e.startDate <= :end')
+            ->setParameter('status', 'active')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('e.startDate', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

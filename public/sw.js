@@ -2,26 +2,37 @@
 const CACHE_NAME = 'csv-plongee-v1';
 const urlsToCache = [
   '/',
-  '/css/app.css',
-  '/js/app.js',
-  '/manifest.json',
-  '/blog',
-  '/calendrier'
+  '/manifest.json'
 ];
 
 // Installation du service worker
 self.addEventListener('install', function(event) {
+  console.log('Service Worker: Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
         console.log('Cache ouvert');
-        return cache.addAll(urlsToCache);
+        // Mettre en cache les URLs une par une pour éviter l'échec total
+        return Promise.allSettled(
+          urlsToCache.map(url =>
+            cache.add(url).catch(err => {
+              console.warn('Failed to cache:', url, err);
+              return null;
+            })
+          )
+        );
+      })
+      .then(() => {
+        console.log('Service Worker: Installation complete');
+        // Forcer l'activation immédiate
+        return self.skipWaiting();
       })
   );
 });
 
 // Activation du service worker
 self.addEventListener('activate', function(event) {
+  console.log('Service Worker: Activating...');
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
@@ -32,12 +43,21 @@ self.addEventListener('activate', function(event) {
           }
         })
       );
+    }).then(() => {
+      console.log('Service Worker: Activation complete');
+      // Prendre le contrôle immédiatement
+      return self.clients.claim();
     })
   );
 });
 
 // Interception des requêtes
 self.addEventListener('fetch', function(event) {
+  // Ignorer les requêtes non-HTTP (chrome-extension://, etc.)
+  if (!event.request.url.startsWith('http')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(function(response) {
@@ -58,7 +78,10 @@ self.addEventListener('fetch', function(event) {
 
           caches.open(CACHE_NAME)
             .then(function(cache) {
-              cache.put(event.request, responseToCache);
+              // Vérifier que la requête est bien HTTP avant de la mettre en cache
+              if (event.request.url.startsWith('http')) {
+                cache.put(event.request, responseToCache);
+              }
             });
 
           return response;
@@ -73,18 +96,69 @@ self.addEventListener('fetch', function(event) {
   );
 });
 
-// Gestion des notifications push (optionnel)
+// Gestion des notifications push
 self.addEventListener('push', function(event) {
   if (event.data) {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: '/pwa-icons/icon-192x192.png',
-      badge: '/pwa-icons/icon-72x72.png',
-      tag: 'csv-notification'
+      icon: data.icon || '/pwa-icons/icon-192x192.png',
+      badge: data.badge || '/pwa-icons/icon-72x72.png',
+      tag: data.tag || 'csv-notification',
+      data: {
+        url: data.url || '/',
+        timestamp: Date.now()
+      },
+      vibrate: [200, 100, 200],
+      requireInteraction: data.requireInteraction || false,
+      actions: data.actions || []
     };
+
     event.waitUntil(
       self.registration.showNotification(data.title, options)
     );
   }
+});
+
+// Gestion du clic sur une notification
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+
+  // Gérer les actions personnalisées si présentes
+  if (event.action) {
+    console.log('Action clicked:', event.action);
+
+    // Si l'action est 'close', on ne fait rien de plus
+    if (event.action === 'close') {
+      return;
+    }
+  }
+
+  // Ouvrir l'URL associée à la notification
+  const urlToOpen = event.notification.data.url;
+
+  event.waitUntil(
+    clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then(function(clientList) {
+      // Chercher si une fenêtre est déjà ouverte
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url.includes(urlToOpen) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+
+      // Si aucune fenêtre n'est ouverte sur cette URL, en ouvrir une nouvelle
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+// Gestion de la fermeture d'une notification
+self.addEventListener('notificationclose', function(event) {
+  console.log('Notification closed:', event.notification.tag);
 });

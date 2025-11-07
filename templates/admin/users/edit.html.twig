@@ -92,35 +92,18 @@
         <div>
             <label for="diving_level" class="block text-sm font-medium text-gray-700">Niveau de plongée</label>
             <div class="mt-1">
-                <select name="diving_level" 
+                <select name="diving_level"
                         id="diving_level"
                         class="shadow-sm focus:ring-club-orange focus:border-club-orange block w-full sm:text-sm border-gray-300 rounded-md">
                     <option value="">-- Sélectionner un niveau --</option>
                     {% for level in diving_levels %}
-                        <option value="{{ level.code }}" {{ (not isNew and user_diving_level == level.code) ? 'selected' : '' }}>
+                        <option value="{{ level.id }}" {{ (not isNew and user.highestDivingLevel and user.highestDivingLevel.id == level.id) ? 'selected' : '' }}>
                             {{ level.name }}{% if level.description %} - {{ level.description }}{% endif %}
                         </option>
                     {% endfor %}
                 </select>
             </div>
             <p class="mt-1 text-sm text-gray-500">Niveau de certification FFESSM du plongeur</p>
-        </div>
-
-        <!-- Apnéiste -->
-        <div>
-            <div class="flex items-center">
-                <input type="hidden" name="is_freediver" value="0">
-                <input type="checkbox" 
-                       name="is_freediver" 
-                       id="is_freediver" 
-                       value="1"
-                       {{ (not isNew and user_is_freediver) ? 'checked' : '' }}
-                       class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
-                <label for="is_freediver" class="ml-2 block text-sm text-gray-900">
-                    Apnéiste
-                </label>
-            </div>
-            <p class="mt-1 text-xs text-gray-500">Cochez si le membre pratique l'apnée</p>
         </div>
 
         <!-- Rôles -->

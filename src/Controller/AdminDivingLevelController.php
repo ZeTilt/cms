@@ -40,7 +40,8 @@ class AdminDivingLevelController extends AbstractController
             $divingLevel->setDescription($request->request->get('description'));
             $divingLevel->setSortOrder((int) $request->request->get('sort_order', 0));
             $divingLevel->setActive((bool) $request->request->get('is_active', true));
-            
+            $divingLevel->setInstructor((bool) $request->request->get('is_instructor', false));
+
             $this->entityManager->persist($divingLevel);
             $this->entityManager->flush();
             
@@ -64,7 +65,8 @@ class AdminDivingLevelController extends AbstractController
             $divingLevel->setDescription($request->request->get('description'));
             $divingLevel->setSortOrder((int) $request->request->get('sort_order', 0));
             $divingLevel->setActive((bool) $request->request->get('is_active'));
-            
+            $divingLevel->setInstructor((bool) $request->request->get('is_instructor'));
+
             $this->entityManager->flush();
             
             $this->addFlash('success', 'Niveau de plongée mis à jour avec succès !');

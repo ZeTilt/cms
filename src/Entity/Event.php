@@ -89,6 +89,21 @@ class Event
     #[ORM\JoinColumn(nullable: true)]
     private ?DivingLevel $minDivingLevel = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $needsPilot = false;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $pilot = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $divingDirector = null;
+
+    #[ORM\ManyToOne(targetEntity: Boat::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Boat $boat = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -201,9 +216,13 @@ class Event
 
     public function getCurrentParticipants(): int
     {
-        return $this->participations->filter(function(EventParticipation $participation) {
-            return $participation->isActive();
-        })->count();
+        $total = 0;
+        foreach ($this->participations as $participation) {
+            if ($participation->isActive()) {
+                $total += $participation->getQuantity() ?? 1;
+            }
+        }
+        return $total;
     }
 
     public function getColor(): ?string
@@ -440,15 +459,27 @@ class Event
     public function checkUserEligibility($user): array
     {
         $issues = [];
-        
+
+        // Vérifier le niveau minimum requis
+        if ($this->minDivingLevel) {
+            $userLevel = $user->getHighestDivingLevel();
+
+            if (!$userLevel) {
+                $issues[] = "Niveau de plongée requis : {$this->minDivingLevel->getName()}";
+            } elseif ($userLevel->getSortOrder() < $this->minDivingLevel->getSortOrder()) {
+                // Plus le sortOrder est élevé, plus le niveau est avancé
+                $issues[] = "Niveau minimum requis : {$this->minDivingLevel->getName()} (vous avez : {$userLevel->getName()})";
+            }
+        }
+
         foreach ($this->getActiveConditions() as $condition) {
             if (!$condition->checkEntityCondition($user)) {
-                $errorMessage = $condition->getErrorMessage() ?: 
+                $errorMessage = $condition->getErrorMessage() ?:
                     "Condition non respectée : {$condition->getDisplayName()}";
                 $issues[] = $errorMessage;
             }
         }
-        
+
         return $issues;
     }
 
@@ -462,7 +493,7 @@ class Event
      */
     public function hasRequirements(): bool
     {
-        return !$this->getActiveConditions()->isEmpty();
+        return $this->minDivingLevel !== null || !$this->getActiveConditions()->isEmpty();
     }
 
     public function getContactPerson(): ?User
@@ -528,9 +559,13 @@ class Event
      */
     public function getActiveParticipants(): int
     {
-        return $this->participations->filter(function(EventParticipation $participation) {
-            return $participation->isActive() && !$participation->isWaitingList();
-        })->count();
+        $total = 0;
+        foreach ($this->participations as $participation) {
+            if ($participation->isActive() && !$participation->isWaitingList()) {
+                $total += $participation->getQuantity() ?? 1;
+            }
+        }
+        return $total;
     }
 
     /**
@@ -538,9 +573,13 @@ class Event
      */
     public function getWaitingListCount(): int
     {
-        return $this->participations->filter(function(EventParticipation $participation) {
-            return $participation->isActive() && $participation->isWaitingList();
-        })->count();
+        $total = 0;
+        foreach ($this->participations as $participation) {
+            if ($participation->isActive() && $participation->isWaitingList()) {
+                $total += $participation->getQuantity() ?? 1;
+            }
+        }
+        return $total;
     }
 
     /**
@@ -640,14 +679,51 @@ class Event
      */
     public function canUserRegister(User $user): bool
     {
-        // Si pas de niveau minimum requis, tout le monde peut s'inscrire
-        if (!$this->minDivingLevel) {
-            return true;
-        }
+        return $this->isUserEligible($user);
+    }
 
-        // TODO: Récupérer le niveau de l'utilisateur depuis les EntityAttributes
-        // et comparer avec le niveau minimum requis
-        return true; // Temporaire
+    public function needsPilot(): bool
+    {
+        return $this->needsPilot;
+    }
+
+    public function setNeedsPilot(bool $needsPilot): static
+    {
+        $this->needsPilot = $needsPilot;
+        return $this;
+    }
+
+    public function getPilot(): ?User
+    {
+        return $this->pilot;
+    }
+
+    public function setPilot(?User $pilot): static
+    {
+        $this->pilot = $pilot;
+        return $this;
+    }
+
+    public function getDivingDirector(): ?User
+    {
+        return $this->divingDirector;
+    }
+
+    public function setDivingDirector(?User $divingDirector): static
+    {
+        $this->divingDirector = $divingDirector;
+        return $this;
+    }
+
+    public function getBoat(): ?Boat
+    {
+        return $this->boat;
+    }
+
+    public function setBoat(?Boat $boat): static
+    {
+        $this->boat = $boat;
+        return $this;
     }
 
     public function __toString(): string

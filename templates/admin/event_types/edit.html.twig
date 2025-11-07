@@ -104,9 +104,9 @@
 
                     <div class="sm:col-span-2">
                         <div class="flex items-center">
-                            <input type="checkbox" 
-                                   name="is_active" 
-                                   id="is_active" 
+                            <input type="checkbox"
+                                   name="is_active"
+                                   id="is_active"
                                    value="1"
                                    {{ (isNew or eventType.isActive) ? 'checked' : '' }}
                                    class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
@@ -115,6 +115,36 @@
                             </label>
                         </div>
                         <p class="mt-1 text-sm text-gray-500">Les types inactifs ne seront pas disponibles lors de la création d'événements</p>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <div class="flex items-center">
+                            <input type="checkbox"
+                                   name="requires_diving_director"
+                                   id="requires_diving_director"
+                                   value="1"
+                                   {{ eventType.requiresDivingDirector ? 'checked' : '' }}
+                                   class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                            <label for="requires_diving_director" class="ml-2 block text-sm text-gray-900">
+                                Nécessite un Directeur de Plongée (DP)
+                            </label>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Si coché, un DP devra être sélectionné lors de la création d'un événement de ce type</p>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <div class="flex items-center">
+                            <input type="checkbox"
+                                   name="requires_pilot"
+                                   id="requires_pilot"
+                                   value="1"
+                                   {{ eventType.requiresPilot ? 'checked' : '' }}
+                                   class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                            <label for="requires_pilot" class="ml-2 block text-sm text-gray-900">
+                                Nécessite un pilote de bateau
+                            </label>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Si coché, un pilote et un bateau devront être sélectionnés lors de la création d'un événement de ce type</p>
                     </div>
                 </div>
 

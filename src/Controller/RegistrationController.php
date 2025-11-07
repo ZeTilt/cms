@@ -58,14 +58,16 @@ class RegistrationController extends AbstractController
                 $user->setPassword($hashedPassword);
             }
 
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-
-            // Sauvegarder les attributs EAV si fournis
+            // Sauvegarder le niveau de plongée si fourni
             if ($request->request->get('diving_level')) {
-                $this->saveDivingLevel($user, $request->request->get('diving_level'));
+                $divingLevelId = $request->request->get('diving_level');
+                $divingLevel = $this->entityManager->getRepository(DivingLevel::class)->find($divingLevelId);
+                if ($divingLevel) {
+                    $user->setHighestDivingLevel($divingLevel);
+                }
             }
 
+            $this->entityManager->persist($user);
             $this->entityManager->flush();
 
             // Envoyer l'email de vérification
@@ -78,20 +80,6 @@ class RegistrationController extends AbstractController
         return $this->render('registration/register.html.twig', [
             'diving_levels' => $divingLevels,
         ]);
-    }
-
-    private function saveDivingLevel(User $user, ?string $divingLevel): void
-    {
-        if (!$divingLevel) return;
-
-        $attribute = new \App\Entity\EntityAttribute();
-        $attribute->setEntityType('User');
-        $attribute->setEntityId($user->getId());
-        $attribute->setAttributeName('diving_level');
-        $attribute->setAttributeType('text');
-        $attribute->setAttributeValue($divingLevel);
-        
-        $this->entityManager->persist($attribute);
     }
 
     #[Route('/verify-email/{token}', name: 'app_verify_email')]

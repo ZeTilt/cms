@@ -1,4 +1,5 @@
 {% extends 'dp/base.html.twig' %}
+{% import '_macros/avatar.html.twig' as avatar_macro %}
 
 {% block page_title %}Participants - {{ event.title }}{% endblock %}
 
@@ -19,6 +20,13 @@
 
 {% block page_actions %}
 <div class="flex space-x-3">
+    <a href="{{ path('dp_events_export_csv', {id: event.id}) }}"
+       class="inline-flex items-center px-4 py-2 border border-green-300 shadow-sm text-sm font-medium rounded-md text-green-700 bg-green-50 hover:bg-green-100">
+        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Exporter CSV
+    </a>
     <a href="{{ path('calendar_event_detail', {id: event.id}) }}"
        target="_blank"
        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
@@ -111,90 +119,59 @@
     {% endif %}
 </div>
 
-<!-- Ajouter un participant -->
+<!-- Récapitulatif encadrants/autonomes -->
+{% set instructorCount = 0 %}
+{% set autonomousCount = 0 %}
+{% for participation in activeParticipants %}
+    {% if participation.participationType == 'instructor' %}
+        {% set instructorCount = instructorCount + 1 %}
+    {% elseif participation.participationType == 'autonomous' %}
+        {% set autonomousCount = autonomousCount + 1 %}
+    {% endif %}
+{% endfor %}
+
+{% if instructorCount > 0 or autonomousCount > 0 %}
 <div class="bg-white shadow-sm rounded-lg mb-6">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900">Ajouter un participant</h2>
+    <div class="px-6 py-4">
+        <h3 class="text-sm font-medium text-gray-900 mb-3">Répartition encadrants/autonomes</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-green-50 rounded-lg p-4 border-2 border-green-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-medium text-green-900">👨‍🏫 Encadrants</h4>
+                        <p class="text-xs text-green-700 mt-1">Participants encadrant l'événement</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-green-900">{{ instructorCount }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-4 border-2 border-purple-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-medium text-purple-900">🤿 Autonomes</h4>
+                        <p class="text-xs text-purple-700 mt-1">Participants en autonomie</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-purple-900">{{ autonomousCount }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if instructorCount > 0 and autonomousCount > 0 %}
+            <div class="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div class="flex items-center text-sm text-blue-900">
+                    <svg class="h-5 w-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="font-medium">Ratio : </span>
+                    <span class="ml-1">{{ instructorCount }} encadrant(s) pour {{ autonomousCount }} autonome(s)</span>
+                </div>
+            </div>
+        {% endif %}
     </div>
-    <form method="POST" action="{{ path('dp_events_add_participant', {id: event.id}) }}" class="px-6 py-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <label for="user_email" class="block text-sm font-medium text-gray-700 mb-1">Rechercher par email</label>
-                <input type="email" id="user_email" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm" placeholder="email@exemple.com">
-            </div>
-            <div>
-                <label for="user_id" class="block text-sm font-medium text-gray-700 mb-1">Sélectionner le plongeur</label>
-                <select id="user_id" name="user_id" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm" required>
-                    <option value="">-- Choisir un plongeur --</option>
-                </select>
-            </div>
-            {% if event.clubMeetingTime and event.siteMeetingTime %}
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Point de rendez-vous</label>
-                <select name="meeting_point" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
-                    <option value="">-- Non défini --</option>
-                    <option value="club">🏠 RDV au club ({{ event.clubMeetingTime|date('H:i') }})</option>
-                    <option value="site">🌊 RDV sur site ({{ event.siteMeetingTime|date('H:i') }})</option>
-                </select>
-            </div>
-            {% elseif event.clubMeetingTime %}
-                <input type="hidden" name="meeting_point" value="club">
-            {% elseif event.siteMeetingTime %}
-                <input type="hidden" name="meeting_point" value="site">
-            {% endif %}
-        </div>
-        <div class="mt-4">
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark">
-                <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Ajouter le participant
-            </button>
-        </div>
-    </form>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const emailInput = document.getElementById('user_email');
-    const userSelect = document.getElementById('user_id');
-
-    // Charger les utilisateurs via AJAX
-    fetch('/dp/api/users')
-        .then(response => response.json())
-        .then(users => {
-            users.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.id;
-                option.textContent = user.displayName + ' (' + user.email + ')';
-                option.setAttribute('data-email', user.email.toLowerCase());
-                userSelect.appendChild(option);
-            });
-        });
-
-    // Filtrer par email
-    emailInput.addEventListener('input', function() {
-        const searchValue = this.value.toLowerCase();
-        const options = userSelect.querySelectorAll('option');
-
-        options.forEach(option => {
-            if (!option.value) return; // Skip placeholder
-            const email = option.getAttribute('data-email');
-            if (email && email.includes(searchValue)) {
-                option.style.display = '';
-            } else {
-                option.style.display = 'none';
-            }
-        });
-
-        // Si une seule correspondance, la sélectionner
-        const visibleOptions = Array.from(options).filter(o => o.value && o.style.display !== 'none');
-        if (visibleOptions.length === 1) {
-            userSelect.value = visibleOptions[0].value;
-        }
-    });
-});
-</script>
+{% endif %}
 
 <!-- Participants actifs -->
 <div class="bg-white shadow-sm rounded-lg mb-6">
@@ -221,16 +198,22 @@ document.addEventListener('DOMContentLoaded', function() {
                             Participant
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Téléphone
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Niveau
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Certificat médical
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             RDV
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Inscription
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Statut
+                            Places
                         </th>
                         <th scope="col" class="relative px-6 py-3">
                             <span class="sr-only">Actions</span>
@@ -242,22 +225,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-8 w-8">
-                                        <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                                            <span class="text-sm font-medium text-gray-700">
-                                                {{ participation.participant.fullName|slice(0, 1)|upper }}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {{ avatar_macro.user_avatar(participation.participant, 'md') }}
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">
                                             {{ participation.participant.fullName }}
                                         </div>
-                                        <div class="text-sm text-gray-500">
-                                            {{ participation.participant.email }}
+                                        <div class="text-xs text-gray-500">
+                                            Inscrit le {{ participation.registrationDate|date('d/m/Y') }}
                                         </div>
                                     </div>
                                 </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if participation.participant.phoneNumber %}
+                                    <a href="tel:{{ participation.participant.phoneNumber }}" class="text-club-blue hover:underline text-sm">
+                                        {{ participation.participant.phoneNumber }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-sm text-gray-400">-</span>
+                                {% endif %}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if participation.participant.highestDivingLevel %}
@@ -265,7 +251,48 @@ document.addEventListener('DOMContentLoaded', function() {
                                         {{ participation.participant.highestDivingLevel.name }}
                                     </span>
                                 {% else %}
-                                    <span class="text-sm text-gray-400">Non défini</span>
+                                    <span class="text-sm text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if participation.participationType == 'instructor' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        👨‍🏫 Encadrant
+                                    </span>
+                                {% elseif participation.participationType == 'autonomous' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        🤿 Autonome
+                                    </span>
+                                {% else %}
+                                    <span class="text-sm text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if participation.participant.medicalCertificateExpiry %}
+                                    {% set isExpired = participation.participant.medicalCertificateExpiry < date('today') %}
+                                    {% set isExpiringSoon = participation.participant.medicalCertificateExpiry < date('+30 days') and not isExpired %}
+                                    <div class="text-sm">
+                                        <span class="{% if isExpired %}text-red-600 font-semibold{% elseif isExpiringSoon %}text-orange-600 font-medium{% else %}text-gray-900{% endif %}">
+                                            {{ participation.participant.medicalCertificateExpiry|date('d/m/Y') }}
+                                        </span>
+                                        {% if isExpired %}
+                                            <div class="text-xs text-red-500 mt-0.5">⚠️ Expiré</div>
+                                        {% elseif isExpiringSoon %}
+                                            <div class="text-xs text-orange-500 mt-0.5">⏰ Expire bientôt</div>
+                                        {% endif %}
+                                        {% if participation.participant.medicalCertificateFile %}
+                                            <a href="{{ path('download_medical_certificate', {userId: participation.participant.id}) }}"
+                                               class="text-xs text-club-blue hover:underline flex items-center mt-1"
+                                               target="_blank">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                Voir le certificat
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-sm text-gray-400">Non renseigné</span>
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -280,16 +307,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </span>
                                     {% endif %}
                                 {% else %}
-                                    <span class="text-sm text-gray-400">Non défini</span>
+                                    <span class="text-sm text-gray-400">-</span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ participation.registrationDate|date('d/m/Y à H:i') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    {{ participation.statusDisplayName }}
-                                </span>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="text-sm font-semibold text-gray-900">{{ participation.quantity }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <form method="POST" action="{{ path('dp_events_remove_participant', {id: event.id, participationId: participation.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir désinscrire ce participant ?');" style="display: inline;">
@@ -348,13 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-8 w-8">
-                                        <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                                            <span class="text-sm font-medium text-gray-700">
-                                                {{ participation.participant.fullName|slice(0, 1)|upper }}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {{ avatar_macro.user_avatar(participation.participant, 'sm') }}
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">
                                             {{ participation.participant.fullName }}

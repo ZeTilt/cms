@@ -7,15 +7,43 @@
     <!-- En-tête -->
     <div class="bg-white shadow-sm rounded-lg mb-8">
         <div class="px-6 py-6 border-b border-gray-200">
-            <div class="flex items-center">
-                <div class="h-12 w-12 rounded-full bg-club-orange flex items-center justify-center">
-                    <span class="text-lg font-medium text-white">
-                        {{ user.fullName|slice(0, 1)|upper }}
-                    </span>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    {% if user.avatarFile %}
+                        <img src="{{ asset('uploads/avatars/' ~ user.avatarFile) }}"
+                             alt="Avatar {{ user.fullName }}"
+                             class="h-20 w-20 rounded-full object-cover border-2 border-club-orange">
+                    {% else %}
+                        <div class="h-20 w-20 rounded-full bg-club-orange flex items-center justify-center border-2 border-club-orange">
+                            <span class="text-2xl font-medium text-white">
+                                {{ user.fullName|slice(0, 1)|upper }}
+                            </span>
+                        </div>
+                    {% endif %}
+                    <div class="ml-4">
+                        <h1 class="text-2xl font-bold text-gray-900">{{ user.fullName }}</h1>
+                        <p class="text-sm text-gray-500">{{ user.email }}</p>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <h1 class="text-2xl font-bold text-gray-900">{{ user.fullName }}</h1>
-                    <p class="text-sm text-gray-500">{{ user.email }}</p>
+
+                <!-- Upload avatar -->
+                <div class="flex flex-col items-end">
+                    <form method="POST" action="{{ path('user_profile_upload_avatar') }}" enctype="multipart/form-data" id="avatar-form">
+                        <label for="avatar-input" class="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Changer l'avatar
+                        </label>
+                        <input type="file" id="avatar-input" name="avatar" accept="image/*" class="hidden" onchange="document.getElementById('avatar-form').submit()">
+                    </form>
+                    {% if user.avatarFile %}
+                        <form method="POST" action="{{ path('user_profile_delete_avatar') }}" class="mt-2">
+                            <button type="submit" class="text-xs text-red-600 hover:text-red-800" onclick="return confirm('Supprimer votre avatar ?')">
+                                Supprimer l'avatar
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -59,20 +87,47 @@
         </div>
     </div>
 
-    <!-- Niveau de plongée -->
+    <!-- Niveaux et Activités -->
     <div class="bg-white shadow-sm rounded-lg mb-8">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-medium text-gray-900">🏊 Niveau de Plongée</h2>
+            <h2 class="text-lg font-medium text-gray-900">🏊 Activités et Niveaux</h2>
             <p class="mt-1 text-sm text-gray-500">
-                Définissez votre niveau de plongée pour accéder aux événements correspondants.
+                Définissez vos activités et niveaux pour accéder aux événements correspondants.
             </p>
         </div>
 
         <div class="px-6 py-6">
-            <form method="POST" action="{{ path('user_profile_diving_level') }}" class="space-y-4">
+            <form method="POST" action="{{ path('user_profile_activities') }}" class="space-y-6">
+                <!-- Activités pratiquées -->
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        Mes activités
+                    </label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_diver" value="1" {{ user.isDiver ? 'checked' : '' }}
+                                   onchange="document.getElementById('diving_level_section').style.display = this.checked ? 'block' : 'none'"
+                                   class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">🤿 Je pratique la plongée bouteille</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_freediver" value="1" {{ user.isFreediver ? 'checked' : '' }}
+                                   onchange="document.getElementById('freediving_level_section').style.display = this.checked ? 'block' : 'none'"
+                                   class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">🌊 Je pratique l'apnée</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_pilot" value="1" {{ user.isPilot ? 'checked' : '' }}
+                                   class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">⛵ Je suis pilote de bateau</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Niveau de plongée -->
+                <div id="diving_level_section" style="display: {{ user.isDiver ? 'block' : 'none' }}">
                     <label for="diving_level_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        Mon niveau actuel
+                        Niveau de plongée bouteille
                     </label>
                     <select name="diving_level_id" id="diving_level_id"
                             class="block w-full md:w-96 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
@@ -81,32 +136,104 @@
                             <option value="{{ level.id }}"
                                     {{ user.highestDivingLevel and user.highestDivingLevel.id == level.id ? 'selected' : '' }}>
                                 {{ level.name }}
-                                {% if level.description %}
-                                    - {{ level.description }}
-                                {% endif %}
+                                {% if level.description %} - {{ level.description }}{% endif %}
                             </option>
                         {% endfor %}
                     </select>
-
-                    {% if user.highestDivingLevel %}
-                        <p class="mt-2 text-sm text-green-600">
-                            ✓ Niveau actuel : <strong>{{ user.highestDivingLevel.name }}</strong>
-                        </p>
-                    {% else %}
-                        <p class="mt-2 text-sm text-yellow-600">
-                            ⚠️ Aucun niveau défini - vous ne pourrez pas vous inscrire aux événements avec niveau minimum requis
-                        </p>
-                    {% endif %}
                 </div>
 
-                <div class="flex items-center justify-between">
+                <!-- Niveau d'apnée -->
+                <div id="freediving_level_section" style="display: {{ user.isFreediver ? 'block' : 'none' }}">
+                    <label for="freediving_level_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Niveau d'apnée
+                    </label>
+                    <select name="freediving_level_id" id="freediving_level_id"
+                            class="block w-full md:w-96 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <option value="">-- Sélectionner mon niveau --</option>
+                        {% for level in freedivingLevels %}
+                            <option value="{{ level.id }}"
+                                    {{ user.highestFreedivingLevel and user.highestFreedivingLevel.id == level.id ? 'selected' : '' }}>
+                                {{ level.name }}
+                                {% if level.description %} - {{ level.description }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="flex items-center justify-end pt-4 border-t">
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Informations personnelles -->
+    <div class="bg-white shadow-sm rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">👤 Informations Personnelles</h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Ces informations sont visibles uniquement par les Directeurs de Plongée.
+            </p>
+        </div>
+
+        <div class="px-6 py-6">
+            <form method="POST" action="{{ path('user_profile_personal_info') }}" class="space-y-6">
+                <!-- Téléphone mobile -->
+                <div>
+                    <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">
+                        📱 Numéro de téléphone mobile
+                    </label>
+                    <input type="tel"
+                           name="phone_number"
+                           id="phone_number"
+                           value="{{ user.phoneNumber ?? '' }}"
+                           placeholder="Ex: 06 12 34 56 78"
+                           class="block w-full md:w-96 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Pour vous contacter en cas d'urgence
+                    </p>
+                </div>
+
+                <!-- Date de naissance -->
+                <div>
+                    <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">
+                        🎂 Date de naissance
+                    </label>
+                    <input type="date"
+                           name="date_of_birth"
+                           id="date_of_birth"
+                           value="{{ user.dateOfBirth ? user.dateOfBirth|date('Y-m-d') : '' }}"
+                           class="block w-full md:w-64 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Utile pour les assurances et validité des certificats
+                    </p>
+                </div>
+
+                <!-- Adresse postale -->
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
+                        🏠 Adresse postale
+                    </label>
+                    <textarea name="address"
+                              id="address"
+                              rows="3"
+                              placeholder="Numéro et rue&#10;Code postal et ville"
+                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">{{ user.address ?? '' }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Pour l'envoi de documents administratifs
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between pt-4 border-t">
                     <div class="text-sm text-gray-500">
-                        <p><strong>Pourquoi définir mon niveau ?</strong></p>
-                        <ul class="mt-1 list-disc list-inside space-y-1">
-                            <li>Accès aux événements correspondant à votre niveau</li>
-                            <li>Visibilité pour les directeurs de plongée</li>
-                            <li>Respect des conditions de sécurité du club</li>
-                        </ul>
+                        <p><strong>🔒 Confidentialité :</strong></p>
+                        <p class="mt-1">Ces informations ne sont visibles que par les DP et ne sont jamais partagées.</p>
                     </div>
 
                     <button type="submit"
@@ -114,33 +241,500 @@
                         <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        Mettre à jour
+                        Enregistrer
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Autres attributs (si système d'attributs existant) -->
-    {% if is_granted('ROLE_USER') %}
-    <div class="bg-white shadow-sm rounded-lg">
+    <!-- Certificat médical -->
+    <div class="bg-white shadow-sm rounded-lg mb-8">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-medium text-gray-900">📋 Autres Informations</h2>
+            <h2 class="text-lg font-medium text-gray-900">🏥 Certificat Médical</h2>
             <p class="mt-1 text-sm text-gray-500">
-                Gérez vos autres informations de profil.
+                Ajoutez votre certificat médical pour permettre aux DP de vérifier sa validité.
             </p>
         </div>
 
-        <div class="px-6 py-4">
-            <a href="{{ path('user_attributes_index') }}"
-               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
-                <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Gérer mes attributs
-            </a>
+        <div class="px-6 py-6">
+            <form method="POST" action="{{ path('user_profile_medical_certificate') }}" enctype="multipart/form-data" class="space-y-6">
+                <!-- Statut actuel -->
+                {% if user.medicalCertificateFile %}
+                    <div class="rounded-md p-4 {{ user.isMedicalCertificateValid() ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200' }}">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                {% if user.isMedicalCertificateValid() %}
+                                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% else %}
+                                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <h3 class="text-sm font-medium {{ user.isMedicalCertificateValid() ? 'text-green-800' : 'text-red-800' }}">
+                                    {% if user.isMedicalCertificateValid() %}
+                                        ✓ Certificat médical valide
+                                    {% else %}
+                                        ⚠️ Certificat médical expiré
+                                    {% endif %}
+                                </h3>
+                                <div class="mt-2 text-sm {{ user.isMedicalCertificateValid() ? 'text-green-700' : 'text-red-700' }}">
+                                    <p>Date d'expiration : {{ user.medicalCertificateExpiry|date('d/m/Y') }}</p>
+                                    <p class="mt-1">
+                                        <a href="{{ asset('uploads/medical_certificates/' ~ user.medicalCertificateFile) }}"
+                                           target="_blank"
+                                           class="underline hover:no-underline">
+                                            Voir le certificat
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="rounded-md bg-yellow-50 border border-yellow-200 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-800">
+                                    Aucun certificat médical
+                                </h3>
+                                <p class="mt-2 text-sm text-yellow-700">
+                                    Vous devez fournir un certificat médical valide pour participer aux plongées.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Upload du certificat -->
+                <div>
+                    <label for="medical_certificate_file" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ user.medicalCertificateFile ? 'Remplacer le certificat' : 'Fichier du certificat' }}
+                    </label>
+                    <input type="file"
+                           name="medical_certificate_file"
+                           id="medical_certificate_file"
+                           accept=".pdf,.jpg,.jpeg,.png"
+                           class="block w-full text-sm text-gray-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-medium
+                                  file:bg-club-orange file:text-white
+                                  hover:file:bg-club-orange-dark
+                                  cursor-pointer">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Formats acceptés : PDF, JPG, PNG (max 5 Mo)
+                    </p>
+                </div>
+
+                <!-- Date d'expiration -->
+                <div>
+                    <label for="medical_certificate_expiry" class="block text-sm font-medium text-gray-700 mb-2">
+                        Date d'expiration *
+                    </label>
+                    <input type="date"
+                           name="medical_certificate_expiry"
+                           id="medical_certificate_expiry"
+                           value="{{ user.medicalCertificateExpiry ? user.medicalCertificateExpiry|date('Y-m-d') : '' }}"
+                           required
+                           class="block w-full md:w-64 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Un certificat médical est généralement valide 1 an
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between pt-4">
+                    <div class="text-sm text-gray-500">
+                        <p><strong>Informations importantes :</strong></p>
+                        <ul class="mt-1 list-disc list-inside space-y-1">
+                            <li>Le certificat doit être en cours de validité</li>
+                            <li>Visible uniquement par les Directeurs de Plongée</li>
+                            <li>Vous serez notifié 30 jours avant l'expiration</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        Enregistrer le certificat
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    {% endif %}
+
+    <!-- Licence FFESSM -->
+    <div class="bg-white shadow-sm rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">🎫 Licence FFESSM</h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Ajoutez votre justificatif de licence pour permettre aux DP de vérifier sa validité.
+            </p>
+        </div>
+
+        <div class="px-6 py-6">
+            <form method="POST" action="{{ path('user_profile_licence') }}" enctype="multipart/form-data" class="space-y-6">
+                <!-- Statut actuel -->
+                {% if user.licenceFile %}
+                    <div class="rounded-md p-4 {{ user.isLicenceValid() ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200' }}">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                {% if user.isLicenceValid() %}
+                                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% else %}
+                                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <h3 class="text-sm font-medium {{ user.isLicenceValid() ? 'text-green-800' : 'text-red-800' }}">
+                                    {% if user.isLicenceValid() %}
+                                        ✓ Licence valide
+                                    {% else %}
+                                        ⚠️ Licence expirée
+                                    {% endif %}
+                                </h3>
+                                <div class="mt-2 text-sm {{ user.isLicenceValid() ? 'text-green-700' : 'text-red-700' }}">
+                                    {% if user.licenceNumber %}
+                                        <p>Numéro : {{ user.licenceNumber }}</p>
+                                    {% endif %}
+                                    <p>Date d'expiration : {{ user.licenceExpiry|date('d/m/Y') }}</p>
+                                    <p class="mt-1">
+                                        <a href="{{ asset('uploads/licences/' ~ user.licenceFile) }}"
+                                           target="_blank"
+                                           class="underline hover:no-underline">
+                                            Voir le justificatif
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="rounded-md bg-yellow-50 border border-yellow-200 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-800">
+                                    Aucun justificatif de licence
+                                </h3>
+                                <p class="mt-2 text-sm text-yellow-700">
+                                    Vous devez fournir un justificatif de licence valide pour participer aux plongées.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Numéro de licence -->
+                <div>
+                    <label for="licence_number" class="block text-sm font-medium text-gray-700 mb-2">
+                        Numéro de licence
+                    </label>
+                    <input type="text"
+                           name="licence_number"
+                           id="licence_number"
+                           value="{{ user.licenceNumber ?? '' }}"
+                           placeholder="Ex: 123456789"
+                           class="block w-full md:w-96 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Numéro visible sur votre carte de licence
+                    </p>
+                </div>
+
+                <!-- Upload du justificatif -->
+                <div>
+                    <label for="licence_file" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ user.licenceFile ? 'Remplacer le justificatif' : 'Fichier du justificatif' }}
+                    </label>
+                    <input type="file"
+                           name="licence_file"
+                           id="licence_file"
+                           accept=".pdf,.jpg,.jpeg,.png"
+                           class="block w-full text-sm text-gray-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-medium
+                                  file:bg-club-orange file:text-white
+                                  hover:file:bg-club-orange-dark
+                                  cursor-pointer">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Formats acceptés : PDF, JPG, PNG (max 5 Mo)
+                    </p>
+                </div>
+
+                <!-- Date d'expiration -->
+                <div>
+                    <label for="licence_expiry" class="block text-sm font-medium text-gray-700 mb-2">
+                        Date d'expiration (optionnelle)
+                    </label>
+                    <input type="date"
+                           name="licence_expiry"
+                           id="licence_expiry"
+                           value="{{ user.licenceExpiry ? user.licenceExpiry|date('Y-m-d') : '' }}"
+                           class="block w-full md:w-64 border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-xs text-gray-500">
+                        La licence FFESSM est généralement valide pour la saison (31 août)
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between pt-4">
+                    <div class="text-sm text-gray-500">
+                        <p><strong>Informations importantes :</strong></p>
+                        <ul class="mt-1 list-disc list-inside space-y-1">
+                            <li>La licence doit être en cours de validité</li>
+                            <li>Visible uniquement par les Directeurs de Plongée</li>
+                            <li>Vous serez notifié 30 jours avant l'expiration</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        Enregistrer la licence
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notifications Push -->
+    <div class="bg-white shadow-sm rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">
+                🔔 Notifications push
+            </h2>
+        </div>
+        <div class="px-6 py-6">
+            <div id="push-notifications-section">
+                <!-- Status des notifications -->
+                <div id="push-status" class="mb-6">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900">Statut</h3>
+                            <p id="push-status-text" class="text-sm text-gray-500 mt-1">Vérification...</p>
+                        </div>
+                        <button id="toggle-push"
+                                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <span id="toggle-push-text">Charger...</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Préférences -->
+                <div id="push-preferences" class="hidden space-y-4">
+                    <div class="border-t border-gray-200 pt-4">
+                        <h3 class="text-sm font-medium text-gray-900 mb-3">Préférences de notifications</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-start">
+                                <input type="checkbox" id="pref-registration" class="push-preference mt-1 mr-3 h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                                <span class="text-sm text-gray-700">
+                                    <strong>Nouvelles inscriptions</strong><br>
+                                    <span class="text-xs text-gray-500">Notification quand un participant s'inscrit (DP uniquement)</span>
+                                </span>
+                            </label>
+                            <label class="flex items-start">
+                                <input type="checkbox" id="pref-cancellation" class="push-preference mt-1 mr-3 h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                                <span class="text-sm text-gray-700">
+                                    <strong>Désinscriptions</strong><br>
+                                    <span class="text-xs text-gray-500">Notification quand un participant se désinscrit (DP uniquement)</span>
+                                </span>
+                            </label>
+                            <label class="flex items-start">
+                                <input type="checkbox" id="pref-waiting-list" class="push-preference mt-1 mr-3 h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                                <span class="text-sm text-gray-700">
+                                    <strong>Place libérée</strong><br>
+                                    <span class="text-xs text-gray-500">Notification quand une place se libère en liste d'attente</span>
+                                </span>
+                            </label>
+                            <label class="flex items-start">
+                                <input type="checkbox" id="pref-new-event" class="push-preference mt-1 mr-3 h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                                <span class="text-sm text-gray-700">
+                                    <strong>Nouvelles plongées</strong><br>
+                                    <span class="text-xs text-gray-500">Notification quand une plongée est créée et que votre niveau permet d'y participer</span>
+                                </span>
+                            </label>
+                            <label class="flex items-start">
+                                <input type="checkbox" id="pref-as-dp" class="push-preference mt-1 mr-3 h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                                <span class="text-sm text-gray-700">
+                                    <strong>Notifications DP</strong><br>
+                                    <span class="text-xs text-gray-500">Toutes les notifications en tant que Directeur de Plongée</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">
+                                Les notifications push vous permettent de recevoir des alertes en temps réel même quand le site n'est pas ouvert.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Attendre que window.pushManager soit initialisé
+        function waitForPushManager() {
+            return new Promise((resolve) => {
+                if (window.pushManager) {
+                    resolve();
+                } else {
+                    const checkInterval = setInterval(() => {
+                        if (window.pushManager) {
+                            clearInterval(checkInterval);
+                            resolve();
+                        }
+                    }, 100);
+
+                    // Timeout après 5 secondes
+                    setTimeout(() => {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }, 5000);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const statusText = document.getElementById('push-status-text');
+            const toggleButton = document.getElementById('toggle-push');
+            const toggleButtonText = document.getElementById('toggle-push-text');
+            const preferencesSection = document.getElementById('push-preferences');
+
+            try {
+                // Vérifier le support des notifications
+                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    statusText.textContent = '❌ Notifications non supportées par votre navigateur';
+                    toggleButton.style.display = 'none';
+                    return;
+                }
+
+                // Attendre que pushManager soit prêt
+                statusText.textContent = 'Initialisation...';
+                await waitForPushManager();
+
+                if (!window.pushManager) {
+                    statusText.textContent = '⚠️ Service non disponible';
+                    toggleButtonText.textContent = 'Réessayer';
+                    toggleButton.addEventListener('click', () => location.reload());
+                    return;
+                }
+
+                async function updateStatus() {
+                    try {
+                        const isSubscribed = await window.pushManager.isSubscribed();
+                        if (isSubscribed) {
+                            statusText.textContent = '✅ Notifications activées';
+                            statusText.className = 'text-sm text-green-600 mt-1 font-medium';
+                            toggleButtonText.textContent = 'Désactiver';
+                            toggleButton.className = 'px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50';
+                            preferencesSection.classList.remove('hidden');
+                            await loadPreferences();
+                        } else {
+                            statusText.textContent = '❌ Notifications désactivées';
+                            statusText.className = 'text-sm text-gray-600 mt-1';
+                            toggleButtonText.textContent = 'Activer';
+                            toggleButton.className = 'px-4 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50';
+                            preferencesSection.classList.add('hidden');
+                        }
+                    } catch (error) {
+                        console.error('Error updating status:', error);
+                        statusText.textContent = '⚠️ Erreur de vérification';
+                        statusText.className = 'text-sm text-red-600 mt-1';
+                    }
+                }
+
+            async function loadPreferences() {
+                try {
+                    const response = await fetch('/api/push/subscriptions');
+                    const subscriptions = await response.json();
+                    if (subscriptions.length > 0) {
+                        const prefs = subscriptions[0].preferences;
+                        document.getElementById('pref-registration').checked = prefs.notifyEventRegistration;
+                        document.getElementById('pref-cancellation').checked = prefs.notifyEventCancellation;
+                        document.getElementById('pref-waiting-list').checked = prefs.notifyWaitingListPromotion;
+                        document.getElementById('pref-new-event').checked = prefs.notifyNewEvent;
+                        document.getElementById('pref-as-dp').checked = prefs.notifyAsDP;
+                    }
+                } catch (error) {
+                    console.error('Error loading preferences:', error);
+                }
+            }
+
+            toggleButton.addEventListener('click', async function() {
+                toggleButton.disabled = true;
+                const isSubscribed = await window.pushManager.isSubscribed();
+                if (isSubscribed) {
+                    await window.pushManager.unsubscribe();
+                } else {
+                    const result = await window.pushManager.subscribe();
+                    if (result.reason === 'permission_denied') {
+                        alert('Autorisez les notifications dans votre navigateur pour activer cette fonctionnalité.');
+                    }
+                }
+                await updateStatus();
+                toggleButton.disabled = false;
+            });
+
+                document.querySelectorAll('.push-preference').forEach(checkbox => {
+                    checkbox.addEventListener('change', async function() {
+                        const preferences = {
+                            notifyEventRegistration: document.getElementById('pref-registration').checked,
+                            notifyEventCancellation: document.getElementById('pref-cancellation').checked,
+                            notifyWaitingListPromotion: document.getElementById('pref-waiting-list').checked,
+                            notifyNewEvent: document.getElementById('pref-new-event').checked,
+                            notifyAsDP: document.getElementById('pref-as-dp').checked
+                        };
+                        const result = await window.pushManager.updatePreferences(preferences);
+                        if (result.success) {
+                            const originalText = statusText.textContent;
+                            statusText.textContent = '✅ Préférences enregistrées !';
+                            setTimeout(() => { statusText.textContent = originalText; }, 2000);
+                        }
+                    });
+                });
+
+                await updateStatus();
+            } catch (error) {
+                console.error('Push notification initialization error:', error);
+                statusText.textContent = '⚠️ Erreur d\'initialisation';
+                statusText.className = 'text-sm text-red-600 mt-1';
+                toggleButtonText.textContent = 'Réessayer';
+                toggleButton.addEventListener('click', () => location.reload());
+            }
+        });
+    </script>
 </div>
 {% endblock %}

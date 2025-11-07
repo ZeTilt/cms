@@ -87,9 +87,9 @@
         <div>
             <div class="flex items-center">
                 <input type="hidden" name="is_active" value="0">
-                <input type="checkbox" 
-                       name="is_active" 
-                       id="is_active" 
+                <input type="checkbox"
+                       name="is_active"
+                       id="is_active"
                        value="1"
                        {{ (isNew or diving_level.active) ? 'checked' : '' }}
                        class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
@@ -98,6 +98,23 @@
                 </label>
             </div>
             <p class="mt-1 text-xs text-gray-500">Les niveaux inactifs n'apparaissent pas dans les formulaires</p>
+        </div>
+
+        <!-- Est encadrant -->
+        <div>
+            <div class="flex items-center">
+                <input type="hidden" name="is_instructor" value="0">
+                <input type="checkbox"
+                       name="is_instructor"
+                       id="is_instructor"
+                       value="1"
+                       {{ (not isNew and diving_level.instructor) ? 'checked' : '' }}
+                       class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                <label for="is_instructor" class="ml-2 block text-sm text-gray-900">
+                    Est un niveau encadrant
+                </label>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Les titulaires de ce niveau peuvent encadrer des plongées (E1, E2, E3, MF1, MF2, etc.)</p>
         </div>
 
         <!-- Actions -->

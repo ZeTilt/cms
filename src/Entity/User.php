@@ -54,6 +54,63 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?DivingLevel $highestDivingLevel = null;
 
+    #[ORM\ManyToOne(targetEntity: FreedivingLevel::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?FreedivingLevel $highestFreedivingLevel = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isDiver = false;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isFreediver = false;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPilot = false;
+
+    // Nouveaux champs pour remplacer le système EAV
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $licenceNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $licenceFile = null;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $licenceExpiry = null;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $medicalCertificateDate = null;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $medicalCertificateExpiry = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $medicalCertificateFile = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $insuranceNumber = null;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $insuranceExpiry = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $emergencyContactName = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $emergencyContactPhone = null;
+
+    // Informations personnelles (visibles uniquement par les DP)
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $phoneNumber = null;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $dateOfBirth = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $address = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatarFile = null;
+
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Gallery::class, orphanRemoval: true)]
     private Collection $galleries;
 
@@ -245,6 +302,64 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isInstructor(): bool
+    {
+        return $this->highestDivingLevel !== null && $this->highestDivingLevel->isInstructor();
+    }
+
+    public function getHighestFreedivingLevel(): ?FreedivingLevel
+    {
+        return $this->highestFreedivingLevel;
+    }
+
+    public function setHighestFreedivingLevel(?FreedivingLevel $highestFreedivingLevel): static
+    {
+        $this->highestFreedivingLevel = $highestFreedivingLevel;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function isFreedivingInstructor(): bool
+    {
+        return $this->highestFreedivingLevel !== null && $this->highestFreedivingLevel->isInstructor();
+    }
+
+    public function isDiver(): bool
+    {
+        return $this->isDiver;
+    }
+
+    public function setDiver(bool $isDiver): static
+    {
+        $this->isDiver = $isDiver;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function isFreediver(): bool
+    {
+        return $this->isFreediver;
+    }
+
+    public function setFreediver(bool $isFreediver): static
+    {
+        $this->isFreediver = $isFreediver;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function isPilot(): bool
+    {
+        return $this->isPilot;
+    }
+
+    public function setPilot(bool $isPilot): static
+    {
+        $this->isPilot = $isPilot;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
     public function isEmailVerified(): bool
     {
         return $this->emailVerified;
@@ -274,5 +389,204 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->emailVerificationToken = bin2hex(random_bytes(32));
         $this->updatedAt = new \DateTimeImmutable();
         return $this->emailVerificationToken;
+    }
+
+    // Getters et Setters pour les nouveaux champs (remplacement EAV)
+
+    public function getLicenceNumber(): ?string
+    {
+        return $this->licenceNumber;
+    }
+
+    public function setLicenceNumber(?string $licenceNumber): static
+    {
+        $this->licenceNumber = $licenceNumber;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getLicenceFile(): ?string
+    {
+        return $this->licenceFile;
+    }
+
+    public function setLicenceFile(?string $licenceFile): static
+    {
+        $this->licenceFile = $licenceFile;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getLicenceExpiry(): ?\DateTimeInterface
+    {
+        return $this->licenceExpiry;
+    }
+
+    public function setLicenceExpiry(?\DateTimeInterface $licenceExpiry): static
+    {
+        $this->licenceExpiry = $licenceExpiry;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function isLicenceValid(): bool
+    {
+        if (!$this->licenceExpiry) {
+            return false;
+        }
+        return $this->licenceExpiry >= new \DateTime('today');
+    }
+
+    public function getMedicalCertificateDate(): ?\DateTimeInterface
+    {
+        return $this->medicalCertificateDate;
+    }
+
+    public function setMedicalCertificateDate(?\DateTimeInterface $medicalCertificateDate): static
+    {
+        $this->medicalCertificateDate = $medicalCertificateDate;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getMedicalCertificateExpiry(): ?\DateTimeInterface
+    {
+        return $this->medicalCertificateExpiry;
+    }
+
+    public function setMedicalCertificateExpiry(?\DateTimeInterface $medicalCertificateExpiry): static
+    {
+        $this->medicalCertificateExpiry = $medicalCertificateExpiry;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getMedicalCertificateFile(): ?string
+    {
+        return $this->medicalCertificateFile;
+    }
+
+    public function setMedicalCertificateFile(?string $medicalCertificateFile): static
+    {
+        $this->medicalCertificateFile = $medicalCertificateFile;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getInsuranceNumber(): ?string
+    {
+        return $this->insuranceNumber;
+    }
+
+    public function setInsuranceNumber(?string $insuranceNumber): static
+    {
+        $this->insuranceNumber = $insuranceNumber;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getInsuranceExpiry(): ?\DateTimeInterface
+    {
+        return $this->insuranceExpiry;
+    }
+
+    public function setInsuranceExpiry(?\DateTimeInterface $insuranceExpiry): static
+    {
+        $this->insuranceExpiry = $insuranceExpiry;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getEmergencyContactName(): ?string
+    {
+        return $this->emergencyContactName;
+    }
+
+    public function setEmergencyContactName(?string $emergencyContactName): static
+    {
+        $this->emergencyContactName = $emergencyContactName;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getEmergencyContactPhone(): ?string
+    {
+        return $this->emergencyContactPhone;
+    }
+
+    public function setEmergencyContactPhone(?string $emergencyContactPhone): static
+    {
+        $this->emergencyContactPhone = $emergencyContactPhone;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getDateOfBirth(): ?\DateTimeInterface
+    {
+        return $this->dateOfBirth;
+    }
+
+    public function setDateOfBirth(?\DateTimeInterface $dateOfBirth): static
+    {
+        $this->dateOfBirth = $dateOfBirth;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Vérifie si le certificat médical est valide (non expiré)
+     */
+    public function isMedicalCertificateValid(): bool
+    {
+        if (!$this->medicalCertificateExpiry) {
+            return false;
+        }
+        return $this->medicalCertificateExpiry >= new \DateTime('today');
+    }
+
+    /**
+     * Vérifie si l'assurance est valide (non expirée)
+     */
+    public function isInsuranceValid(): bool
+    {
+        if (!$this->insuranceExpiry) {
+            return false;
+        }
+        return $this->insuranceExpiry >= new \DateTime('today');
+    }
+
+    public function getAvatarFile(): ?string
+    {
+        return $this->avatarFile;
+    }
+
+    public function setAvatarFile(?string $avatarFile): static
+    {
+        $this->avatarFile = $avatarFile;
+        return $this;
     }
 }

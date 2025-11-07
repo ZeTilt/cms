@@ -250,11 +250,6 @@ class GalleryController extends AbstractController
             $errors[] = 'Title is required.';
         }
 
-        $visibility = $request->request->get('visibility', 'public');
-        if (!in_array($visibility, ['public', 'private'])) {
-            $errors[] = 'Invalid visibility setting.';
-        }
-
         if (!empty($errors)) {
             foreach ($errors as $error) {
                 $this->addFlash('error', $error);
@@ -262,19 +257,9 @@ class GalleryController extends AbstractController
             return null;
         }
 
-        // Update gallery
+        // Update gallery (toutes les galeries sont maintenant publiques)
         $gallery->setTitle($title);
         $gallery->setDescription($request->request->get('description', ''));
-        $gallery->setVisibility($visibility);
-        
-        if ($visibility === 'private') {
-            $accessCode = $request->request->get('access_code', '');
-            if (!empty($accessCode)) {
-                $gallery->setAccessCode($accessCode);
-            }
-        } else {
-            $gallery->setAccessCode(null);
-        }
 
         if (!$isEdit) {
             $gallery->setAuthor($this->getUser());

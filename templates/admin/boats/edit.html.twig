@@ -1,0 +1,94 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}{{ isNew ? "Nouveau Bateau" : "Modifier Bateau" }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <a href="{{ path('admin_boats_list') }}" class="text-gray-500 hover:text-gray-700">Bateaux</a>
+</li>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">{{ isNew ? 'Nouveau' : 'Modifier' }}</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-sm rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">
+            {{ isNew ? "Créer un nouveau bateau" : "Modifier le bateau" }}
+        </h2>
+    </div>
+
+    <form method="POST" class="p-6 space-y-6">
+        <!-- Nom -->
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                Nom du bateau *
+            </label>
+            <input type="text" id="name" name="name"
+                   value="{{ boat.name }}"
+                   required
+                   placeholder="Ex: Zodiac Pro 550"
+                   class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+            <p class="mt-1 text-xs text-gray-500">Nom complet du bateau</p>
+        </div>
+
+        <!-- Capacité -->
+        <div>
+            <label for="capacity" class="block text-sm font-medium text-gray-700 mb-2">
+                Capacité (nombre de personnes)
+            </label>
+            <input type="number" id="capacity" name="capacity"
+                   value="{{ boat.capacity ?? '' }}"
+                   min="1"
+                   placeholder="Ex: 12"
+                   class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+            <p class="mt-1 text-xs text-gray-500">Nombre maximum de personnes pouvant monter à bord</p>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                Description
+            </label>
+            <textarea id="description" name="description" rows="3"
+                      placeholder="Ex: Semi-rigide équipé de bouteilles de secours, radio VHF, GPS..."
+                      class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">{{ boat.description ?? '' }}</textarea>
+            <p class="mt-1 text-xs text-gray-500">Caractéristiques et équipements du bateau</p>
+        </div>
+
+        <!-- Actif -->
+        <div class="flex items-start">
+            <div class="flex items-center h-5">
+                <input type="checkbox" id="is_active" name="is_active" value="1"
+                       {{ boat.isActive ? 'checked' : '' }}
+                       class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+            </div>
+            <div class="ml-3">
+                <label for="is_active" class="font-medium text-gray-700">
+                    Bateau actif
+                </label>
+                <p class="text-sm text-gray-500">Le bateau est disponible pour les sorties</p>
+            </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <a href="{{ path('admin_boats_list') }}"
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                Annuler
+            </a>
+            <button type="submit"
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-club-orange hover:bg-club-orange-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-club-orange">
+                {{ isNew ? 'Créer' : 'Enregistrer' }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

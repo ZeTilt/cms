@@ -112,6 +112,10 @@ deploy-check: ## Vérifie avant déploiement
 	$(COMPOSER) validate --no-check-publish --no-check-all
 	$(PHP) bin/console lint:container
 	$(PHP) bin/console doctrine:mapping:info
+	@echo "$(YELLOW)📱 Vérification PWA...$(NC)"
+	@test -f public/sw.js && echo "   ✅ Service Worker présent" || echo "   ❌ Service Worker manquant"
+	@test -f public/manifest.json && echo "   ✅ Manifest PWA présent" || echo "   ❌ Manifest manquant"
+	@test -f public/js/push-notifications.js && echo "   ✅ Script push présent" || echo "   ❌ Script push manquant"
 
 deploy: deploy-check ## Déploie en production
 	@echo "$(GREEN)🚀 Déploiement en production...$(NC)"
@@ -120,6 +124,14 @@ deploy: deploy-check ## Déploie en production
 	$(PHP) bin/console cache:clear --env=prod
 	$(PHP) bin/console doctrine:migrations:migrate --no-interaction --env=prod
 	@echo "$(GREEN)✅ Déploiement terminé$(NC)"
+
+generate-vapid: ## Génère les clés VAPID pour les notifications push
+	@echo "$(GREEN)🔑 Génération des clés VAPID...$(NC)"
+	@./generate-vapid-keys.sh
+
+test-notifications: ## Teste les notifications push (dry-run)
+	@echo "$(GREEN)🧪 Test des notifications (dry-run)...$(NC)"
+	$(PHP) bin/console app:send-event-reminders --dry-run
 
 deploy-with-data: deploy-fresh-db ## Déploie en production avec base de données complètement fraîche
 	@echo "$(GREEN)✅ Déploiement avec données terminé$(NC)"

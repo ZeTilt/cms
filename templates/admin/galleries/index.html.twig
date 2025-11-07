@@ -71,19 +71,8 @@
 
                         <!-- Gallery Info -->
                         <div class="p-4">
-                            <div class="flex justify-between items-start mb-2">
+                            <div class="mb-2">
                                 <h3 class="text-lg font-semibold text-gray-900 truncate">{{ gallery.title }}</h3>
-                                <div class="flex items-center space-x-1 text-xs">
-                                    {% if gallery.visibility == 'private' %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                            🔒 Private
-                                        </span>
-                                    {% else %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                            🌐 Public
-                                        </span>
-                                    {% endif %}
-                                </div>
                             </div>
 
                             {% if gallery.description %}

@@ -39,11 +39,19 @@ class EventParticipation
     #[ORM\Column]
     private ?bool $isWaitingList = false;
 
+    #[ORM\Column]
+    private ?int $quantity = 1;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $participationType = null; // 'instructor' ou 'autonomous'
+
     public function __construct()
     {
         $this->registrationDate = new \DateTimeImmutable();
         $this->status = 'registered';
         $this->isWaitingList = false;
+        $this->quantity = 1;
+        $this->participationType = null;
     }
 
     public function getId(): ?int
@@ -163,5 +171,41 @@ class EventParticipation
             'site' => 'RDV sur site',
             default => 'Non défini'
         };
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): static
+    {
+        $this->quantity = max(1, $quantity); // Ensure minimum quantity is 1
+        return $this;
+    }
+
+    public function getParticipationType(): ?string
+    {
+        return $this->participationType;
+    }
+
+    public function setParticipationType(?string $participationType): static
+    {
+        $this->participationType = $participationType;
+        return $this;
+    }
+
+    public function getParticipationTypeDisplayName(): string
+    {
+        return match($this->participationType) {
+            'instructor' => 'Encadrant',
+            'autonomous' => 'Autonome',
+            default => 'Non défini'
+        };
+    }
+
+    public function isInstructor(): bool
+    {
+        return $this->participationType === 'instructor';
     }
 }

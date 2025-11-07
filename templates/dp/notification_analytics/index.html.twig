@@ -1,0 +1,226 @@
+{% extends 'plongee_base.html.twig' %}
+
+{% block title %}Analytiques Notifications - Espace DP{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3">
+                <i class="bi bi-graph-up"></i>
+                Analytiques des Notifications Push
+            </h1>
+            <p class="text-muted">Statistiques et performance des notifications envoyées</p>
+        </div>
+    </div>
+
+    {# Filtres de période #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a href="{{ path('dp_notification_analytics', {period: '7'}) }}"
+                   class="btn btn-sm {{ period == '7' ? 'btn-primary' : 'btn-outline-primary' }}">
+                    7 jours
+                </a>
+                <a href="{{ path('dp_notification_analytics', {period: '30'}) }}"
+                   class="btn btn-sm {{ period == '30' ? 'btn-primary' : 'btn-outline-primary' }}">
+                    30 jours
+                </a>
+                <a href="{{ path('dp_notification_analytics', {period: '90'}) }}"
+                   class="btn btn-sm {{ period == '90' ? 'btn-primary' : 'btn-outline-primary' }}">
+                    90 jours
+                </a>
+                <a href="{{ path('dp_notification_analytics', {period: 'all'}) }}"
+                   class="btn btn-sm {{ period == 'all' ? 'btn-primary' : 'btn-outline-primary' }}">
+                    Tout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Statistiques globales #}
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Total envoyées</h6>
+                    <h2 class="card-title mb-0">{{ globalStats.total|number_format }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Taux de livraison</h6>
+                    <h2 class="card-title mb-0">{{ globalStats.delivery_rate }}%</h2>
+                    <small class="text-muted">{{ globalStats.delivered|number_format }} livrées</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Taux d'ouverture</h6>
+                    <h2 class="card-title mb-0">{{ globalStats.open_rate }}%</h2>
+                    <small class="text-muted">{{ globalStats.opened|number_format }} ouvertes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Taux de clic</h6>
+                    <h2 class="card-title mb-0">{{ globalStats.click_rate }}%</h2>
+                    <small class="text-muted">{{ globalStats.clicked|number_format }} cliquées</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Statistiques par type #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Performance par type de notification</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th class="text-end">Total</th>
+                                    <th class="text-end">Livrées</th>
+                                    <th class="text-end">Taux livraison</th>
+                                    <th class="text-end">Ouvertes</th>
+                                    <th class="text-end">Taux ouverture</th>
+                                    <th class="text-end">Cliquées</th>
+                                    <th class="text-end">Taux clic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stat in statsByType %}
+                                <tr>
+                                    <td>
+                                        <span class="badge
+                                            {% if stat.type == 'event_registration' %}bg-primary
+                                            {% elseif stat.type == 'event_cancellation' %}bg-danger
+                                            {% elseif stat.type == 'waiting_list_promotion' %}bg-success
+                                            {% elseif stat.type == 'event_reminder' %}bg-info
+                                            {% else %}bg-secondary
+                                            {% endif %}">
+                                            {{ stat.type }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">{{ stat.total|number_format }}</td>
+                                    <td class="text-end">{{ stat.delivered|number_format }}</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-light text-dark">{{ stat.delivery_rate }}%</span>
+                                    </td>
+                                    <td class="text-end">{{ stat.opened|number_format }}</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-light text-dark">{{ stat.open_rate }}%</span>
+                                    </td>
+                                    <td class="text-end">{{ stat.clicked|number_format }}</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-light text-dark">{{ stat.click_rate }}%</span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        Aucune notification envoyée pour cette période
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Historique récent #}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Notifications récentes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Utilisateur</th>
+                                    <th>Titre</th>
+                                    <th>Statut</th>
+                                    <th>Événement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for notif in notifications %}
+                                <tr>
+                                    <td>
+                                        <small>{{ notif.createdAt|date('d/m/Y H:i') }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm
+                                            {% if notif.type == 'event_registration' %}bg-primary
+                                            {% elseif notif.type == 'event_cancellation' %}bg-danger
+                                            {% elseif notif.type == 'waiting_list_promotion' %}bg-success
+                                            {% elseif notif.type == 'event_reminder' %}bg-info
+                                            {% else %}bg-secondary
+                                            {% endif %}">
+                                            {{ notif.type }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>{{ notif.user.fullName }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ notif.title }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge
+                                            {% if notif.status == 'delivered' %}bg-success
+                                            {% elseif notif.status == 'opened' %}bg-info
+                                            {% elseif notif.status == 'clicked' %}bg-primary
+                                            {% elseif notif.status == 'failed' %}bg-danger
+                                            {% else %}bg-secondary
+                                            {% endif %}">
+                                            {{ notif.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if notif.event %}
+                                            <small>
+                                                <a href="{{ path('dp_event_participants', {id: notif.event.id}) }}">
+                                                    {{ notif.event.title }}
+                                                </a>
+                                            </small>
+                                        {% else %}
+                                            <small class="text-muted">N/A</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        Aucune notification récente
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

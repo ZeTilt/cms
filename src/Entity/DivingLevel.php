@@ -29,6 +29,9 @@ class DivingLevel
     private bool $isActive = true;
 
     #[ORM\Column]
+    private bool $isInstructor = false;
+
+    #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
@@ -100,6 +103,18 @@ class DivingLevel
     public function setActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function isInstructor(): bool
+    {
+        return $this->isInstructor;
+    }
+
+    public function setInstructor(bool $isInstructor): static
+    {
+        $this->isInstructor = $isInstructor;
         $this->updatedAt = new \DateTimeImmutable();
         return $this;
     }

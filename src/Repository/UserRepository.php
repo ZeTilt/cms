@@ -83,4 +83,37 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    /**
+     * @return User[] Returns users who are pilots
+     */
+    public function findPilots(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.isPilot = :true')
+            ->andWhere('u.active = :active')
+            ->setParameter('true', true)
+            ->setParameter('active', true)
+            ->orderBy('u.firstName', 'ASC')
+            ->addOrderBy('u.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return User[] Returns users who can be diving directors (admins + instructors)
+     */
+    public function findDivingDirectors(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.active = :active')
+            ->andWhere('u.roles LIKE :role_admin OR u.roles LIKE :role_super_admin')
+            ->setParameter('active', true)
+            ->setParameter('role_admin', '%"ROLE_ADMIN"%')
+            ->setParameter('role_super_admin', '%"ROLE_SUPER_ADMIN"%')
+            ->orderBy('u.firstName', 'ASC')
+            ->addOrderBy('u.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

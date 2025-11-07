@@ -38,15 +38,6 @@
                         <span class="text-sm text-gray-500">{{ gallery.images|length }} images</span>
                         <span class="text-sm text-gray-500">•</span>
                         <span class="text-sm text-gray-500">Updated {{ gallery.updatedAt|date('M j, Y') }}</span>
-                        {% if gallery.visibility == 'private' %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                🔒 Private
-                            </span>
-                        {% else %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                🌐 Public
-                            </span>
-                        {% endif %}
                     </div>
                 </div>
             </div>

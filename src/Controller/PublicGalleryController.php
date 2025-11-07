@@ -17,7 +17,8 @@ class PublicGalleryController extends AbstractController
     #[Route('/galleries', name: 'public_galleries_list', methods: ['GET'])]
     public function list(): Response
     {
-        $galleries = $this->galleryRepository->findPublicGalleries();
+        // Toutes les galeries sont maintenant publiques
+        $galleries = $this->galleryRepository->findAll();
 
         return $this->render('public/galleries/list.html.twig', [
             'galleries' => $galleries
@@ -25,25 +26,12 @@ class PublicGalleryController extends AbstractController
     }
 
     #[Route('/gallery/{slug}', name: 'public_gallery_show', methods: ['GET'])]
-    public function show(string $slug, Request $request): Response
+    public function show(string $slug): Response
     {
-        $gallery = $this->galleryRepository->findPublicBySlug($slug);
+        $gallery = $this->galleryRepository->findOneBy(['slug' => $slug]);
 
         if (!$gallery) {
             throw $this->createNotFoundException('Gallery not found');
-        }
-
-        // Handle private gallery access
-        if ($gallery->isPrivate()) {
-            $submittedCode = $request->query->get('code');
-            
-            // If gallery requires access code and none provided or wrong code
-            if ($gallery->requiresAccessCode() && $gallery->getAccessCode() !== $submittedCode) {
-                return $this->render('public/galleries/access-code.html.twig', [
-                    'gallery' => $gallery,
-                    'error' => $submittedCode ? 'Invalid access code' : null
-                ]);
-            }
         }
 
         return $this->render('public/galleries/show.html.twig', [
@@ -54,7 +42,7 @@ class PublicGalleryController extends AbstractController
     #[Route('/gallery/{slug}/image/{imageId}', name: 'public_gallery_image', methods: ['GET'])]
     public function showImage(string $slug, int $imageId): Response
     {
-        $gallery = $this->galleryRepository->findPublicBySlug($slug);
+        $gallery = $this->galleryRepository->findOneBy(['slug' => $slug]);
 
         if (!$gallery) {
             throw $this->createNotFoundException('Gallery not found');

@@ -33,6 +33,12 @@ class EventType
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $requiresDivingDirector = false;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $requiresPilot = false;
+
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'eventType')]
     private Collection $events;
 
@@ -140,6 +146,28 @@ class EventType
             }
         }
 
+        return $this;
+    }
+
+    public function requiresDivingDirector(): bool
+    {
+        return $this->requiresDivingDirector;
+    }
+
+    public function setRequiresDivingDirector(bool $requiresDivingDirector): static
+    {
+        $this->requiresDivingDirector = $requiresDivingDirector;
+        return $this;
+    }
+
+    public function requiresPilot(): bool
+    {
+        return $this->requiresPilot;
+    }
+
+    public function setRequiresPilot(bool $requiresPilot): static
+    {
+        $this->requiresPilot = $requiresPilot;
         return $this;
     }
 

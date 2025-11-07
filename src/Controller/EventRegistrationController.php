@@ -26,15 +26,22 @@ class EventRegistrationController extends AbstractController
     {
         $user = $this->getUser();
 
-        // Check if user is already registered
+        // Check if user is already registered (with active status)
         $existingParticipation = $this->participationRepository->findByEventAndUser($event, $user);
-        if ($existingParticipation) {
-            if ($existingParticipation->isActive()) {
-                $this->addFlash('error', 'Vous êtes déjà inscrit à cet événement.');
-            } else {
-                $this->addFlash('error', 'Votre inscription à cet événement a été annulée.');
-            }
+        if ($existingParticipation && $existingParticipation->isActive()) {
+            $this->addFlash('error', 'Vous êtes déjà inscrit à cet événement.');
             return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
+        }
+
+        // If there was a cancelled participation, we'll reuse it
+        if ($existingParticipation && !$existingParticipation->isActive()) {
+            $participation = $existingParticipation;
+            $participation->setStatus('registered');
+        } else {
+            // Create new participation
+            $participation = new EventParticipation();
+            $participation->setEvent($event);
+            $participation->setParticipant($user);
         }
 
         // Check user eligibility
@@ -47,10 +54,20 @@ class EventRegistrationController extends AbstractController
             return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
         }
 
-        // Create participation
-        $participation = new EventParticipation();
-        $participation->setEvent($event);
-        $participation->setParticipant($user);
+        // Get requested quantity (default to 1)
+        $quantity = (int) $request->request->get('quantity', 1);
+        $quantity = max(1, $quantity); // Ensure at least 1
+
+        // Update participation quantity
+        $participation->setQuantity($quantity);
+
+        // Set participation type if user is instructor (default to instructor if not specified)
+        if ($user->isInstructor()) {
+            $participationType = $request->request->get('participation_type', 'instructor');
+            if (in_array($participationType, ['instructor', 'autonomous'])) {
+                $participation->setParticipationType($participationType);
+            }
+        }
 
         // Set meeting point if provided
         $meetingPoint = $request->request->get('meeting_point');
@@ -58,17 +75,25 @@ class EventRegistrationController extends AbstractController
             $participation->setMeetingPoint($meetingPoint);
         }
 
-        // Check if event is full - if so, add to waiting list
-        $isWaitingList = $event->isFullyBooked();
+        // Check if event will be full after this registration - if so, add to waiting list
+        $currentParticipants = $event->getActiveParticipants();
+        $maxParticipants = $event->getMaxParticipants();
+        $isWaitingList = $maxParticipants !== null && ($currentParticipants + $quantity) > $maxParticipants;
         $participation->setIsWaitingList($isWaitingList);
 
         $this->entityManager->persist($participation);
         $this->entityManager->flush();
 
         if ($isWaitingList) {
-            $this->addFlash('warning', 'L\'événement est complet. Vous avez été ajouté à la liste d\'attente.');
+            $message = $quantity > 1
+                ? sprintf('L\'événement est complet. Vous avez été ajouté à la liste d\'attente pour %d places.', $quantity)
+                : 'L\'événement est complet. Vous avez été ajouté à la liste d\'attente.';
+            $this->addFlash('warning', $message);
         } else {
-            $this->addFlash('success', 'Votre inscription a été enregistrée avec succès !');
+            $message = $quantity > 1
+                ? sprintf('Votre inscription pour %d places a été enregistrée avec succès !', $quantity)
+                : 'Votre inscription a été enregistrée avec succès !';
+            $this->addFlash('success', $message);
         }
 
         return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
