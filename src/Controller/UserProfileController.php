@@ -294,19 +294,34 @@ class UserProfileController extends AbstractController
     #[Route('/activities', name: 'user_profile_activities', methods: ['POST'])]
     public function updateActivities(Request $request): Response
     {
+        // Debug: Log all received data
+        error_log('=== UPDATE ACTIVITIES DEBUG ===');
+        error_log('Token: ' . $request->request->get('_token'));
+        error_log('is_diver: ' . $request->request->get('is_diver'));
+        error_log('diving_level_id: ' . $request->request->get('diving_level_id'));
+        error_log('is_freediver: ' . $request->request->get('is_freediver'));
+        error_log('is_pilot: ' . $request->request->get('is_pilot'));
+
         // Validation du token CSRF
         $token = new CsrfToken('profile_activities', $request->request->get('_token'));
         if (!$this->csrfTokenManager->isTokenValid($token)) {
+            error_log('CSRF TOKEN INVALID!');
             $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
             return $this->redirectToRoute('user_profile_index');
         }
 
+        error_log('CSRF Token valid');
+
         $user = $this->getUser();
+        error_log('User ID: ' . $user->getId());
+        error_log('User status: ' . $user->getStatus());
 
         // Mise à jour des cases à cocher d'activités
         $user->setDiver((bool) $request->request->get('is_diver'));
         $user->setFreediver((bool) $request->request->get('is_freediver'));
         $user->setPilot((bool) $request->request->get('is_pilot'));
+
+        error_log('After setDiver - isDiver: ' . ($user->isDiver() ? 'true' : 'false'));
 
         // Mise à jour du niveau de plongée bouteille
         if ($user->isDiver()) {
@@ -340,7 +355,12 @@ class UserProfileController extends AbstractController
             $user->setHighestFreedivingLevel(null);
         }
 
+        error_log('Before flush - isDiver: ' . ($user->isDiver() ? 'true' : 'false'));
+        error_log('Before flush - diving level: ' . ($user->getHighestDivingLevel() ? $user->getHighestDivingLevel()->getId() : 'null'));
+
         $this->entityManager->flush();
+
+        error_log('After flush - SUCCESS');
 
         $this->addFlash('success', 'Vos activités et niveaux ont été mis à jour avec succès !');
 
