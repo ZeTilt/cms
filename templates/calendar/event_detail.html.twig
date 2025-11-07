@@ -29,9 +29,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                             <span>
-                                {{ event.startDate|date('l j F Y à H:i') }}
+                                {{ event.startDate|date_fr('full') }}
                                 {% if event.endDate and event.endDate != event.startDate %}
-                                    - {{ event.endDate|date('H:i') }}
+                                    - {{ event.endDate|date_fr('time') }}
                                 {% endif %}
                             </span>
                         </div>
@@ -141,14 +141,14 @@
                                                                     <input type="radio" name="meeting_point" value="club" required class="mr-3 text-club-orange focus:ring-club-orange">
                                                                     <div class="flex-1">
                                                                         <div class="font-medium text-sm">🏠 RDV au club</div>
-                                                                        <div class="text-xs text-gray-500">{{ event.clubMeetingTime|date('H:i') }}</div>
+                                                                        <div class="text-xs text-gray-500">{{ event.clubMeetingTime|date_fr('time') }}</div>
                                                                     </div>
                                                                 </label>
                                                                 <label class="flex items-center p-2 bg-white border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
                                                                     <input type="radio" name="meeting_point" value="site" required class="mr-3 text-club-orange focus:ring-club-orange">
                                                                     <div class="flex-1">
                                                                         <div class="font-medium text-sm">🌊 RDV sur site</div>
-                                                                        <div class="text-xs text-gray-500">{{ event.siteMeetingTime|date('H:i') }}</div>
+                                                                        <div class="text-xs text-gray-500">{{ event.siteMeetingTime|date_fr('time') }}</div>
                                                                     </div>
                                                                 </label>
                                                             </div>
@@ -157,13 +157,13 @@
                                                         <input type="hidden" name="meeting_point" value="club">
                                                         <div class="bg-white border border-gray-200 rounded-md p-2 text-center">
                                                             <div class="font-medium text-sm">🏠 RDV au club</div>
-                                                            <div class="text-xs text-gray-500">{{ event.clubMeetingTime|date('H:i') }}</div>
+                                                            <div class="text-xs text-gray-500">{{ event.clubMeetingTime|date_fr('time') }}</div>
                                                         </div>
                                                     {% elseif event.siteMeetingTime %}
                                                         <input type="hidden" name="meeting_point" value="site">
                                                         <div class="bg-white border border-gray-200 rounded-md p-2 text-center">
                                                             <div class="font-medium text-sm">🌊 RDV sur site</div>
-                                                            <div class="text-xs text-gray-500">{{ event.siteMeetingTime|date('H:i') }}</div>
+                                                            <div class="text-xs text-gray-500">{{ event.siteMeetingTime|date_fr('time') }}</div>
                                                         </div>
                                                     {% endif %}
 
@@ -214,9 +214,9 @@
                             <div>
                                 <h4 class="text-sm font-semibold text-gray-600 mb-2">📅 Horaires</h4>
                                 <div class="text-gray-700 space-y-1 text-sm">
-                                    <div><strong>Début:</strong> {{ event.startDate|date('d/m/Y à H:i') }}</div>
+                                    <div><strong>Début:</strong> {{ event.startDate|date_fr('datetime') }}</div>
                                     {% if event.endDate %}
-                                        <div><strong>Fin:</strong> {{ event.endDate|date('d/m/Y à H:i') }}</div>
+                                        <div><strong>Fin:</strong> {{ event.endDate|date_fr('datetime') }}</div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -336,7 +336,7 @@
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <h4 class="font-medium text-blue-900">🏠 RDV au club</h4>
-                                                    <p class="text-sm text-blue-700">{{ event.clubMeetingTime|date('H:i') }}</p>
+                                                    <p class="text-sm text-blue-700">{{ event.clubMeetingTime|date_fr('time') }}</p>
                                                 </div>
                                                 <div class="text-right">
                                                     <div class="text-lg font-semibold text-blue-900">{{ event.clubMeetingParticipants|length }}</div>
@@ -350,7 +350,7 @@
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <h4 class="font-medium text-green-900">🌊 RDV sur site</h4>
-                                                    <p class="text-sm text-green-700">{{ event.siteMeetingTime|date('H:i') }}</p>
+                                                    <p class="text-sm text-green-700">{{ event.siteMeetingTime|date_fr('time') }}</p>
                                                 </div>
                                                 <div class="text-right">
                                                     <div class="text-lg font-semibold text-green-900">{{ event.siteMeetingParticipants|length }}</div>

@@ -26,7 +26,7 @@
                     {% endif %}
                     
                     <div class="text-sm text-gray-500 mb-4">
-                        Published {{ post.publishedAt|date('F j, Y') }}
+                        Publié le {{ post.publishedAt|date_fr('medium') }}
                         {% if post.author %}
                             by {{ post.author.firstName }} {{ post.author.lastName }}
                         {% endif %}
