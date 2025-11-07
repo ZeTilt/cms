@@ -4,11 +4,14 @@ namespace App\Controller;
 
 use App\Repository\DivingLevelRepository;
 use App\Repository\FreedivingLevelRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -21,7 +24,9 @@ class UserProfileController extends AbstractController
         private EntityManagerInterface $entityManager,
         private DivingLevelRepository $divingLevelRepository,
         private FreedivingLevelRepository $freedivingLevelRepository,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
+        private UserRepository $userRepository,
+        private MailerInterface $mailer
     ) {}
 
     #[Route('', name: 'user_profile_index')]
@@ -394,6 +399,57 @@ class UserProfileController extends AbstractController
             $this->addFlash('success', 'Avatar supprimé avec succès.');
         } catch (\Exception $e) {
             $this->addFlash('error', 'Erreur lors de la suppression de l\'avatar : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('user_profile_index');
+    }
+
+    #[Route('/remind-admins', name: 'user_profile_remind_admins', methods: ['POST'])]
+    public function remindAdmins(): Response
+    {
+        $user = $this->getUser();
+
+        // Vérifier que le compte est bien en attente
+        if ($user->getStatus() !== 'pending') {
+            $this->addFlash('info', 'Votre compte a déjà été traité par les administrateurs.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
+        // Récupérer tous les administrateurs
+        $admins = $this->userRepository->findAdmins();
+
+        if (empty($admins)) {
+            $this->addFlash('error', 'Aucun administrateur trouvé. Contactez-nous directement.');
+            return $this->redirectToRoute('user_profile_index');
+        }
+
+        // Envoyer un email à chaque administrateur
+        $emailsSent = 0;
+        foreach ($admins as $admin) {
+            try {
+                $email = (new TemplatedEmail())
+                    ->from('noreply@plongee-venetes.fr')
+                    ->to($admin->getEmail())
+                    ->subject('Rappel : Nouveau membre en attente de validation')
+                    ->htmlTemplate('emails/admin_reminder.html.twig')
+                    ->context([
+                        'admin' => $admin,
+                        'pendingUser' => $user,
+                        'adminPanelUrl' => $this->generateUrl('admin_users_index', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL)
+                    ]);
+
+                $this->mailer->send($email);
+                $emailsSent++;
+            } catch (\Exception $e) {
+                // Log l'erreur mais continue pour les autres admins
+                error_log('Erreur envoi email admin: ' . $e->getMessage());
+            }
+        }
+
+        if ($emailsSent > 0) {
+            $this->addFlash('success', 'Votre demande a été envoyée aux administrateurs. Vous recevrez une notification dès que votre compte sera validé.');
+        } else {
+            $this->addFlash('error', 'Erreur lors de l\'envoi de la relance. Veuillez réessayer plus tard.');
         }
 
         return $this->redirectToRoute('user_profile_index');

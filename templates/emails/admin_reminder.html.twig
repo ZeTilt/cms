@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #F97316;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #F97316;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #ea580c;
+        }
+        .info-box {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: bold;
+            width: 150px;
+            color: #6b7280;
+        }
+        .info-value {
+            flex: 1;
+            color: #111827;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 12px;
+        }
+        .warning {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤿 Club Subaquatique des Vénètes</h1>
+        <p style="margin: 0; font-size: 18px;">Rappel : Nouveau membre en attente</p>
+    </div>
+
+    <div class="content">
+        <h2>Bonjour {{ admin.firstName }},</h2>
+
+        <p>
+            Un membre est en attente de validation de son compte et vient de relancer sa demande :
+        </p>
+
+        <div class="info-box">
+            <div class="info-row">
+                <span class="info-label">Nom complet :</span>
+                <span class="info-value"><strong>{{ pendingUser.fullName }}</strong></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email :</span>
+                <span class="info-value">{{ pendingUser.email }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Inscrit depuis :</span>
+                <span class="info-value">{{ pendingUser.createdAt|date('d/m/Y à H:i') }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Activités :</span>
+                <span class="info-value">
+                    {% set activities = [] %}
+                    {% if pendingUser.isDiver %}
+                        {% set activities = activities|merge(['🤿 Plongée bouteille']) %}
+                    {% endif %}
+                    {% if pendingUser.isFreediver %}
+                        {% set activities = activities|merge(['🌊 Apnée']) %}
+                    {% endif %}
+                    {% if pendingUser.isPilot %}
+                        {% set activities = activities|merge(['⛵ Pilote']) %}
+                    {% endif %}
+                    {% if activities is empty %}
+                        <em>Aucune activité sélectionnée</em>
+                    {% else %}
+                        {{ activities|join(', ') }}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>⏳ Action requise :</strong>
+            <p style="margin: 10px 0 0 0;">
+                Ce membre attend votre validation pour pouvoir s'inscrire aux plongées et accéder aux fonctionnalités du club.
+            </p>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{ adminPanelUrl }}" class="button">
+                Gérer les membres en attente
+            </a>
+        </div>
+
+        <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+            <strong>💡 Conseil :</strong> Vérifiez les informations du membre et validez son compte si tout est correct.
+            Le membre recevra automatiquement une notification par email.
+        </p>
+
+        <p style="margin-top: 30px;">
+            Cordialement,<br>
+            <strong>Le système de gestion du club</strong>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
+        <p>&copy; {{ "now"|date("Y") }} Club Subaquatique des Vénètes - Tous droits réservés</p>
+    </div>
+</body>
+</html>
