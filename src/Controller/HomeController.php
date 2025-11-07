@@ -19,9 +19,16 @@ class HomeController extends AbstractController
         // Get upcoming events for the widget
         $upcomingEvents = $eventRepository->findRecentEventsForWidget(4);
 
-        return $this->render('home/index.html.twig', [
+        $response = $this->render('home/index.html.twig', [
             'blog_articles' => $blogArticles,
             'upcoming_events' => $upcomingEvents,
         ]);
+
+        // Empêcher le cache pour que la navigation s'affiche correctement pour les utilisateurs connectés
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+
+        return $response;
     }
 }
