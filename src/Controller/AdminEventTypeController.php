@@ -49,6 +49,7 @@ class AdminEventTypeController extends AbstractController
             $eventType->setActive($request->request->getBoolean('is_active', true));
             $eventType->setRequiresDivingDirector($request->request->getBoolean('requires_diving_director', false));
             $eventType->setRequiresPilot($request->request->getBoolean('requires_pilot', false));
+            $eventType->setRequiresLifeguard($request->request->getBoolean('requires_lifeguard', false));
 
             // Vérifier que le code est unique
             $existingType = $this->eventTypeRepository->findByCode($code);
@@ -100,6 +101,7 @@ class AdminEventTypeController extends AbstractController
             $eventType->setActive($request->request->getBoolean('is_active', true));
             $eventType->setRequiresDivingDirector($request->request->getBoolean('requires_diving_director', false));
             $eventType->setRequiresPilot($request->request->getBoolean('requires_pilot', false));
+            $eventType->setRequiresLifeguard($request->request->getBoolean('requires_lifeguard', false));
 
             $this->entityManager->flush();
             

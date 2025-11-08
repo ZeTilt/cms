@@ -75,6 +75,10 @@ class EventRegistrationController extends AbstractController
             $participation->setMeetingPoint($meetingPoint);
         }
 
+        // Set lifeguard status if provided
+        $isLifeguard = $request->request->getBoolean('is_lifeguard', false);
+        $participation->setIsLifeguard($isLifeguard);
+
         // Check if event will be full after this registration - if so, add to waiting list
         $currentParticipants = $event->getActiveParticipants();
         $maxParticipants = $event->getMaxParticipants();

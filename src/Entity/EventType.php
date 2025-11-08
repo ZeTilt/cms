@@ -39,6 +39,9 @@ class EventType
     #[ORM\Column(type: 'boolean')]
     private bool $requiresPilot = false;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $requiresLifeguard = false;
+
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'eventType')]
     private Collection $events;
 
@@ -168,6 +171,17 @@ class EventType
     public function setRequiresPilot(bool $requiresPilot): static
     {
         $this->requiresPilot = $requiresPilot;
+        return $this;
+    }
+
+    public function requiresLifeguard(): bool
+    {
+        return $this->requiresLifeguard;
+    }
+
+    public function setRequiresLifeguard(bool $requiresLifeguard): static
+    {
+        $this->requiresLifeguard = $requiresLifeguard;
         return $this;
     }
 

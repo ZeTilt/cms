@@ -45,6 +45,9 @@ class EventParticipation
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $participationType = null; // 'instructor' ou 'autonomous'
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isLifeguard = false;
+
     public function __construct()
     {
         $this->registrationDate = new \DateTimeImmutable();
@@ -52,6 +55,7 @@ class EventParticipation
         $this->isWaitingList = false;
         $this->quantity = 1;
         $this->participationType = null;
+        $this->isLifeguard = false;
     }
 
     public function getId(): ?int
@@ -207,5 +211,16 @@ class EventParticipation
     public function isInstructor(): bool
     {
         return $this->participationType === 'instructor';
+    }
+
+    public function isLifeguard(): bool
+    {
+        return $this->isLifeguard;
+    }
+
+    public function setIsLifeguard(bool $isLifeguard): static
+    {
+        $this->isLifeguard = $isLifeguard;
+        return $this;
     }
 }

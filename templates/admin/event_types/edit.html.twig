@@ -146,6 +146,21 @@
                         </div>
                         <p class="mt-1 text-sm text-gray-500">Si coché, un pilote et un bateau devront être sélectionnés lors de la création d'un événement de ce type</p>
                     </div>
+
+                    <div class="sm:col-span-2">
+                        <div class="flex items-center">
+                            <input type="checkbox"
+                                   name="requires_lifeguard"
+                                   id="requires_lifeguard"
+                                   value="1"
+                                   {{ eventType.requiresLifeguard ? 'checked' : '' }}
+                                   class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                            <label for="requires_lifeguard" class="ml-2 block text-sm text-gray-900">
+                                Nécessite des surveillants de baignade
+                            </label>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Si coché, les participants pourront s'inscrire en tant que surveillant de baignade pour les événements de ce type</p>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-between pt-6 border-t border-gray-200">
