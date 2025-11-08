@@ -88,7 +88,7 @@
                                 class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
                             <option value="">-- Sélectionner un type d'événement --</option>
                             {% for eventType in eventTypes %}
-                                <option value="{{ eventType.id }}" 
+                                <option value="{{ eventType.id }}"
                                         data-color="{{ eventType.color }}"
                                         {{ event.eventType and event.eventType.id == eventType.id ? 'selected' : '' }}>
                                     {{ eventType.name }}
@@ -112,7 +112,7 @@
                                         <p>Vous devez d'abord créer des types d'événements avant de pouvoir créer un événement.</p>
                                     </div>
                                     <div class="mt-4">
-                                        <a href="{{ path('admin_event_types_new') }}" 
+                                        <a href="{{ path('admin_event_types_new') }}"
                                            class="text-sm bg-yellow-50 text-yellow-800 rounded-md p-2 hover:bg-yellow-100">
                                             Créer un type d'événement →
                                         </a>
@@ -121,41 +121,6 @@
                             </div>
                         </div>
                     {% endif %}
-                </div>
-
-                <!-- Nombre maximum de participants -->
-                <div>
-                    <label for="max_participants" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre maximum de participants
-                    </label>
-                    <input type="number" id="max_participants" name="max_participants"
-                           value="{{ event.maxParticipants ?? '' }}"
-                           min="1"
-                           placeholder="Laisser vide pour un nombre illimité"
-                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
-                    <p class="mt-1 text-sm text-gray-500">
-                        Si l'événement est complet, les nouveaux inscrits seront automatiquement mis en liste d'attente.
-                    </p>
-                </div>
-
-                <!-- Niveau minimum requis -->
-                <div>
-                    <label for="min_diving_level" class="block text-sm font-medium text-gray-700 mb-2">
-                        Niveau minimum requis
-                    </label>
-                    <select id="min_diving_level" name="min_diving_level_id"
-                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
-                        <option value="">-- Aucun niveau minimum --</option>
-                        {% for level in divingLevels|default([]) %}
-                            <option value="{{ level.id }}"
-                                    {{ event.minDivingLevel and event.minDivingLevel.id == level.id ? 'selected' : '' }}>
-                                {{ level.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Les plongeurs n'ayant pas le niveau requis ne pourront pas s'inscrire.
-                    </p>
                 </div>
 
                 <!-- Directeur de Plongée -->
@@ -225,6 +190,41 @@
                             </p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Nombre maximum de participants -->
+                <div>
+                    <label for="max_participants" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nombre maximum de participants
+                    </label>
+                    <input type="number" id="max_participants" name="max_participants"
+                           value="{{ event.maxParticipants ?? '' }}"
+                           min="1"
+                           placeholder="Laisser vide pour un nombre illimité"
+                           class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                    <p class="mt-1 text-sm text-gray-500">
+                        Si l'événement est complet, les nouveaux inscrits seront automatiquement mis en liste d'attente.
+                    </p>
+                </div>
+
+                <!-- Niveau minimum requis -->
+                <div>
+                    <label for="min_diving_level" class="block text-sm font-medium text-gray-700 mb-2">
+                        Niveau minimum requis
+                    </label>
+                    <select id="min_diving_level" name="min_diving_level_id"
+                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                        <option value="">-- Aucun niveau minimum --</option>
+                        {% for level in divingLevels|default([]) %}
+                            <option value="{{ level.id }}"
+                                    {{ event.minDivingLevel and event.minDivingLevel.id == level.id ? 'selected' : '' }}>
+                                {{ level.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Les plongeurs n'ayant pas le niveau requis ne pourront pas s'inscrire.
+                    </p>
                 </div>
 
                 <!-- Heures de rendez-vous -->
@@ -535,14 +535,55 @@ document.addEventListener('DOMContentLoaded', function() {
     // === Auto-remplir le nombre max de participants selon le bateau sélectionné ===
     const boatSelect = document.getElementById('boat_id');
     const maxParticipantsInput = document.getElementById('max_participants');
+    const maxParticipantsContainer = maxParticipantsInput ? maxParticipantsInput.parentElement : null;
+
+    // Créer l'élément d'alerte
+    let warningAlert = null;
+    if (maxParticipantsContainer) {
+        warningAlert = document.createElement('div');
+        warningAlert.className = 'mt-2 rounded-md bg-yellow-50 border border-yellow-200 p-3 hidden';
+        warningAlert.innerHTML = `
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700" id="capacity-warning-text"></p>
+                </div>
+            </div>
+        `;
+        maxParticipantsContainer.appendChild(warningAlert);
+    }
+
+    // Fonction pour vérifier la capacité
+    function checkCapacity() {
+        if (!boatSelect || !maxParticipantsInput || !warningAlert) return;
+
+        const selectedOption = boatSelect.options[boatSelect.selectedIndex];
+        const boatCapacity = selectedOption.getAttribute('data-capacity');
+        const maxParticipants = parseInt(maxParticipantsInput.value);
+
+        if (boatCapacity && boatCapacity !== '' && maxParticipants && maxParticipants > parseInt(boatCapacity)) {
+            // Afficher l'alerte
+            document.getElementById('capacity-warning-text').textContent =
+                `⚠️ Attention : Le nombre de participants (${maxParticipants}) dépasse la capacité du bateau (${boatCapacity} places).`;
+            warningAlert.classList.remove('hidden');
+        } else {
+            // Masquer l'alerte
+            warningAlert.classList.add('hidden');
+        }
+    }
 
     if (boatSelect && maxParticipantsInput) {
+        // Auto-remplir seulement si le champ est vide
         boatSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const boatCapacity = selectedOption.getAttribute('data-capacity');
 
-            if (boatCapacity && boatCapacity !== '') {
-                // Remplir automatiquement le champ max participants avec la capacité du bateau
+            if (boatCapacity && boatCapacity !== '' && !maxParticipantsInput.value) {
+                // Remplir automatiquement seulement si le champ est vide
                 maxParticipantsInput.value = boatCapacity;
 
                 // Ajouter un effet visuel pour montrer que c'est auto-rempli
@@ -551,7 +592,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     maxParticipantsInput.classList.remove('bg-green-50', 'border-green-300');
                 }, 1500);
             }
+
+            // Vérifier la capacité
+            checkCapacity();
         });
+
+        // Vérifier la capacité quand on modifie le nombre de participants
+        maxParticipantsInput.addEventListener('input', checkCapacity);
+
+        // Vérifier au chargement initial
+        checkCapacity();
     }
 });
 </script>
