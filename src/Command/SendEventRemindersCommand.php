@@ -98,7 +98,7 @@ class SendEventRemindersCommand extends Command
                             $event->getStartDate()->format('d/m/Y à H:i'),
                             $participation->getPlacesReserved()
                         ),
-                        'url' => '/calendrier/' . $event->getId(),
+                        'url' => '/calendrier/evenement/' . $event->getId(),
                         'tag' => 'event-reminder-' . $event->getId(),
                         'groupTag' => null,
                         'groupable' => false,

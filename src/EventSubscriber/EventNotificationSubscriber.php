@@ -57,7 +57,7 @@ class EventNotificationSubscriber
                 $event->getTitle(),
                 $event->getStartDate()->format('d/m/Y à H:i')
             ),
-            'url' => '/calendrier/' . $event->getId(),
+            'url' => '/calendrier/evenement/' . $event->getId(),
             'tag' => 'new-event-' . $event->getId(),
             'groupTag' => 'new-events',
             'groupable' => true,

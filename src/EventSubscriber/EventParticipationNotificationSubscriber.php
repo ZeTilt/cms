@@ -160,7 +160,7 @@ class EventParticipationNotificationSubscriber
                 $event->getTitle(),
                 $event->getStartDate()->format('d/m/Y à H:i')
             ),
-            'url' => '/calendrier/' . $event->getId(),
+            'url' => '/calendrier/evenement/' . $event->getId(),
             'tag' => 'waiting-list-promoted-' . $participation->getId(),
             'groupTag' => null,
             'groupable' => false,
