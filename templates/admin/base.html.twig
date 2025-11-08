@@ -298,16 +298,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    
+
     if (sidebarToggle && sidebar && overlay) {
         sidebarToggle.addEventListener('click', function() {
             sidebar.classList.toggle('-translate-x-full');
             overlay.style.display = sidebar.classList.contains('-translate-x-full') ? 'none' : 'block';
         });
-        
+
         overlay.addEventListener('click', function() {
             sidebar.classList.add('-translate-x-full');
             overlay.style.display = 'none';
+        });
+
+        // Fermer le menu automatiquement quand on clique sur un lien dans la sidebar
+        const sidebarLinks = sidebar.querySelectorAll('a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                overlay.style.display = 'none';
+            });
         });
     }
 });
