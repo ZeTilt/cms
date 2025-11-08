@@ -1,7 +1,7 @@
 // Service Worker pour PWA Club Subaquatique des Vénètes
-// Version 3 - Network First pour les pages HTML, Cache pour les assets
-const CACHE_NAME = 'csv-plongee-v3';
-const STATIC_CACHE = 'csv-static-v3';
+// Version 4 - Debugging des notifications push
+const CACHE_NAME = 'csv-plongee-v4';
+const STATIC_CACHE = 'csv-static-v4';
 
 // Assets statiques à mettre en cache (images, CSS, JS, fonts)
 const staticAssets = [
@@ -20,7 +20,7 @@ const staticAssets = [
 
 // Installation du service worker
 self.addEventListener('install', function(event) {
-  console.log('Service Worker v3: Installing...');
+  console.log('Service Worker v4: Installing...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then(function(cache) {
@@ -35,7 +35,7 @@ self.addEventListener('install', function(event) {
         );
       })
       .then(() => {
-        console.log('Service Worker v3: Installation complete');
+        console.log('Service Worker v4: Installation complete');
         return self.skipWaiting();
       })
   );
@@ -43,7 +43,7 @@ self.addEventListener('install', function(event) {
 
 // Activation du service worker
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker v3: Activating...');
+  console.log('Service Worker v4: Activating...');
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
@@ -56,7 +56,7 @@ self.addEventListener('activate', function(event) {
         })
       );
     }).then(() => {
-      console.log('Service Worker v3: Activation complete');
+      console.log('Service Worker v4: Activation complete');
       return self.clients.claim();
     })
   );
@@ -132,8 +132,20 @@ self.addEventListener('fetch', function(event) {
 
 // Gestion des notifications push
 self.addEventListener('push', function(event) {
-  if (event.data) {
-    const data = event.data.json();
+  console.log('🔔 [SW] Push event received!', event);
+
+  if (!event.data) {
+    console.error('❌ [SW] Push event has no data!');
+    return;
+  }
+
+  try {
+    const rawData = event.data.text();
+    console.log('📦 [SW] Raw push data:', rawData);
+
+    const data = JSON.parse(rawData);
+    console.log('✅ [SW] Parsed push data:', data);
+
     const options = {
       body: data.body,
       icon: data.icon || '/pwa-icons/icon-192x192.png',
@@ -148,8 +160,27 @@ self.addEventListener('push', function(event) {
       actions: data.actions || []
     };
 
+    console.log('🔔 [SW] Showing notification with options:', options);
+
     event.waitUntil(
       self.registration.showNotification(data.title, options)
+        .then(() => {
+          console.log('✅ [SW] Notification displayed successfully');
+        })
+        .catch((error) => {
+          console.error('❌ [SW] Error displaying notification:', error);
+        })
+    );
+  } catch (error) {
+    console.error('❌ [SW] Error processing push event:', error);
+
+    // Afficher une notification de secours en cas d'erreur
+    event.waitUntil(
+      self.registration.showNotification('Club des Vénètes', {
+        body: 'Nouvelle notification (erreur de traitement)',
+        icon: '/pwa-icons/icon-192x192.png',
+        tag: 'csv-notification-error'
+      })
     );
   }
 });
