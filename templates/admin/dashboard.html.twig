@@ -6,124 +6,204 @@
 <!-- Header -->
 <div class="bg-white shadow">
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p class="mt-1 text-sm text-gray-500">Welcome back, {{ app.user.fullName }}!</p>
-        </div>
+        <h1 class="text-3xl font-bold text-gray-900">Tableau de bord</h1>
+        <p class="mt-1 text-sm text-gray-500">Bienvenue, {{ app.user.fullName }} !</p>
     </div>
 </div>
 
 <!-- Main content -->
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <div class="space-y-8">
-        <div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Overview</h2>
-                
-                <!-- Active Modules -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Active Modules</h3>
-                    {% if modules is empty %}
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                            <div class="flex">
-                                <div class="ml-3">
-                                    <p class="text-sm text-yellow-700">
-                                        No modules are currently active. Contact your super administrator to activate modules.
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <!-- Utilisateurs actifs -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Utilisateurs actifs</dt>
+                            <dd class="flex items-baseline">
+                                <div class="text-2xl font-semibold text-gray-900">{{ stats.users.active }}</div>
+                                <div class="ml-2 flex items-baseline text-sm font-semibold text-gray-500">
+                                    / {{ stats.users.total }}
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utilisateurs en attente -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">En attente validation</dt>
+                            <dd class="flex items-baseline">
+                                <div class="text-2xl font-semibold text-gray-900">{{ stats.users.pending }}</div>
+                                {% if stats.users.pending > 0 %}
+                                    <a href="{{ path('admin_users_list') }}" class="ml-2 text-xs text-yellow-600 hover:text-yellow-800">Valider →</a>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Événements à venir -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Événements à venir</dt>
+                            <dd class="text-2xl font-semibold text-gray-900">{{ stats.events.upcoming_count }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total participants -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Participants inscrits</dt>
+                            <dd class="text-2xl font-semibold text-gray-900">{{ stats.events.total_participants }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertes -->
+    {% if alert_events|length > 0 %}
+    <div class="mb-8">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">⚠️ Événements nécessitant attention</h2>
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul role="list" class="divide-y divide-gray-200">
+                {% for alert in alert_events %}
+                <li>
+                    <a href="{{ path('admin_events_edit', {id: alert.event.id}) }}" class="block hover:bg-gray-50">
+                        <div class="px-4 py-4 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900 truncate">
+                                        {{ alert.event.title }}
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        {{ alert.event.startDate|date_fr('medium') }} à {{ alert.event.startDate|date_fr('time') }}
+                                    </p>
+                                </div>
+                                <div class="ml-2 flex-shrink-0 flex">
+                                    <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                       {% if alert.type == 'low_registrations' %}bg-red-100 text-red-800
+                                       {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                        {{ alert.message }}
                                     </p>
                                 </div>
                             </div>
                         </div>
-                    {% else %}
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {% for module in modules %}
-                                <div class="bg-white overflow-hidden shadow rounded-lg">
-                                    <div class="p-5">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0">
-                                                <div class="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center">
-                                                    <span class="text-white font-medium text-sm">{{ module.name|slice(0, 2)|upper }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="ml-5 w-0 flex-1">
-                                                <dl>
-                                                    <dt class="text-sm font-medium text-gray-500 truncate">{{ module.displayName }}</dt>
-                                                    <dd class="text-sm text-gray-900">{{ module.description ?: 'No description' }}</dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="bg-gray-50 px-5 py-3">
-                                        <div class="text-sm">
-                                            <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-                                                Manage {{ module.displayName }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Pages (always available) -->
-                        <a href="{{ path('admin_pages_new') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
-                            Create Page
-                        </a>
-                        <a href="{{ path('admin_pages_list') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
-                            Manage Pages
-                        </a>
-                        
-                        <!-- Blog Actions (if blog module is active) -->
-                        {% if is_module_active('blog') %}
-                            <a href="{{ path('admin_articles_new') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Create Article
-                            </a>
-                            <a href="{{ path('admin_articles_list') }}" class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Manage Articles
-                            </a>
-                        {% endif %}
-                        
-                        <!-- Gallery Actions (if gallery module is active) -->
-                        {% if is_module_active('gallery') %}
-                            <a href="{{ path('admin_galleries_new') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Create Gallery
-                            </a>
-                            <a href="{{ path('admin_galleries_list') }}" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded text-center">
-                                Manage Galleries
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
-                    <div class="bg-white shadow overflow-hidden sm:rounded-md">
-                        <ul role="list" class="divide-y divide-gray-200">
-                            <li class="px-4 py-4">
-                                <div class="flex items-center justify-between">
-                                    <p class="text-sm font-medium text-gray-900">System initialized</p>
-                                    <div class="ml-2 flex-shrink-0 flex">
-                                        <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Complete
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="mt-2 sm:flex sm:justify-between">
-                                    <div class="sm:flex">
-                                        <p class="flex items-center text-sm text-gray-500">
-                                            Le site du Club Subaquatique des Vénètes a été initialisé avec succès.
-                                        </p>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
+    </div>
+    {% endif %}
+
+    <!-- Prochains événements -->
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-medium text-gray-900">Prochains événements</h2>
+            <a href="{{ path('admin_events_list') }}" class="text-sm text-club-orange hover:text-club-orange-dark">
+                Voir tous →
+            </a>
+        </div>
+
+        {% if upcoming_events|length > 0 %}
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul role="list" class="divide-y divide-gray-200">
+                {% for event in upcoming_events %}
+                <li>
+                    <a href="{{ path('admin_events_edit', {id: event.id}) }}" class="block hover:bg-gray-50">
+                        <div class="px-4 py-4 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm font-medium text-gray-900 truncate">
+                                            {{ event.title }}
+                                        </p>
+                                        {% if event.eventType %}
+                                        <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            {{ event.eventType.name }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-2 flex items-center text-sm text-gray-500">
+                                        <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        {{ event.startDate|date_fr('medium') }} à {{ event.startDate|date_fr('time') }}
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    {% set confirmed = event.confirmedParticipations|length %}
+                                    {% set max = event.maxParticipants %}
+                                    <div class="text-sm">
+                                        <span class="font-medium text-gray-900">{{ confirmed }}</span>
+                                        {% if max %}
+                                            <span class="text-gray-500">/ {{ max }}</span>
+                                        {% endif %}
+                                        <span class="text-gray-500">participant(s)</span>
+                                    </div>
+                                    {% if max %}
+                                        <div class="mt-1 w-24 bg-gray-200 rounded-full h-2">
+                                            {% set percent = (confirmed / max * 100)|round %}
+                                            <div class="bg-club-orange h-2 rounded-full" style="width: {{ percent }}%"></div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <div class="bg-white shadow sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6 text-center text-gray-500">
+                Aucun événement à venir
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
