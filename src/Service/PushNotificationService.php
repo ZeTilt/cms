@@ -9,6 +9,8 @@ use App\Entity\User;
 use App\Repository\NotificationHistoryRepository;
 use App\Repository\PushSubscriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Minishlink\WebPush\Subscription;
+use Minishlink\WebPush\WebPush;
 use Psr\Log\LoggerInterface;
 
 class PushNotificationService
@@ -166,32 +168,67 @@ class PushNotificationService
      */
     private function sendPushNotification(PushSubscription $subscription, array $notification): bool
     {
-        // Préparer le payload
-        $payload = json_encode([
-            'title' => $notification['title'] ?? 'Notification',
-            'body' => $notification['body'] ?? '',
-            'icon' => $notification['icon'] ?? '/pwa-icons/icon-192x192.png',
-            'badge' => $notification['badge'] ?? '/pwa-icons/icon-72x72.png',
-            'url' => $notification['url'] ?? '/',
-            'tag' => $notification['tag'] ?? 'csv-notification',
-            'requireInteraction' => $notification['requireInteraction'] ?? false,
-            'actions' => $notification['actions'] ?? []
-        ]);
+        try {
+            // Préparer le payload
+            $payload = json_encode([
+                'title' => $notification['title'] ?? 'Notification',
+                'body' => $notification['body'] ?? '',
+                'icon' => $notification['icon'] ?? '/pwa-icons/icon-192x192.png',
+                'badge' => $notification['badge'] ?? '/pwa-icons/icon-72x72.png',
+                'url' => $notification['url'] ?? '/',
+                'tag' => $notification['tag'] ?? 'csv-notification',
+                'requireInteraction' => $notification['requireInteraction'] ?? false,
+                'actions' => $notification['actions'] ?? []
+            ]);
 
-        // Pour la version 0.2.2, on utilise une approche simplifiée
-        // Dans une vraie implémentation avec une version récente, on utiliserait le package web-push
-        // Pour l'instant, on log juste la notification (développement)
+            // Configuration de l'authentification VAPID
+            $auth = [
+                'VAPID' => [
+                    'subject' => $this->vapidSubject,
+                    'publicKey' => $this->vapidPublicKey,
+                    'privateKey' => $this->vapidPrivateKey,
+                ],
+            ];
 
-        $this->logger->info('Push notification sent', [
-            'user_id' => $subscription->getUser()->getId(),
-            'endpoint' => substr($subscription->getEndpoint(), 0, 50) . '...',
-            'notification' => $notification
-        ]);
+            // Créer l'instance WebPush
+            $webPush = new WebPush($auth);
 
-        // TODO: Implémenter l'envoi réel avec l'API Web Push
-        // Cela nécessiterait une version plus récente du package ou une implémentation manuelle
+            // Créer la subscription à partir des données stockées
+            $pushSubscription = Subscription::create([
+                'endpoint' => $subscription->getEndpoint(),
+                'keys' => [
+                    'p256dh' => $subscription->getPublicKey(),
+                    'auth' => $subscription->getAuthToken(),
+                ],
+            ]);
 
-        return true;
+            // Envoyer la notification
+            $result = $webPush->sendOneNotification($pushSubscription, $payload);
+
+            // Vérifier le résultat
+            if ($result->isSuccess()) {
+                $this->logger->info('Push notification sent successfully', [
+                    'user_id' => $subscription->getUser()->getId(),
+                    'endpoint' => substr($subscription->getEndpoint(), 0, 50) . '...',
+                ]);
+                return true;
+            } else {
+                $this->logger->error('Push notification failed', [
+                    'user_id' => $subscription->getUser()->getId(),
+                    'endpoint' => substr($subscription->getEndpoint(), 0, 50) . '...',
+                    'reason' => $result->getReason(),
+                    'expired' => $result->isSubscriptionExpired(),
+                ]);
+                return false;
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Exception sending push notification', [
+                'user_id' => $subscription->getUser()->getId(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return false;
+        }
     }
 
     /**
