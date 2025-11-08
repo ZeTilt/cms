@@ -174,7 +174,7 @@
                                     </div>
                                 </div>
                                 <div class="ml-4 flex-shrink-0">
-                                    {% set confirmed = event.confirmedParticipations|length %}
+                                    {% set confirmed = event.activeParticipationsList|length %}
                                     {% set max = event.maxParticipants %}
                                     <div class="text-sm">
                                         <span class="font-medium text-gray-900">{{ confirmed }}</span>

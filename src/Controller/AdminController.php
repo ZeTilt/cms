@@ -75,7 +75,7 @@ class AdminController extends AbstractController
         // Événements nécessitant attention
         $alertEvents = [];
         foreach ($upcomingEvents as $event) {
-            $confirmedCount = count($event->getConfirmedParticipations());
+            $confirmedCount = count($event->getActiveParticipationsList());
             $maxParticipants = $event->getMaxParticipants();
 
             // Événement presque vide (moins de 3 inscrits et J-7)
