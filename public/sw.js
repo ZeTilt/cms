@@ -1,19 +1,26 @@
 // Service Worker pour PWA Club Subaquatique des Vénètes
-// Version 2 - Network First pour les pages HTML, Cache pour les assets
-const CACHE_NAME = 'csv-plongee-v2';
-const STATIC_CACHE = 'csv-static-v2';
+// Version 3 - Network First pour les pages HTML, Cache pour les assets
+const CACHE_NAME = 'csv-plongee-v3';
+const STATIC_CACHE = 'csv-static-v3';
 
 // Assets statiques à mettre en cache (images, CSS, JS, fonts)
 const staticAssets = [
   '/manifest.json',
   '/assets/logo sans fond.png',
+  '/assets/favicon.ico',
+  '/pwa-icons/icon-72x72.png',
+  '/pwa-icons/icon-96x96.png',
+  '/pwa-icons/icon-128x128.png',
+  '/pwa-icons/icon-144x144.png',
+  '/pwa-icons/icon-152x152.png',
   '/pwa-icons/icon-192x192.png',
+  '/pwa-icons/icon-384x384.png',
   '/pwa-icons/icon-512x512.png'
 ];
 
 // Installation du service worker
 self.addEventListener('install', function(event) {
-  console.log('Service Worker v2: Installing...');
+  console.log('Service Worker v3: Installing...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then(function(cache) {
@@ -28,7 +35,7 @@ self.addEventListener('install', function(event) {
         );
       })
       .then(() => {
-        console.log('Service Worker v2: Installation complete');
+        console.log('Service Worker v3: Installation complete');
         return self.skipWaiting();
       })
   );
@@ -36,7 +43,7 @@ self.addEventListener('install', function(event) {
 
 // Activation du service worker
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker v2: Activating...');
+  console.log('Service Worker v3: Activating...');
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
@@ -49,7 +56,7 @@ self.addEventListener('activate', function(event) {
         })
       );
     }).then(() => {
-      console.log('Service Worker v2: Activation complete');
+      console.log('Service Worker v3: Activation complete');
       return self.clients.claim();
     })
   );
