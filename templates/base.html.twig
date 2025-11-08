@@ -31,22 +31,11 @@
         <!-- Navigation -->
         <nav class="bg-white shadow">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="{{ path('app_home') }}" class="flex items-center space-x-3">
-                            <img src="{{ asset('assets/logo sans fond.png') }}" alt="Club Vénètes" class="h-8 w-auto">
-                            <span class="text-xl font-semibold text-gray-900">Club des Vénètes</span>
-                        </a>
-                    </div>
+                <div class="flex justify-end h-16">
                     <div class="flex items-center space-x-8">
-                        <a href="{{ path('app_home') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            Accueil
+                        <a href="{{ path('app_home') }}">
+                            <img src="{{ asset('assets/logo sans fond.png') }}" alt="Club Vénètes" class="h-8 w-auto">
                         </a>
-                        {% if is_module_active('blog') %}
-                            <a href="{{ path('blog_index') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                                Blog
-                            </a>
-                        {% endif %}
                         <a href="{{ path('admin_dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                             Admin
                         </a>
