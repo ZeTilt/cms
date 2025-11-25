@@ -73,7 +73,7 @@
 
     {% block javascripts %}
         <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-        <script src="{{ asset('assets/gallery' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
+        <script src="{{ asset('assets/app' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
     {% endblock %}
 </head>
 <body class="body-bg">
@@ -116,7 +116,7 @@
                     <!-- Logo -->
                     <div class="nav-logo">
                         <a href="{{ path('app_home') }}">
-                            <img src="{{ asset('assets/logo sans fond.png') }}" alt="Club Subaquatique des Vénètes">
+                            <img src="{{ asset('assets/logo sans fond.webp') }}" alt="Club Subaquatique des Vénètes">
                             <div class="nav-logo-text">
                                 <span class="nav-logo-title">Club Subaquatique</span>
                                 <span class="nav-logo-subtitle">des Vénètes</span>

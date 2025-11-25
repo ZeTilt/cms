@@ -9,8 +9,6 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('assets/carousel' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
-    <script src="{{ asset('assets/youtube-thumbnails' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
