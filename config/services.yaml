@@ -59,5 +59,11 @@ services:
             $vapidPublicKey: '%env(VAPID_PUBLIC_KEY)%'
         tags: ['twig.extension']
 
+    # Content Extension (WebP support)
+    App\Twig\ContentExtension:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+        tags: ['twig.extension']
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

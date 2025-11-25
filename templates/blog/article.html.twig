@@ -64,7 +64,7 @@
 
         {% if article.featuredImage %}
             <figure class="article-detail-figure">
-                <img src="{{ article.featuredImage }}" alt="{{ article.title }}" loading="lazy">
+                <img src="{{ article.featuredImage|webp }}" alt="{{ article.title }}" loading="lazy">
             </figure>
         {% endif %}
 

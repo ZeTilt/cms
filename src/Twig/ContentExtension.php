@@ -10,7 +10,8 @@ use Twig\TwigFilter;
 class ContentExtension extends AbstractExtension
 {
     public function __construct(
-        private PageContentRenderer $pageContentRenderer
+        private PageContentRenderer $pageContentRenderer,
+        private string $projectDir
     ) {
     }
 
@@ -31,7 +32,16 @@ class ContentExtension extends AbstractExtension
             new TwigFilter('render_page_content', [$this, 'renderPageContent'], ['is_safe' => ['html']]),
             new TwigFilter('youtube_thumbnails', [$this, 'replaceYoutubeThumbnails'], ['is_safe' => ['html']]),
             new TwigFilter('lazy_images', [$this, 'addLazyLoadingToImages'], ['is_safe' => ['html']]),
+            new TwigFilter('webp', [$this, 'toWebp']),
         ];
+    }
+
+    /**
+     * Convert image URL to WebP if available, otherwise return original URL
+     */
+    public function toWebp(string $imageUrl): string
+    {
+        return $this->getWebpUrl($imageUrl) ?? $imageUrl;
     }
 
     public function renderPageContent(string $content): string
@@ -200,12 +210,45 @@ class ContentExtension extends AbstractExtension
                          data-current-index="0"
                          onerror="handleYouTubeThumbnailError(this)">';
         } else {
-            // Regular image, no fallback needed
-            return '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '"
+            // Regular image - check if WebP version exists
+            $webpUrl = $this->getWebpUrl($imageUrl);
+            $finalUrl = $webpUrl ?? $imageUrl;
+
+            return '<img src="' . htmlspecialchars($finalUrl, ENT_QUOTES, 'UTF-8') . '"
                          alt="' . htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') . '"
                          class="' . htmlspecialchars($cssClasses, ENT_QUOTES, 'UTF-8') . '"
                          loading="lazy">';
         }
+    }
+
+    /**
+     * Get WebP URL if the WebP version exists, otherwise return null
+     */
+    private function getWebpUrl(string $imageUrl): ?string
+    {
+        // Only process local images (starting with / or /uploads/)
+        if (!str_starts_with($imageUrl, '/')) {
+            return null;
+        }
+
+        // Build WebP path
+        $pathInfo = pathinfo($imageUrl);
+        $extension = strtolower($pathInfo['extension'] ?? '');
+
+        // Only convert jpg, jpeg, png
+        if (!in_array($extension, ['jpg', 'jpeg', 'png'])) {
+            return null;
+        }
+
+        $webpUrl = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '.webp';
+        $webpPath = $this->projectDir . '/public' . $webpUrl;
+
+        // Check if WebP file exists
+        if (file_exists($webpPath)) {
+            return $webpUrl;
+        }
+
+        return null;
     }
 
     /**
