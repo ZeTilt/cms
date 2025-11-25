@@ -245,5 +245,14 @@ optimize-carousel: ## Optimise uniquement les images du carousel
 	$(PHP) bin/console app:optimize-images assets/images --max-width=1200
 	@echo "$(GREEN)✅ Carousel optimisé$(NC)"
 
+optimize-rebuild: ## Supprime tous les WebP et régénère (uploads + carousel)
+	@echo "$(YELLOW)🗑️  Suppression des WebP existants...$(NC)"
+	@find public/uploads/images -name "*.webp" -delete 2>/dev/null || true
+	@find public/assets/images -name "*.webp" -delete 2>/dev/null || true
+	@echo "$(GREEN)🖼️  Régénération des WebP et thumbnails...$(NC)"
+	$(PHP) bin/console app:optimize-images uploads/images
+	$(PHP) bin/console app:optimize-images assets/images
+	@echo "$(GREEN)✅ Rebuild terminé$(NC)"
+
 # Aide par défaut
 default: help
