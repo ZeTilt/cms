@@ -33,6 +33,7 @@ class ContentExtension extends AbstractExtension
             new TwigFilter('youtube_thumbnails', [$this, 'replaceYoutubeThumbnails'], ['is_safe' => ['html']]),
             new TwigFilter('lazy_images', [$this, 'addLazyLoadingToImages'], ['is_safe' => ['html']]),
             new TwigFilter('webp', [$this, 'toWebp']),
+            new TwigFilter('webp_thumb', [$this, 'toWebpThumb']),
         ];
     }
 
@@ -42,6 +43,14 @@ class ContentExtension extends AbstractExtension
     public function toWebp(string $imageUrl): string
     {
         return $this->getWebpUrl($imageUrl) ?? $imageUrl;
+    }
+
+    /**
+     * Convert image URL to WebP thumbnail if available, fallback to regular WebP, then original
+     */
+    public function toWebpThumb(string $imageUrl): string
+    {
+        return $this->getWebpThumbUrl($imageUrl) ?? $this->getWebpUrl($imageUrl) ?? $imageUrl;
     }
 
     public function renderPageContent(string $content): string
@@ -226,7 +235,7 @@ class ContentExtension extends AbstractExtension
      */
     private function getWebpUrl(string $imageUrl): ?string
     {
-        // Only process local images (starting with / or /uploads/)
+        // Only process local images (starting with /)
         if (!str_starts_with($imageUrl, '/')) {
             return null;
         }
@@ -246,6 +255,36 @@ class ContentExtension extends AbstractExtension
         // Check if WebP file exists
         if (file_exists($webpPath)) {
             return $webpUrl;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get WebP thumbnail URL if it exists, otherwise return null
+     */
+    private function getWebpThumbUrl(string $imageUrl): ?string
+    {
+        // Only process local images (starting with /)
+        if (!str_starts_with($imageUrl, '/')) {
+            return null;
+        }
+
+        // Build thumbnail WebP path
+        $pathInfo = pathinfo($imageUrl);
+        $extension = strtolower($pathInfo['extension'] ?? '');
+
+        // Only convert jpg, jpeg, png
+        if (!in_array($extension, ['jpg', 'jpeg', 'png'])) {
+            return null;
+        }
+
+        $thumbUrl = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '_thumb.webp';
+        $thumbPath = $this->projectDir . '/public' . $thumbUrl;
+
+        // Check if thumbnail WebP file exists
+        if (file_exists($thumbPath)) {
+            return $thumbUrl;
         }
 
         return null;

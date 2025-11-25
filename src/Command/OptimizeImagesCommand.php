@@ -106,11 +106,12 @@ HELP
                     $file['file'],
                     $this->imageOptimizer->formatBytes($file['saved']),
                     $file['webp'] ?? '-',
+                    $file['thumbnail'] ?? '-',
                 ];
             }
 
             $io->table(
-                ['Fichier', 'Économisé', 'Version WebP'],
+                ['Fichier', 'Économisé', 'WebP', 'Thumbnail'],
                 $rows
             );
         }

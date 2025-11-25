@@ -131,7 +131,7 @@
                                 <div class="carousel-container">
                                     {% for image in carousel_images %}
                                         <div class="carousel-slide {{ loop.first ? 'active' : '' }}" data-slide="{{ loop.index0 }}">
-                                            {{ youtube_thumbnail_with_fallback(image|webp, 'Image ' ~ loop.index, '') }}
+                                            {{ youtube_thumbnail_with_fallback(image|webp_thumb, 'Image ' ~ loop.index, '') }}
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -161,12 +161,12 @@
                     {% elseif article.featuredImage %}
                         <!-- Featured image -->
                         <div class="article-media">
-                            {{ youtube_thumbnail_with_fallback(article.featuredImage|webp, article.title, '') }}
+                            {{ youtube_thumbnail_with_fallback(article.featuredImage|webp_thumb, article.title, '') }}
                         </div>
                     {% elseif all_images and all_images|length > 0 %}
                         <!-- First image from content -->
                         <div class="article-media">
-                            {{ youtube_thumbnail_with_fallback(all_images[0]|webp, article.title, '') }}
+                            {{ youtube_thumbnail_with_fallback(all_images[0]|webp_thumb, article.title, '') }}
                         </div>
                     {% else %}
                         <!-- Fallback placeholder -->

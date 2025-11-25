@@ -13,6 +13,8 @@ class ImageOptimizerService
     private const DEFAULT_JPEG_QUALITY = 75;
     private const DEFAULT_WEBP_QUALITY = 70;
     private const DEFAULT_PNG_COMPRESSION = 6;
+    private const THUMBNAIL_WIDTH = 800;
+    private const THUMBNAIL_SUFFIX = '_thumb';
 
     public function __construct(
         private string $projectDir
@@ -20,14 +22,15 @@ class ImageOptimizerService
     }
 
     /**
-     * Optimise une image : compresse et crée une version WebP
+     * Optimise une image : compresse, crée une version WebP et un thumbnail WebP
      *
      * @param string $imagePath Chemin absolu vers l'image
-     * @param int|null $maxWidth Largeur max (optionnel)
-     * @param int|null $maxHeight Hauteur max (optionnel)
-     * @return array ['original' => string, 'webp' => string|null, 'saved_bytes' => int]
+     * @param int|null $maxWidth Largeur max pour redimensionner l'original (optionnel)
+     * @param int|null $maxHeight Hauteur max pour redimensionner l'original (optionnel)
+     * @param bool $createThumbnail Créer un thumbnail WebP (défaut: true)
+     * @return array ['original' => string, 'webp' => string|null, 'thumbnail' => string|null, 'saved_bytes' => int]
      */
-    public function optimize(string $imagePath, ?int $maxWidth = null, ?int $maxHeight = null): array
+    public function optimize(string $imagePath, ?int $maxWidth = null, ?int $maxHeight = null, bool $createThumbnail = true): array
     {
         if (!file_exists($imagePath)) {
             throw new \InvalidArgumentException("File not found: $imagePath");
@@ -48,7 +51,13 @@ class ImageOptimizerService
             throw new \RuntimeException("Could not load image: $imagePath");
         }
 
-        // Redimensionner si nécessaire
+        // Créer le thumbnail AVANT de redimensionner l'original
+        $thumbnailPath = null;
+        if ($createThumbnail) {
+            $thumbnailPath = $this->createThumbnailWebp($image, $imagePath, $width, $height);
+        }
+
+        // Redimensionner l'original si nécessaire
         if ($maxWidth || $maxHeight) {
             $image = $this->resize($image, $width, $height, $maxWidth, $maxHeight);
             $newDimensions = [imagesx($image), imagesy($image)];
@@ -59,7 +68,7 @@ class ImageOptimizerService
         // Optimiser et sauvegarder l'image originale
         $this->saveOptimized($image, $imagePath, $type);
 
-        // Créer la version WebP
+        // Créer la version WebP (taille originale ou redimensionnée)
         $webpPath = $this->createWebpVersion($image, $imagePath);
 
         // Libérer la mémoire
@@ -71,6 +80,7 @@ class ImageOptimizerService
         return [
             'original' => $imagePath,
             'webp' => $webpPath,
+            'thumbnail' => $thumbnailPath,
             'original_size' => $originalSize,
             'new_size' => $newSize,
             'saved_bytes' => $savedBytes,
@@ -113,13 +123,14 @@ class ImageOptimizerService
             }
 
             try {
-                $result = $this->optimize($file, $maxWidth, $maxHeight);
+                $result = $this->optimize($file, $maxWidth, $maxHeight, true);
                 $results['processed']++;
                 $results['total_saved'] += $result['saved_bytes'];
                 $results['files'][] = [
                     'file' => basename($file),
                     'saved' => $result['saved_bytes'],
                     'webp' => $result['webp'] ? basename($result['webp']) : null,
+                    'thumbnail' => $result['thumbnail'] ? basename($result['thumbnail']) : null,
                 ];
             } catch (\Exception $e) {
                 $results['errors'][] = [
@@ -199,16 +210,16 @@ class ImageOptimizerService
      * Crée une version WebP de l'image
      * Utilise cwebp si disponible (meilleure compression), sinon GD
      */
-    private function createWebpVersion(\GdImage $image, string $originalPath): ?string
+    private function createWebpVersion(\GdImage $image, string $originalPath, string $suffix = ''): ?string
     {
         $info = pathinfo($originalPath);
-        $webpPath = $info['dirname'] . '/' . $info['filename'] . '.webp';
+        $webpPath = $info['dirname'] . '/' . $info['filename'] . $suffix . '.webp';
 
         // Essayer d'utiliser cwebp pour une meilleure compression
         if ($this->hasCwebp()) {
-            // Qualité 75 avec cwebp donne de très bons résultats
+            // Qualité 70 avec cwebp donne de très bons résultats
             $command = sprintf(
-                'cwebp -q 75 -m 6 %s -o %s 2>/dev/null',
+                'cwebp -q 70 -m 6 %s -o %s 2>/dev/null',
                 escapeshellarg($originalPath),
                 escapeshellarg($webpPath)
             );
@@ -224,6 +235,61 @@ class ImageOptimizerService
             return $webpPath;
         }
 
+        return null;
+    }
+
+    /**
+     * Crée un thumbnail WebP redimensionné
+     */
+    private function createThumbnailWebp(\GdImage $image, string $originalPath, int $width, int $height): ?string
+    {
+        $info = pathinfo($originalPath);
+        $thumbPath = $info['dirname'] . '/' . $info['filename'] . self::THUMBNAIL_SUFFIX . '.webp';
+
+        // Calculer les nouvelles dimensions
+        $ratio = $width / $height;
+        $newWidth = min($width, self::THUMBNAIL_WIDTH);
+        $newHeight = (int) ($newWidth / $ratio);
+
+        // Si l'image est déjà plus petite, pas besoin de thumbnail
+        if ($width <= self::THUMBNAIL_WIDTH) {
+            return null;
+        }
+
+        // Créer l'image redimensionnée
+        $thumb = imagecreatetruecolor($newWidth, $newHeight);
+        imagealphablending($thumb, false);
+        imagesavealpha($thumb, true);
+        imagecopyresampled($thumb, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+        // Sauvegarder en WebP via cwebp ou GD
+        if ($this->hasCwebp()) {
+            // Sauvegarder temporairement en JPG pour cwebp
+            $tempPath = sys_get_temp_dir() . '/' . uniqid('thumb_') . '.jpg';
+            imagejpeg($thumb, $tempPath, 90);
+
+            $command = sprintf(
+                'cwebp -q 70 -m 6 %s -o %s 2>/dev/null',
+                escapeshellarg($tempPath),
+                escapeshellarg($thumbPath)
+            );
+            exec($command, $output, $returnCode);
+            @unlink($tempPath);
+
+            imagedestroy($thumb);
+
+            if ($returnCode === 0 && file_exists($thumbPath)) {
+                return $thumbPath;
+            }
+        }
+
+        // Fallback GD
+        if (imagewebp($thumb, $thumbPath, self::DEFAULT_WEBP_QUALITY)) {
+            imagedestroy($thumb);
+            return $thumbPath;
+        }
+
+        imagedestroy($thumb);
         return null;
     }
 
