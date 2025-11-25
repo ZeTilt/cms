@@ -11,7 +11,7 @@ namespace App\Service;
 class ImageOptimizerService
 {
     private const DEFAULT_JPEG_QUALITY = 75;
-    private const DEFAULT_WEBP_QUALITY = 80;
+    private const DEFAULT_WEBP_QUALITY = 70;
     private const DEFAULT_PNG_COMPRESSION = 6;
 
     public function __construct(
@@ -197,17 +197,49 @@ class ImageOptimizerService
 
     /**
      * Crée une version WebP de l'image
+     * Utilise cwebp si disponible (meilleure compression), sinon GD
      */
     private function createWebpVersion(\GdImage $image, string $originalPath): ?string
     {
         $info = pathinfo($originalPath);
         $webpPath = $info['dirname'] . '/' . $info['filename'] . '.webp';
 
+        // Essayer d'utiliser cwebp pour une meilleure compression
+        if ($this->hasCwebp()) {
+            // Qualité 75 avec cwebp donne de très bons résultats
+            $command = sprintf(
+                'cwebp -q 75 -m 6 %s -o %s 2>/dev/null',
+                escapeshellarg($originalPath),
+                escapeshellarg($webpPath)
+            );
+            exec($command, $output, $returnCode);
+
+            if ($returnCode === 0 && file_exists($webpPath)) {
+                return $webpPath;
+            }
+        }
+
+        // Fallback sur GD si cwebp n'est pas disponible
         if (imagewebp($image, $webpPath, self::DEFAULT_WEBP_QUALITY)) {
             return $webpPath;
         }
 
         return null;
+    }
+
+    /**
+     * Vérifie si cwebp est disponible
+     */
+    private function hasCwebp(): bool
+    {
+        static $hasCwebp = null;
+
+        if ($hasCwebp === null) {
+            exec('which cwebp 2>/dev/null', $output, $returnCode);
+            $hasCwebp = $returnCode === 0;
+        }
+
+        return $hasCwebp;
     }
 
     /**
