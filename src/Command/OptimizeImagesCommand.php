@@ -28,8 +28,8 @@ class OptimizeImagesCommand extends Command
     {
         $this
             ->addArgument('directory', InputArgument::OPTIONAL, 'Dossier à optimiser (relatif à public/)', 'uploads/images')
-            ->addOption('max-width', 'w', InputOption::VALUE_REQUIRED, 'Largeur maximale des images')
-            ->addOption('max-height', 'h', InputOption::VALUE_REQUIRED, 'Hauteur maximale des images')
+            ->addOption('max-width', 'W', InputOption::VALUE_REQUIRED, 'Largeur maximale des images')
+            ->addOption('max-height', 'H', InputOption::VALUE_REQUIRED, 'Hauteur maximale des images')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simulation sans modification')
             ->setHelp(<<<'HELP'
 La commande <info>%command.name%</info> optimise toutes les images d'un dossier :
