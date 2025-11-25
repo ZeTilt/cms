@@ -228,5 +228,22 @@ restore-local: ## Restaure un dump dans la base locale (usage: make restore-loca
 	@mysql -u empo8897_venetes_preprod -p'Vén3t3sPréPr0d' empo8897_venetes_preprod < $(DUMP)
 	@echo "$(GREEN)✅ Base restaurée$(NC)"
 
+# Optimisation des images
+optimize-images: ## Optimise toutes les images uploadées (compression + WebP)
+	@echo "$(GREEN)🖼️  Optimisation des images...$(NC)"
+	$(PHP) bin/console app:optimize-images uploads/images
+	$(PHP) bin/console app:optimize-images assets/images
+	@echo "$(GREEN)✅ Optimisation terminée$(NC)"
+
+optimize-images-dry: ## Simule l'optimisation des images (dry-run)
+	@echo "$(GREEN)🔍 Simulation de l'optimisation...$(NC)"
+	$(PHP) bin/console app:optimize-images uploads/images --dry-run
+	$(PHP) bin/console app:optimize-images assets/images --dry-run
+
+optimize-carousel: ## Optimise uniquement les images du carousel
+	@echo "$(GREEN)🎠 Optimisation du carousel...$(NC)"
+	$(PHP) bin/console app:optimize-images assets/images --max-width=1200
+	@echo "$(GREEN)✅ Carousel optimisé$(NC)"
+
 # Aide par défaut
 default: help

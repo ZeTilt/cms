@@ -21,13 +21,15 @@ class ImageUploadService
 
     private const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     private const THUMBNAIL_SIZE = 300;
+    private const OPTIMIZE_MAX_WIDTH = 1920; // Largeur max pour les images uploadées
 
     public function __construct(
         private string $uploadDirectory,
         private string $thumbnailDirectory,
         private SluggerInterface $slugger,
         private EntityManagerInterface $entityManager,
-        private ImageRepository $imageRepository
+        private ImageRepository $imageRepository,
+        private ?ImageOptimizerService $imageOptimizer = null
     ) {
         // Ensure upload directories exist
         if (!is_dir($this->uploadDirectory)) {
@@ -56,17 +58,39 @@ class ImageUploadService
         $fullPath = $this->uploadDirectory . '/' . $filename;
         $width = null;
         $height = null;
-        
-        try {
-            if (function_exists('getimagesize')) {
-                $dimensions = getimagesize($fullPath);
-                if ($dimensions !== false) {
-                    $width = $dimensions[0] ?? null;
-                    $height = $dimensions[1] ?? null;
+
+        // Optimiser l'image automatiquement (compression + WebP)
+        if ($this->imageOptimizer) {
+            try {
+                $optimizeResult = $this->imageOptimizer->optimize(
+                    $fullPath,
+                    self::OPTIMIZE_MAX_WIDTH,
+                    null
+                );
+                // Mettre à jour les dimensions après redimensionnement
+                if (isset($optimizeResult['dimensions'])) {
+                    $width = $optimizeResult['dimensions'][0];
+                    $height = $optimizeResult['dimensions'][1];
                 }
+                error_log("Image optimized: saved {$optimizeResult['saved_bytes']} bytes");
+            } catch (\Exception $e) {
+                error_log('Image optimization failed: ' . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            error_log('Failed to get image dimensions: ' . $e->getMessage());
+        }
+
+        // Get image dimensions if not already set by optimizer
+        if ($width === null || $height === null) {
+            try {
+                if (function_exists('getimagesize')) {
+                    $dimensions = getimagesize($fullPath);
+                    if ($dimensions !== false) {
+                        $width = $dimensions[0] ?? null;
+                        $height = $dimensions[1] ?? null;
+                    }
+                }
+            } catch (\Exception $e) {
+                error_log('Failed to get image dimensions: ' . $e->getMessage());
+            }
         }
 
         // Generate thumbnail (skip if GD not available)
