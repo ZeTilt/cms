@@ -28,7 +28,6 @@
     
     {% block stylesheets %}
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="{{ asset('assets/gallery.css') }}">
         <script>
             tailwind.config = {
                 theme: {
@@ -43,6 +42,7 @@
                 }
             }
         </script>
+        <link rel="stylesheet" href="{{ asset('assets/gallery' ~ (app.environment == 'prod' ? '.min' : '') ~ '.css') }}">
         <style>
             /* Dropdown navigation avec JavaScript */
             .dropdown-menu {
@@ -51,7 +51,6 @@
                 transform: translateY(-10px);
                 pointer-events: none;
             }
-            
             .dropdown-menu.show {
                 opacity: 1;
                 transform: translateY(0);
@@ -61,8 +60,6 @@
             @media (max-width: 768px) {
                 .hero-carousel { height: 300px; }
             }
-            
-            /* Style pour les éléments surlignés (remplace <mark>) */
             .highlight {
                 background-color: #FEF3C7;
                 color: #92400E;
@@ -70,20 +67,12 @@
                 border-radius: 0.25rem;
                 font-weight: bold;
             }
-            
-            /* Amélioration du style des articles */
-            .prose .highlight {
-                background-color: #FEF3C7;
-                color: #92400E;
-                padding: 0.125rem 0.25rem;
-                border-radius: 0.25rem;
-            }
         </style>
     {% endblock %}
 
     {% block javascripts %}
         <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-        <script src="{{ asset('assets/gallery.js') }}"></script>
+        <script src="{{ asset('assets/gallery' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
     {% endblock %}
 </head>
 <body class="bg-gray-50">
@@ -647,7 +636,7 @@
     </script>
 
     <!-- Push Notifications -->
-    <script src="{{ asset('js/push-notifications.js') }}"></script>
+    <script src="{{ asset('js/push-notifications' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
     <script>
         // Initialiser le gestionnaire de notifications push
         window.pushManager = null;

@@ -1,0 +1,3 @@
+twig:
+    # Strict mode disabled in prod for better performance
+    strict_variables: false

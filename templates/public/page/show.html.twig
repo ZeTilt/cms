@@ -32,7 +32,7 @@
         </header>
         
         <div class="prose max-w-none">
-            {{ page.content|raw }}
+            {{ page.content|lazy_images|raw }}
         </div>
         
         {% if page.tags %}

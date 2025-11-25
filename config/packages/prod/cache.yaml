@@ -1,0 +1,8 @@
+framework:
+    cache:
+        # Use APCu for better performance in production
+        # Uncomment if APCu is available on your server
+        # app: cache.adapter.apcu
+
+        # Alternative: Use filesystem cache with optimized settings
+        app: cache.adapter.filesystem

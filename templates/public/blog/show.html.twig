@@ -47,7 +47,7 @@
         </header>
         
         <div class="prose max-w-none">
-            {{ page.content|raw }}
+            {{ page.content|lazy_images|raw }}
         </div>
         
         <footer class="mt-8 pt-8 border-t border-gray-200">

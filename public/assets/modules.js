@@ -6,8 +6,7 @@
 // Prevent multiple executions
 if (window.moduleManagerLoaded) {
     console.log('Module manager already loaded, skipping...');
-    return;
-}
+} else {
 window.moduleManagerLoaded = true;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -162,3 +161,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 1000);
 });
+} // end of if (!window.moduleManagerLoaded)

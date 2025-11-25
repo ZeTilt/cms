@@ -30,6 +30,7 @@ class ContentExtension extends AbstractExtension
         return [
             new TwigFilter('render_page_content', [$this, 'renderPageContent'], ['is_safe' => ['html']]),
             new TwigFilter('youtube_thumbnails', [$this, 'replaceYoutubeThumbnails'], ['is_safe' => ['html']]),
+            new TwigFilter('lazy_images', [$this, 'addLazyLoadingToImages'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -180,7 +181,7 @@ class ContentExtension extends AbstractExtension
         // Check if this is a YouTube thumbnail URL
         if (preg_match('/img\.youtube\.com\/vi\/([a-zA-Z0-9_-]+)\//', $imageUrl, $matches)) {
             $videoId = $matches[1];
-            
+
             // Multiple thumbnail options in order of preference
             $thumbnailOptions = [
                 "https://img.youtube.com/vi/{$videoId}/maxresdefault.jpg",
@@ -188,21 +189,46 @@ class ContentExtension extends AbstractExtension
                 "https://img.youtube.com/vi/{$videoId}/mqdefault.jpg",
                 "https://img.youtube.com/vi/{$videoId}/default.jpg"
             ];
-            
+
             $thumbnailOptionsJson = htmlspecialchars(json_encode($thumbnailOptions), ENT_QUOTES, 'UTF-8');
-            
-            return '<img src="' . $thumbnailOptions[0] . '" 
-                         alt="' . htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') . '" 
+
+            return '<img src="' . $thumbnailOptions[0] . '"
+                         alt="' . htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') . '"
                          class="' . htmlspecialchars($cssClasses, ENT_QUOTES, 'UTF-8') . ' youtube-thumbnail"
+                         loading="lazy"
                          data-fallback-urls=\'' . $thumbnailOptionsJson . '\'
                          data-current-index="0"
                          onerror="handleYouTubeThumbnailError(this)">';
         } else {
             // Regular image, no fallback needed
-            return '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" 
-                         alt="' . htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') . '" 
-                         class="' . htmlspecialchars($cssClasses, ENT_QUOTES, 'UTF-8') . '">';
+            return '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '"
+                         alt="' . htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') . '"
+                         class="' . htmlspecialchars($cssClasses, ENT_QUOTES, 'UTF-8') . '"
+                         loading="lazy">';
         }
+    }
+
+    /**
+     * Add loading="lazy" to all images in HTML content
+     */
+    public function addLazyLoadingToImages(string $content): string
+    {
+        // Add loading="lazy" to img tags that don't already have it
+        return preg_replace_callback(
+            '/<img\s+([^>]*)>/i',
+            function ($matches) {
+                $attributes = $matches[1];
+
+                // Check if loading attribute already exists
+                if (preg_match('/loading\s*=/i', $attributes)) {
+                    return $matches[0];
+                }
+
+                // Add loading="lazy" attribute
+                return '<img ' . $attributes . ' loading="lazy">';
+            },
+            $content
+        );
     }
 
     /**

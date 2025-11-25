@@ -4,13 +4,13 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/carousel.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/carousel' ~ (app.environment == 'prod' ? '.min' : '') ~ '.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('assets/carousel.js') }}"></script>
-    <script src="{{ asset('assets/youtube-thumbnails.js') }}"></script>
+    <script src="{{ asset('assets/carousel' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
+    <script src="{{ asset('assets/youtube-thumbnails' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -19,7 +19,7 @@
     <div class="relative h-full">
         <!-- Slides -->
         <template x-for="(slide, index) in slides" :key="index">
-            <div 
+            <div
                 x-show="currentSlide === index"
                 x-transition:enter="transition ease-in-out duration-300"
                 x-transition:enter-start="opacity-0 transform translate-x-full"
@@ -31,7 +31,7 @@
                 :style="`background-image: url(${slide.image})`"
             ></div>
         </template>
-        
+
         <!-- Navigation arrows -->
         <button @click="prevSlide()"
                 class="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 sm:p-3 rounded-full hover:bg-opacity-75 transition">
@@ -46,7 +46,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
         </button>
-        
+
         <!-- Dots indicator -->
         <div class="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1.5 sm:space-x-2">
             <template x-for="(slide, index) in slides" :key="index">
@@ -281,25 +281,25 @@ function carousel() {
             { image: '{{ asset("assets/images/P1020334-1080x500.jpg") }}' },
             { image: '{{ asset("assets/images/P10201631-1080x500.jpg") }}' }
         ],
-        
+
         nextSlide() {
             this.currentSlide = (this.currentSlide + 1) % this.slides.length;
         },
-        
+
         prevSlide() {
             this.currentSlide = this.currentSlide === 0 ? this.slides.length - 1 : this.currentSlide - 1;
         },
-        
+
         goToSlide(index) {
             this.currentSlide = index;
         },
-        
+
         autoplay() {
             setInterval(() => {
                 this.nextSlide();
             }, 5000);
         },
-        
+
         init() {
             this.autoplay();
         }

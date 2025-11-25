@@ -4,13 +4,13 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/carousel.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/carousel' ~ (app.environment == 'prod' ? '.min' : '') ~ '.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('assets/carousel.js') }}"></script>
-    <script src="{{ asset('assets/youtube-thumbnails.js') }}"></script>
+    <script src="{{ asset('assets/carousel' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
+    <script src="{{ asset('assets/youtube-thumbnails' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -64,12 +64,12 @@
 
         {% if article.featuredImage %}
             <figure class="mt-16">
-                <img class="aspect-video rounded-xl bg-gray-50 object-contain" src="{{ article.featuredImage }}" alt="{{ article.title }}">
+                <img class="aspect-video rounded-xl bg-gray-50 object-contain" src="{{ article.featuredImage }}" alt="{{ article.title }}" loading="lazy">
             </figure>
         {% endif %}
 
         <div class="mt-16 prose prose-lg max-w-none article-content">
-            {{ article.content|youtube_thumbnails }}
+            {{ article.content|youtube_thumbnails|lazy_images }}
         </div>
 
         <div class="mt-16 border-t border-gray-200 pt-8">
