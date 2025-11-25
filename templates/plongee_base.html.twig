@@ -27,9 +27,47 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('pwa-icons/icon-152x152.png') }}">
     
     {% block stylesheets %}
-        {# CSS Custom minifié (remplace Tailwind CDN ~300Ko par ~9Ko) #}
-        <link rel="stylesheet" href="{{ asset('assets/tailwind-custom' ~ (app.environment == 'prod' ? '.min' : '') ~ '.css') }}">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'club-orange': '#FD7E29',
+                            'club-orange-dark': '#E56B1F',
+                            'club-blue': '#1E40AF',
+                            'club-blue-dark': '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        </script>
         <link rel="stylesheet" href="{{ asset('assets/gallery' ~ (app.environment == 'prod' ? '.min' : '') ~ '.css') }}">
+        <style>
+            /* Dropdown navigation avec JavaScript */
+            .dropdown-menu {
+                transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+                opacity: 0;
+                transform: translateY(-10px);
+                pointer-events: none;
+            }
+            .dropdown-menu.show {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+            .hero-carousel { height: 500px; }
+            @media (max-width: 768px) {
+                .hero-carousel { height: 300px; }
+            }
+            .highlight {
+                background-color: #FEF3C7;
+                color: #92400E;
+                padding: 0.125rem 0.25rem;
+                border-radius: 0.25rem;
+                font-weight: bold;
+            }
+        </style>
     {% endblock %}
 
     {% block javascripts %}
