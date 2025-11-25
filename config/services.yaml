@@ -36,6 +36,16 @@ services:
         arguments:
             $urlGenerator: '@router'
 
+    # Image Optimizer Service
+    App\Service\ImageOptimizerService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    # Optimize Images Command
+    App\Command\OptimizeImagesCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # Push Notification Service
     App\Service\PushNotificationService:
         arguments:
