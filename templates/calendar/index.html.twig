@@ -3,44 +3,44 @@
 {% block title %}Calendrier des Activités - Club Subaquatique des Vénètes{% endblock %}
 
 {% block body %}
-<div class="bg-white py-8">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+<div class="calendar-page">
+    <div class="calendar-container">
         <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold tracking-tight text-club-blue mb-4">
+        <div class="calendar-header">
+            <h1 class="calendar-title">
                 Calendrier des Activités
             </h1>
-            <p class="text-xl text-gray-600">
+            <p class="calendar-subtitle">
                 Toutes les sorties, formations et événements du club
             </p>
         </div>
 
-        <div class="grid lg:grid-cols-3 gap-8">
+        <div class="calendar-layout">
             <!-- Calendrier principal -->
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="calendar-main">
+                <div class="calendar-card">
                     <!-- Navigation du calendrier -->
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center space-x-4">
-                            <a href="{{ path('public_calendar', {year: prev_year, month: prev_month}) }}" 
-                               class="p-2 text-gray-400 hover:text-club-orange transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="calendar-nav">
+                        <div class="calendar-nav-controls">
+                            <a href="{{ path('public_calendar', {year: prev_year, month: prev_month}) }}"
+                               class="calendar-nav-btn">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                                 </svg>
                             </a>
-                            <h2 class="text-2xl font-bold text-club-blue">
+                            <h2 class="calendar-month-title">
                                 {% set months = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'] %}
                                 {{ months[current_month] }} {{ current_year }}
                             </h2>
-                            <a href="{{ path('public_calendar', {year: next_year, month: next_month}) }}" 
-                               class="p-2 text-gray-400 hover:text-club-orange transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <a href="{{ path('public_calendar', {year: next_year, month: next_month}) }}"
+                               class="calendar-nav-btn">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </a>
                         </div>
-                        <a href="{{ path('public_calendar') }}" 
-                           class="px-4 py-2 text-sm font-medium text-club-orange hover:text-club-orange-dark">
+                        <a href="{{ path('public_calendar') }}"
+                           class="calendar-today-btn">
                             Aujourd'hui
                         </a>
                     </div>
@@ -49,21 +49,21 @@
                     {% set firstDay = date(current_year ~ '-' ~ current_month ~ '-01') %}
                     {% set startOfWeek = firstDay.format('N') %}
                     {% set daysInMonth = firstDay.format('t') %}
-                    
-                    <div class="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
+
+                    <div class="calendar-grid">
                         <!-- En-têtes des jours -->
-                        <div class="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">Lun</div>
-                        <div class="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">Mar</div>
-                        <div class="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">Mer</div>
-                        <div class="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">Jeu</div>
-                        <div class="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">Ven</div>
-                        <div class="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">Sam</div>
-                        <div class="bg-gray-50 p-2 text-center text-sm font-medium text-gray-500">Dim</div>
+                        <div class="calendar-day-header">Lun</div>
+                        <div class="calendar-day-header">Mar</div>
+                        <div class="calendar-day-header">Mer</div>
+                        <div class="calendar-day-header">Jeu</div>
+                        <div class="calendar-day-header">Ven</div>
+                        <div class="calendar-day-header">Sam</div>
+                        <div class="calendar-day-header">Dim</div>
 
                         <!-- Cases vides du début -->
                         {% if startOfWeek > 1 %}
                             {% for i in 1..(startOfWeek - 1) %}
-                                <div class="bg-white h-24"></div>
+                                <div class="calendar-day-empty"></div>
                             {% endfor %}
                         {% endif %}
 
@@ -78,22 +78,20 @@
                                 {% endif %}
                             {% endfor %}
 
-                            <div class="bg-white h-24 p-1 {{ isToday ? 'ring-2 ring-club-orange' : '' }}">
-                                <div class="text-sm {{ isToday ? 'font-bold text-club-orange' : 'text-gray-900' }}">
+                            <div class="calendar-day {{ isToday ? 'calendar-day-today' : '' }}">
+                                <div class="calendar-day-number">
                                     {{ day }}
                                 </div>
                                 {% for event in dayEvents|slice(0, 2) %}
-                                    <div class="mt-1">
-                                        <a href="{{ path('calendar_event_detail', {id: event.id}) }}" 
-                                           class="block text-xs px-1 py-0.5 rounded text-white truncate hover:opacity-80"
-                                           style="background-color: {{ event.color ?? '#FD7E29' }}"
-                                           title="{{ event.title }}">
-                                            {{ event.title }}
-                                        </a>
-                                    </div>
+                                    <a href="{{ path('calendar_event_detail', {id: event.id}) }}"
+                                       class="calendar-event"
+                                       style="background-color: {{ event.color ?? '#FD7E29' }}"
+                                       title="{{ event.title }}">
+                                        {{ event.title }}
+                                    </a>
                                 {% endfor %}
                                 {% if dayEvents|length > 2 %}
-                                    <div class="text-xs text-gray-500">+{{ dayEvents|length - 2 }}</div>
+                                    <div class="calendar-day-more">+{{ dayEvents|length - 2 }}</div>
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -104,7 +102,7 @@
                         {% set remainingCells = 42 - totalCells %}
                         {% if remainingCells > 0 %}
                             {% for i in 1..remainingCells %}
-                                <div class="bg-white h-24"></div>
+                                <div class="calendar-day-empty"></div>
                             {% endfor %}
                         {% endif %}
                     </div>
@@ -112,46 +110,45 @@
             </div>
 
             <!-- Sidebar avec événements à venir -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                    <h3 class="text-xl font-bold text-club-blue mb-4">Prochains Événements</h3>
+            <div class="calendar-sidebar">
+                <div class="calendar-sidebar-card">
+                    <h3 class="calendar-sidebar-title">Prochains Événements</h3>
                     {% if upcoming_events is empty %}
-                        <p class="text-gray-500 text-center py-8">Aucun événement prévu</p>
+                        <p class="calendar-upcoming-empty">Aucun événement prévu</p>
                     {% else %}
-                        <div class="space-y-4">
+                        <div class="calendar-upcoming-list">
                             {% for event in upcoming_events %}
-                                <div class="border border-gray-200 rounded-lg p-4 hover:border-club-orange transition-colors">
-                                    <div class="flex items-start justify-between">
-                                        <div class="flex-1 min-w-0">
-                                            <h4 class="text-sm font-medium text-gray-900 truncate">
-                                                <a href="{{ path('calendar_event_detail', {id: event.id}) }}" 
-                                                   class="hover:text-club-orange">
+                                <div class="calendar-upcoming-event">
+                                    <div class="calendar-upcoming-header">
+                                        <div class="calendar-upcoming-content">
+                                            <h4 class="calendar-upcoming-title">
+                                                <a href="{{ path('calendar_event_detail', {id: event.id}) }}">
                                                     {{ event.title }}
                                                 </a>
                                             </h4>
-                                            <p class="text-xs text-gray-500 mt-1">
+                                            <p class="calendar-upcoming-date">
                                                 {{ event.startDate|date_fr('d/m à H:i') }}
                                             </p>
                                             {% if event.location %}
-                                                <p class="text-xs text-gray-500">
+                                                <p class="calendar-upcoming-location">
                                                     📍 {{ event.location }}
                                                 </p>
                                             {% endif %}
                                         </div>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                        <span class="calendar-event-badge"
                                               style="background-color: {{ event.color ?? '#FD7E29' }}1A; color: {{ event.color ?? '#FD7E29' }}">
                                             {{ event.typeDisplayName }}
                                         </span>
                                     </div>
                                     {% if event.maxParticipants %}
-                                        <div class="mt-2">
-                                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                        <div class="calendar-event-places">
+                                            <div class="calendar-event-places-header">
                                                 <span>Places:</span>
                                                 <span>{{ event.currentParticipants }}/{{ event.maxParticipants }}</span>
                                             </div>
-                                            <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                            <div class="calendar-event-places-bar">
                                                 {% set percentage = event.maxParticipants > 0 ? (event.currentParticipants / event.maxParticipants * 100) : 0 %}
-                                                <div class="bg-club-orange h-1.5 rounded-full" 
+                                                <div class="calendar-event-places-fill"
                                                      style="width: {{ percentage }}%"></div>
                                             </div>
                                         </div>
@@ -164,30 +161,30 @@
 
                 <!-- Légende des types d'événements -->
                 {% if event_types is not empty %}
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-club-blue mb-4">Types d'activités</h3>
-                    <div class="space-y-3 text-sm">
+                <div class="calendar-sidebar-card">
+                    <h3 class="calendar-sidebar-title calendar-sidebar-title-sm">Types d'activités</h3>
+                    <div class="calendar-legend">
                         {% for event_type in event_types %}
-                            <div class="flex items-center">
-                                <div class="w-4 h-4 rounded-full mr-3" style="background-color: {{ event_type.color }}"></div>
+                            <div class="calendar-legend-item">
+                                <div class="calendar-legend-color" style="background-color: {{ event_type.color }}"></div>
                                 <span>{{ event_type.name }}</span>
                                 {% if event_type.description %}
-                                    <span class="text-gray-500 text-xs ml-2">- {{ event_type.description }}</span>
+                                    <span class="calendar-legend-desc">- {{ event_type.description }}</span>
                                 {% endif %}
                             </div>
                         {% endfor %}
                     </div>
                 </div>
                 {% else %}
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-club-blue mb-4">Types d'activités</h3>
-                    <div class="text-center py-6">
-                        <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="calendar-sidebar-card">
+                    <h3 class="calendar-sidebar-title calendar-sidebar-title-sm">Types d'activités</h3>
+                    <div class="calendar-legend-empty">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a1.994 1.994 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                         </svg>
-                        <p class="text-sm text-gray-500">Aucun type d'événement configuré</p>
-                        <p class="text-xs text-gray-400 mt-1">
-                            <a href="{{ path('admin_event_types_list') }}" class="text-club-orange hover:text-club-orange-dark">
+                        <p>Aucun type d'événement configuré</p>
+                        <p>
+                            <a href="{{ path('admin_event_types_list') }}">
                                 Créer des types d'événements
                             </a>
                         </p>

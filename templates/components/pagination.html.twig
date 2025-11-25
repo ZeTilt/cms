@@ -1,4 +1,4 @@
-{# 
+{#
   Pagination component
   Parameters:
   - current_page: current page number
@@ -8,73 +8,73 @@
 #}
 
 {% if total_pages > 1 %}
-    <nav class="border-t border-gray-200 px-4 flex items-center justify-between sm:px-0 mt-8">
-        <div class="-mt-px w-0 flex-1 flex">
+    <nav class="pagination">
+        <div class="pagination-prev">
             {% if current_page > 1 %}
-                <a href="{{ path(route_name, route_params|default({})|merge({page: current_page - 1})) }}" class="border-t-2 border-transparent pt-4 pr-1 inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ path(route_name, route_params|default({})|merge({page: current_page - 1})) }}" class="pagination-link pagination-link-prev">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                     Précédent
                 </a>
             {% endif %}
         </div>
-        
-        <div class="hidden md:-mt-px md:flex">
+
+        <div class="pagination-pages">
             {% set start_page = max(1, current_page - 2) %}
             {% set end_page = min(total_pages, current_page + 2) %}
-            
+
             {# Always show first page #}
             {% if start_page > 1 %}
-                <a href="{{ path(route_name, route_params|default({})|merge({page: 1})) }}" class="border-t-2 border-transparent pt-4 px-4 inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                <a href="{{ path(route_name, route_params|default({})|merge({page: 1})) }}" class="pagination-page">
                     1
                 </a>
                 {% if start_page > 2 %}
-                    <span class="border-t-2 border-transparent pt-4 px-4 inline-flex items-center text-sm font-medium text-gray-500">
+                    <span class="pagination-ellipsis">
                         ...
                     </span>
                 {% endif %}
             {% endif %}
-            
+
             {# Show page range #}
             {% for page in start_page..end_page %}
                 {% if page == current_page %}
-                    <span class="border-t-2 border-indigo-500 pt-4 px-4 inline-flex items-center text-sm font-medium text-indigo-600">
+                    <span class="pagination-page pagination-page-active">
                         {{ page }}
                     </span>
                 {% else %}
-                    <a href="{{ path(route_name, route_params|default({})|merge({page: page})) }}" class="border-t-2 border-transparent pt-4 px-4 inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <a href="{{ path(route_name, route_params|default({})|merge({page: page})) }}" class="pagination-page">
                         {{ page }}
                     </a>
                 {% endif %}
             {% endfor %}
-            
+
             {# Always show last page #}
             {% if end_page < total_pages %}
                 {% if end_page < total_pages - 1 %}
-                    <span class="border-t-2 border-transparent pt-4 px-4 inline-flex items-center text-sm font-medium text-gray-500">
+                    <span class="pagination-ellipsis">
                         ...
                     </span>
                 {% endif %}
-                <a href="{{ path(route_name, route_params|default({})|merge({page: total_pages})) }}" class="border-t-2 border-transparent pt-4 px-4 inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                <a href="{{ path(route_name, route_params|default({})|merge({page: total_pages})) }}" class="pagination-page">
                     {{ total_pages }}
                 </a>
             {% endif %}
         </div>
-        
-        <div class="-mt-px w-0 flex-1 flex justify-end">
+
+        <div class="pagination-next">
             {% if current_page < total_pages %}
-                <a href="{{ path(route_name, route_params|default({})|merge({page: current_page + 1})) }}" class="border-t-2 border-transparent pt-4 pl-1 inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                <a href="{{ path(route_name, route_params|default({})|merge({page: current_page + 1})) }}" class="pagination-link pagination-link-next">
                     Suivant
-                    <svg class="ml-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </a>
             {% endif %}
         </div>
     </nav>
-    
-    <div class="text-center mt-4 text-sm text-gray-500">
+
+    <div class="pagination-info">
         Page {{ current_page }} sur {{ total_pages }}
         {% if total_articles is defined %}
             ({{ total_articles }} article{{ total_articles > 1 ? 's' : '' }} au total)

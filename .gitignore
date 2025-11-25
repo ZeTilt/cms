@@ -7,6 +7,10 @@
 /public/bundles/
 /var/
 /vendor/
+/node_modules/
+/.idea/
+/docs/
+/public/assets/images/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
