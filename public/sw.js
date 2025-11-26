@@ -1,7 +1,7 @@
 // Service Worker pour PWA Club Subaquatique des Vénètes
-// Version 6 - JS fusionné + logo WebP
-const CACHE_NAME = 'csv-plongee-v6';
-const STATIC_CACHE = 'csv-static-v6';
+// Version 8 - CSS CMS pages Tailwind compatibility
+const CACHE_NAME = 'csv-plongee-v8';
+const STATIC_CACHE = 'csv-static-v8';
 
 // Assets statiques à mettre en cache (images, CSS, JS, fonts)
 const staticAssets = [
@@ -20,7 +20,7 @@ const staticAssets = [
 
 // Installation du service worker
 self.addEventListener('install', function(event) {
-  console.log('Service Worker v6: Installing...');
+  console.log('Service Worker v8: Installing...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then(function(cache) {
@@ -35,7 +35,7 @@ self.addEventListener('install', function(event) {
         );
       })
       .then(() => {
-        console.log('Service Worker v6: Installation complete');
+        console.log('Service Worker v8: Installation complete');
         return self.skipWaiting();
       })
   );
@@ -43,7 +43,7 @@ self.addEventListener('install', function(event) {
 
 // Activation du service worker
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker v6: Activating...');
+  console.log('Service Worker v8: Activating...');
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
@@ -56,7 +56,7 @@ self.addEventListener('activate', function(event) {
         })
       );
     }).then(() => {
-      console.log('Service Worker v6: Activation complete');
+      console.log('Service Worker v8: Activation complete');
       return self.clients.claim();
     })
   );
