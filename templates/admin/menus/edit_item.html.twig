@@ -1,0 +1,260 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}Modifier : {{ item.label }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+        <a href="{{ path('admin_menus_edit', {id: item.menu.id}) }}" class="text-gray-600 hover:text-gray-800">
+            ← Retour au menu {{ item.menu.name }}
+        </a>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Modifier l'élément</h3>
+        </div>
+
+        <form action="{{ path('admin_menus_items_edit', {id: item.id}) }}" method="POST" class="p-6 space-y-6">
+            <div>
+                <label for="label" class="block text-sm font-medium text-gray-700 mb-1">
+                    Libellé *
+                </label>
+                <input type="text"
+                       id="label"
+                       name="label"
+                       required
+                       value="{{ item.label }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+            </div>
+
+            <div>
+                <label for="type" class="block text-sm font-medium text-gray-700 mb-1">
+                    Type *
+                </label>
+                <select id="type"
+                        name="type"
+                        required
+                        onchange="toggleTypeFields(this.value)"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+                    <option value="page" {{ item.type == 'page' ? 'selected' }}>Page du site</option>
+                    <option value="route" {{ item.type == 'route' ? 'selected' }}>Route Symfony</option>
+                    <option value="url" {{ item.type == 'url' ? 'selected' }}>URL personnalisée</option>
+                    <option value="dropdown" {{ item.type == 'dropdown' ? 'selected' }}>Menu déroulant</option>
+                </select>
+            </div>
+
+            <!-- Champs conditionnels selon le type -->
+            <div id="field-page" style="{{ item.type != 'page' ? 'display: none;' }}">
+                <label for="page_id" class="block text-sm font-medium text-gray-700 mb-1">
+                    Page
+                </label>
+                <select id="page_id"
+                        name="page_id"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+                    <option value="">-- Sélectionner une page --</option>
+                    {% for page in pages %}
+                        <option value="{{ page.id }}" {{ item.page and item.page.id == page.id ? 'selected' }}>
+                            {{ page.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="field-route" style="{{ item.type != 'route' ? 'display: none;' }}">
+                <label for="route" class="block text-sm font-medium text-gray-700 mb-1">
+                    Route
+                </label>
+                <select id="route"
+                        name="route"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+                    <option value="">-- Sélectionner une route --</option>
+                    {% for routeName, routeLabel in availableRoutes %}
+                        <option value="{{ routeName }}" {{ item.route == routeName ? 'selected' }}>
+                            {{ routeLabel }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="mt-2">
+                    <label for="route_params" class="block text-sm font-medium text-gray-700 mb-1">
+                        Paramètres (JSON)
+                    </label>
+                    <input type="text"
+                           id="route_params"
+                           name="route_params"
+                           value="{{ item.routeParams ? item.routeParams|json_encode : '' }}"
+                           placeholder='{"slug": "ma-page"}'
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-club-orange focus:border-club-orange">
+                </div>
+            </div>
+
+            <div id="field-url" style="{{ item.type != 'url' ? 'display: none;' }}">
+                <label for="custom_url" class="block text-sm font-medium text-gray-700 mb-1">
+                    URL
+                </label>
+                <input type="url"
+                       id="custom_url"
+                       name="custom_url"
+                       value="{{ item.customUrl }}"
+                       placeholder="https://..."
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+            </div>
+
+            <div>
+                <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-1">
+                    Parent
+                </label>
+                <select id="parent_id"
+                        name="parent_id"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+                    <option value="">-- Racine --</option>
+                    {% for parent in potentialParents %}
+                        {% if parent.parent is null %}
+                            <option value="{{ parent.id }}" {{ item.parent and item.parent.id == parent.id ? 'selected' }}>
+                                {{ parent.label }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="icon" class="block text-sm font-medium text-gray-700 mb-1">
+                        Icône (emoji)
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text"
+                               id="icon"
+                               name="icon"
+                               value="{{ item.icon }}"
+                               placeholder="Ex: 👥"
+                               maxlength="10"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+                        <button type="button"
+                                onclick="toggleEmojiPicker('icon')"
+                                class="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-lg"
+                                title="Choisir un emoji">
+                            😀
+                        </button>
+                    </div>
+                    <div id="emoji-picker-icon" class="hidden mt-2 p-3 border border-gray-200 rounded-lg bg-gray-50 max-h-64 overflow-y-auto">
+                        {% include 'admin/menus/_emoji_picker.html.twig' with {target: 'icon'} %}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="css_class" class="block text-sm font-medium text-gray-700 mb-1">
+                        Classes CSS
+                    </label>
+                    <input type="text"
+                           id="css_class"
+                           name="css_class"
+                           value="{{ item.cssClass }}"
+                           placeholder="Ex: nav-btn-primary"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-club-orange focus:border-club-orange">
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex items-center">
+                    <input type="checkbox"
+                           name="active"
+                           value="1"
+                           {{ item.active ? 'checked' }}
+                           class="rounded border-gray-300 text-club-orange focus:ring-club-orange">
+                    <span class="ml-2 text-sm text-gray-700">Élément actif</span>
+                </label>
+
+                <label class="flex items-center">
+                    <input type="checkbox"
+                           name="open_new_tab"
+                           value="1"
+                           {{ item.openInNewTab ? 'checked' }}
+                           class="rounded border-gray-300 text-club-orange focus:ring-club-orange">
+                    <span class="ml-2 text-sm text-gray-700">Ouvrir dans un nouvel onglet</span>
+                </label>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Restreindre aux rôles
+                </label>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox"
+                               name="roles[]"
+                               value="ROLE_USER"
+                               {{ item.roles and 'ROLE_USER' in item.roles ? 'checked' }}
+                               class="rounded border-gray-300 text-club-orange focus:ring-club-orange">
+                        <span class="ml-2 text-sm text-gray-600">Membres connectés</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox"
+                               name="roles[]"
+                               value="ROLE_ADMIN"
+                               {{ item.roles and 'ROLE_ADMIN' in item.roles ? 'checked' }}
+                               class="rounded border-gray-300 text-club-orange focus:ring-club-orange">
+                        <span class="ml-2 text-sm text-gray-600">Administrateurs</span>
+                    </label>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Laisser vide = visible par tous</p>
+            </div>
+
+            <div class="bg-gray-50 -mx-6 -mb-6 px-6 py-4 mt-6 flex justify-between">
+                <form action="{{ path('admin_menus_items_delete', {id: item.id}) }}"
+                      method="POST"
+                      onsubmit="return confirm('Supprimer cet élément ?')">
+                    <button type="submit" class="px-4 py-2 text-red-600 hover:text-red-800">
+                        Supprimer
+                    </button>
+                </form>
+                <div class="flex space-x-3">
+                    <a href="{{ path('admin_menus_edit', {id: item.menu.id}) }}"
+                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Annuler
+                    </a>
+                    <button type="submit"
+                            class="px-4 py-2 bg-club-orange text-white rounded-md hover:bg-club-orange-dark">
+                        Enregistrer
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleTypeFields(type) {
+    document.getElementById('field-page').style.display = type === 'page' ? 'block' : 'none';
+    document.getElementById('field-route').style.display = type === 'route' ? 'block' : 'none';
+    document.getElementById('field-url').style.display = type === 'url' ? 'block' : 'none';
+}
+
+function toggleEmojiPicker(targetId) {
+    const picker = document.getElementById('emoji-picker-' + targetId);
+    if (picker) {
+        picker.classList.toggle('hidden');
+    }
+}
+
+function selectEmoji(targetId, emoji) {
+    const input = document.getElementById(targetId);
+    if (input) {
+        input.value = emoji;
+        const picker = document.getElementById('emoji-picker-' + targetId);
+        if (picker) {
+            picker.classList.add('hidden');
+        }
+    }
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('[id^="emoji-picker-"]') && !e.target.closest('button[onclick^="toggleEmojiPicker"]')) {
+        document.querySelectorAll('[id^="emoji-picker-"]').forEach(picker => {
+            picker.classList.add('hidden');
+        });
+    }
+});
+</script>
+{% endblock %}
