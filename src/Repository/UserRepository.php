@@ -116,4 +116,100 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    // ========================================
+    // Méthodes pour la gestion des CACI
+    // ========================================
+
+    /**
+     * Utilisateurs avec CACI déclaré mais non encore vérifié par un DP
+     * @return User[]
+     */
+    public function findCaciPendingVerification(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.active = :active')
+            ->andWhere('u.medicalCertificateExpiry IS NOT NULL')
+            ->andWhere('u.medicalCertificateExpiry >= :today')
+            ->andWhere('u.medicalCertificateVerifiedAt IS NULL')
+            ->setParameter('active', true)
+            ->setParameter('today', new \DateTime('today'))
+            ->orderBy('u.medicalCertificateExpiry', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Utilisateurs avec CACI expiré
+     * @return User[]
+     */
+    public function findCaciExpired(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.active = :active')
+            ->andWhere('u.medicalCertificateExpiry IS NOT NULL')
+            ->andWhere('u.medicalCertificateExpiry < :today')
+            ->setParameter('active', true)
+            ->setParameter('today', new \DateTime('today'))
+            ->orderBy('u.medicalCertificateExpiry', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Utilisateurs actifs sans CACI déclaré
+     * @return User[]
+     */
+    public function findCaciMissing(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.active = :active')
+            ->andWhere('u.status = :approved')
+            ->andWhere('u.medicalCertificateExpiry IS NULL')
+            ->setParameter('active', true)
+            ->setParameter('approved', 'approved')
+            ->orderBy('u.firstName', 'ASC')
+            ->addOrderBy('u.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compte les utilisateurs avec CACI valide (vérifié et non expiré)
+     */
+    public function countCaciValid(): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('u.active = :active')
+            ->andWhere('u.medicalCertificateExpiry IS NOT NULL')
+            ->andWhere('u.medicalCertificateExpiry >= :today')
+            ->andWhere('u.medicalCertificateVerifiedAt IS NOT NULL')
+            ->setParameter('active', true)
+            ->setParameter('today', new \DateTime('today'))
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Utilisateurs avec CACI expirant dans les X prochains jours
+     * @return User[]
+     */
+    public function findCaciExpiringSoon(int $days = 30): array
+    {
+        $today = new \DateTime('today');
+        $futureDate = (new \DateTime('today'))->modify("+{$days} days");
+
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.active = :active')
+            ->andWhere('u.medicalCertificateExpiry IS NOT NULL')
+            ->andWhere('u.medicalCertificateExpiry >= :today')
+            ->andWhere('u.medicalCertificateExpiry <= :futureDate')
+            ->setParameter('active', true)
+            ->setParameter('today', $today)
+            ->setParameter('futureDate', $futureDate)
+            ->orderBy('u.medicalCertificateExpiry', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

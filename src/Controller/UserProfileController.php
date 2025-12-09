@@ -92,69 +92,36 @@ class UserProfileController extends AbstractController
 
         // Gérer la date d'expiration
         $expiryDate = $request->request->get('medical_certificate_expiry');
-        if ($expiryDate) {
-            try {
-                $user->setMedicalCertificateExpiry(new \DateTime($expiryDate));
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Date d\'expiration invalide.');
-                return $this->redirectToRoute('user_profile_index');
-            }
-        } else {
+        if (!$expiryDate) {
             $this->addFlash('error', 'La date d\'expiration est obligatoire.');
             return $this->redirectToRoute('user_profile_index');
         }
 
-        // Gérer l'upload du fichier
-        $file = $request->files->get('medical_certificate_file');
-        if ($file) {
-            // Vérifier la taille du fichier (max 5 Mo)
-            if ($file->getSize() > 5 * 1024 * 1024) {
-                $this->addFlash('error', 'Le fichier est trop volumineux (max 5 Mo).');
-                return $this->redirectToRoute('user_profile_index');
-            }
+        try {
+            $newExpiry = new \DateTime($expiryDate);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Date d\'expiration invalide.');
+            return $this->redirectToRoute('user_profile_index');
+        }
 
-            // Vérifier le type de fichier
-            $allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-            if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
-                $this->addFlash('error', 'Format de fichier non autorisé. Utilisez PDF, JPG ou PNG.');
-                return $this->redirectToRoute('user_profile_index');
-            }
+        // Vérifier si la date a changé -> réinitialiser la vérification
+        $oldExpiry = $user->getMedicalCertificateExpiry();
+        $dateChanged = !$oldExpiry || $oldExpiry->format('Y-m-d') !== $newExpiry->format('Y-m-d');
 
-            $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $this->slugger->slug($originalFilename);
-            $extension = $file->guessExtension();
-            $newFilename = $user->getId() . '_' . uniqid() . '.' . $extension;
+        $user->setMedicalCertificateExpiry($newExpiry);
 
-            try {
-                // Créer le répertoire s'il n'existe pas
-                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/medical_certificates';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-
-                // Supprimer l'ancien fichier si existe
-                if ($user->getMedicalCertificateFile()) {
-                    $oldFile = $uploadDir . '/' . $user->getMedicalCertificateFile();
-                    if (file_exists($oldFile)) {
-                        unlink($oldFile);
-                    }
-                }
-
-                // Déplacer le nouveau fichier
-                $file->move($uploadDir, $newFilename);
-                $user->setMedicalCertificateFile($newFilename);
-
-                $this->addFlash('success', 'Certificat médical enregistré avec succès !');
-            } catch (FileException $e) {
-                $this->addFlash('error', 'Erreur lors de l\'upload du fichier : ' . $e->getMessage());
-                return $this->redirectToRoute('user_profile_index');
-            }
-        } elseif (!$user->getMedicalCertificateFile()) {
-            // Si pas de fichier uploadé et pas de fichier existant
-            $this->addFlash('warning', 'Date d\'expiration mise à jour. N\'oubliez pas d\'uploader votre certificat !');
+        if ($dateChanged) {
+            // Réinitialiser la vérification du DP car nouvelle date déclarée
+            $user->resetCaciVerification();
+            $this->addFlash('success', 'Date d\'expiration du CACI mise à jour. Un Directeur de Plongée devra vérifier votre certificat.');
         } else {
-            // Juste mise à jour de la date, fichier déjà existant
-            $this->addFlash('success', 'Date d\'expiration mise à jour.');
+            $this->addFlash('info', 'Aucune modification détectée.');
+        }
+
+        // Case à cocher d'attestation
+        $attestation = $request->request->get('caci_attestation');
+        if (!$attestation && $dateChanged) {
+            $this->addFlash('warning', 'N\'oubliez pas de cocher la case attestant que vous êtes en possession d\'un CACI valide.');
         }
 
         $this->entityManager->flush();

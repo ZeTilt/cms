@@ -89,8 +89,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $medicalCertificateExpiry = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $medicalCertificateFile = null;
+    // Vérification CACI par le DP
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $medicalCertificateVerifiedAt = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $medicalCertificateVerifiedBy = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $insuranceNumber = null;
@@ -499,18 +504,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMedicalCertificateFile(): ?string
-    {
-        return $this->medicalCertificateFile;
-    }
-
-    public function setMedicalCertificateFile(?string $medicalCertificateFile): static
-    {
-        $this->medicalCertificateFile = $medicalCertificateFile;
-        $this->updatedAt = new \DateTimeImmutable();
-        return $this;
-    }
-
     public function getInsuranceNumber(): ?string
     {
         return $this->insuranceNumber;
@@ -595,15 +588,111 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Getters/Setters pour la vérification CACI
+
+    public function getMedicalCertificateVerifiedAt(): ?\DateTimeImmutable
+    {
+        return $this->medicalCertificateVerifiedAt;
+    }
+
+    public function setMedicalCertificateVerifiedAt(?\DateTimeImmutable $verifiedAt): static
+    {
+        $this->medicalCertificateVerifiedAt = $verifiedAt;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getMedicalCertificateVerifiedBy(): ?User
+    {
+        return $this->medicalCertificateVerifiedBy;
+    }
+
+    public function setMedicalCertificateVerifiedBy(?User $verifiedBy): static
+    {
+        $this->medicalCertificateVerifiedBy = $verifiedBy;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
     /**
-     * Vérifie si le certificat médical est valide (non expiré)
+     * Vérifie le CACI (appelé par un DP)
+     */
+    public function verifyCaci(User $verifiedBy): static
+    {
+        $this->medicalCertificateVerifiedAt = new \DateTimeImmutable();
+        $this->medicalCertificateVerifiedBy = $verifiedBy;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Réinitialise la vérification CACI (quand le plongeur déclare une nouvelle date)
+     */
+    public function resetCaciVerification(): static
+    {
+        $this->medicalCertificateVerifiedAt = null;
+        $this->medicalCertificateVerifiedBy = null;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Le CACI a-t-il été vérifié par un DP ?
+     */
+    public function isCaciVerified(): bool
+    {
+        return $this->medicalCertificateVerifiedAt !== null;
+    }
+
+    /**
+     * Le CACI est-il en attente de vérification ?
+     * (date déclarée mais pas encore vérifiée par un DP)
+     */
+    public function isCaciPendingVerification(): bool
+    {
+        return $this->medicalCertificateExpiry !== null && !$this->isCaciVerified();
+    }
+
+    /**
+     * Retourne le statut du CACI
+     * - 'missing' : pas de date déclarée
+     * - 'pending' : date déclarée, en attente de vérification
+     * - 'expired' : date expirée
+     * - 'valid' : vérifié et non expiré
+     */
+    public function getCaciStatus(): string
+    {
+        if (!$this->medicalCertificateExpiry) {
+            return 'missing';
+        }
+
+        if ($this->medicalCertificateExpiry < new \DateTime('today')) {
+            return 'expired';
+        }
+
+        if (!$this->isCaciVerified()) {
+            return 'pending';
+        }
+
+        return 'valid';
+    }
+
+    /**
+     * Vérifie si le certificat médical est valide (vérifié ET non expiré)
      */
     public function isMedicalCertificateValid(): bool
     {
-        if (!$this->medicalCertificateExpiry) {
-            return false;
-        }
-        return $this->medicalCertificateExpiry >= new \DateTime('today');
+        return $this->getCaciStatus() === 'valid';
+    }
+
+    /**
+     * Vérifie si le plongeur peut s'inscrire aux événements
+     * (CACI valide OU en attente de vérification ET non expiré)
+     */
+    public function canRegisterToEvents(): bool
+    {
+        $status = $this->getCaciStatus();
+        return $status === 'valid' || $status === 'pending';
     }
 
     /**

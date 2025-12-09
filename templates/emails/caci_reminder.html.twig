@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rappel CACI - Club Vénètes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #0066a4;
+        }
+        .header img {
+            max-height: 60px;
+        }
+        .alert-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .expiry-date {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #0066a4;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #005288;
+        }
+        .cta {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="color: #0066a4; margin: 0;">Club de Plongée Vénètes</h1>
+        </div>
+
+        <p>Bonjour {{ user.firstName }},</p>
+
+        {% if daysRemaining <= 7 %}
+        <div class="alert-box alert-danger">
+            <div class="alert-title">Votre CACI expire dans {{ daysRemaining }} jour{% if daysRemaining > 1 %}s{% endif %} !</div>
+            <p style="margin: 0;">Sans certificat médical valide, vous ne pourrez plus vous inscrire aux plongées.</p>
+        </div>
+        {% else %}
+        <div class="alert-box alert-warning">
+            <div class="alert-title">Rappel : Votre CACI expire bientôt</div>
+            <p style="margin: 0;">Pensez à renouveler votre certificat médical pour continuer à plonger.</p>
+        </div>
+        {% endif %}
+
+        <div class="expiry-date">
+            Date d'expiration : {{ expiryDate|date('d/m/Y') }}
+        </div>
+
+        <h3>Que faire ?</h3>
+        <ul>
+            <li>Prenez rendez-vous avec votre médecin pour obtenir un nouveau CACI</li>
+            <li>Le certificat doit mentionner l'absence de contre-indication à la plongée subaquatique</li>
+            <li>Une fois obtenu, mettez à jour votre profil sur le site du club</li>
+        </ul>
+
+        <div class="cta">
+            <a href="https://www.plongee-venetes.fr/profile" class="btn">
+                Mettre à jour mon profil
+            </a>
+        </div>
+
+        <p>Si vous avez des questions, n'hésitez pas à contacter le club.</p>
+
+        <p>Bonnes bulles !<br>
+        L'équipe du Club Vénètes</p>
+
+        <div class="footer">
+            <p>Cet email a été envoyé automatiquement par le système de gestion du Club Vénètes.</p>
+            <p>Club de Plongée Vénètes - Vannes, Morbihan</p>
+        </div>
+    </div>
+</body>
+</html>

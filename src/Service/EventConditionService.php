@@ -68,7 +68,12 @@ class EventConditionService
                     'status' => 'Statut',
                     'active' => 'Actif',
                     'emailVerified' => 'Email vérifié',
-                    
+
+                    // CACI (Certificat médical)
+                    'caciStatus' => 'Statut CACI (missing/pending/expired/valid)',
+                    'canRegisterToEvents' => 'Peut s\'inscrire (CACI ok)',
+                    'medicalCertificateValid' => 'CACI valide (vérifié + non expiré)',
+
                     // Attributs EAV courants
                     'diving_level' => 'Niveau de plongée',
                     'birth_date' => 'Date de naissance',

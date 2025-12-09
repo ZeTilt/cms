@@ -241,7 +241,7 @@ class EventCondition
             return $entity->$methodName();
         }
 
-        // Essayer les méthodes is/has pour les booléens
+        // Essayer les méthodes is/has/can pour les booléens
         $isMethodName = 'is' . ucfirst($attribute);
         if (method_exists($entity, $isMethodName)) {
             return $entity->$isMethodName();
@@ -250,6 +250,11 @@ class EventCondition
         $hasMethodName = 'has' . ucfirst($attribute);
         if (method_exists($entity, $hasMethodName)) {
             return $entity->$hasMethodName();
+        }
+
+        // Support pour les méthodes canXxx (ex: canRegisterToEvents)
+        if (method_exists($entity, $attribute)) {
+            return $entity->$attribute();
         }
 
         return null;
