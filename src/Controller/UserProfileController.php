@@ -53,33 +53,6 @@ class UserProfileController extends AbstractController
         }
     }
 
-    #[Route('/diving-level', name: 'user_profile_diving_level', methods: ['POST'])]
-    public function updateDivingLevel(Request $request): Response
-    {
-        $user = $this->getUser();
-        $divingLevelId = $request->request->get('diving_level_id');
-
-        if ($divingLevelId === '') {
-            // Vider le niveau de plongée
-            $user->setHighestDivingLevel(null);
-            $this->addFlash('success', 'Niveau de plongée supprimé de votre profil.');
-        } elseif ($divingLevelId) {
-            $divingLevel = $this->divingLevelRepository->find($divingLevelId);
-
-            if (!$divingLevel || !$divingLevel->isActive()) {
-                $this->addFlash('error', 'Niveau de plongée invalide.');
-                return $this->redirectToRoute('user_profile_index');
-            }
-
-            $user->setHighestDivingLevel($divingLevel);
-            $this->addFlash('success', 'Votre niveau de plongée a été mis à jour : ' . $divingLevel->getName());
-        }
-
-        $this->entityManager->flush();
-
-        return $this->redirectToRoute('user_profile_index');
-    }
-
     #[Route('/medical-certificate', name: 'user_profile_medical_certificate', methods: ['POST'])]
     public function updateMedicalCertificate(Request $request): Response
     {
