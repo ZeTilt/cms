@@ -74,6 +74,11 @@ class EventConditionService
                     'canRegisterToEvents' => 'Peut s\'inscrire (CACI ok)',
                     'medicalCertificateValid' => 'CACI valide (vérifié + non expiré)',
 
+                    // Cotisation club
+                    'membershipStatus' => 'Statut cotisation (missing/expired/valid)',
+                    'isMembershipValid' => 'Cotisation à jour',
+                    'canParticipateToEvents' => 'Peut participer (CACI + cotisation ok)',
+
                     // Attributs EAV courants
                     'diving_level' => 'Niveau de plongée',
                     'birth_date' => 'Date de naissance',

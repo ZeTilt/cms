@@ -1,0 +1,317 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Cotisations{% endblock %}
+
+{% block page_title %}Cotisations - Saison {{ currentSeason }}{% endblock %}
+
+{% block page_description %}
+    <p class="mt-1 text-sm text-gray-500">Enregistrez et gérez les cotisations des membres</p>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="flex items-center">
+        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        <span class="ml-2 text-sm font-medium text-gray-500">Cotisations</span>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-4 mb-8">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Membres actifs</dt>
+                            <dd class="text-lg font-bold text-blue-600">{{ stats.total }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">A jour</dt>
+                            <dd class="text-lg font-bold text-green-600">{{ stats.paid }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Non payé</dt>
+                            <dd class="text-lg font-bold text-yellow-600">{{ stats.unpaid }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Saison passée</dt>
+                            <dd class="text-lg font-bold text-red-600">{{ stats.expired }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Membres sans cotisation -->
+    {% if unpaidUsers|length > 0 %}
+    <div class="bg-white shadow rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <h2 class="text-lg font-medium text-gray-900">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mr-2">
+                        {{ unpaidUsers|length }}
+                    </span>
+                    Cotisations non payées
+                </h2>
+
+                <!-- Formulaire batch -->
+                <form method="POST" action="{{ path('dp_membership_register_batch') }}" id="batch-form" class="flex items-center gap-2 flex-wrap">
+                    <input type="hidden" name="_token" value="{{ csrf_token('membership_register_batch') }}">
+                    <input type="number" name="batch_amount" placeholder="Montant" step="0.01" min="0"
+                           class="w-24 rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange text-sm" required>
+                    <select name="batch_payment_method" class="rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange text-sm" required>
+                        <option value="">Mode...</option>
+                        {% for key, label in paymentMethods %}
+                            <option value="{{ key }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Enregistrer sélection
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <input type="checkbox" id="select-all-unpaid" class="rounded border-gray-300 text-club-orange focus:ring-club-orange">
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inscrit le</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Enregistrer paiement</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for user in unpaidUsers %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" name="user_ids[]" value="{{ user.id }}" form="batch-form" class="unpaid-checkbox rounded border-gray-300 text-club-orange focus:ring-club-orange">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    {% if user.avatarFile %}
+                                        <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('uploads/avatars/' ~ user.avatarFile) }}" alt="">
+                                    {% else %}
+                                        <div class="h-10 w-10 rounded-full bg-yellow-400 flex items-center justify-center">
+                                            <span class="text-sm font-medium text-white">{{ user.firstName|slice(0,1)|upper }}{{ user.lastName|slice(0,1)|upper }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ user.fullName }}</div>
+                                    <div class="text-sm text-gray-500">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ user.createdAt|date('d/m/Y') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <form method="POST" action="{{ path('dp_membership_register', {id: user.id}) }}" class="inline-flex items-center gap-2">
+                                <input type="hidden" name="_token" value="{{ csrf_token('membership_register_' ~ user.id) }}">
+                                <input type="number" name="amount" placeholder="€" step="0.01" min="0"
+                                       class="w-20 rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange text-sm" required>
+                                <select name="payment_method" class="rounded-md border-gray-300 shadow-sm focus:border-club-orange focus:ring-club-orange text-sm" required>
+                                    <option value="">Mode...</option>
+                                    {% for key, label in paymentMethods %}
+                                        <option value="{{ key }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="text-green-600 hover:text-green-900" title="Enregistrer">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Membres à jour -->
+    {% if paidUsers|length > 0 %}
+    <div class="bg-white shadow rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
+                    {{ paidUsers|length }}
+                </span>
+                Cotisations à jour
+            </h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saison</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paiement</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validé par</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for user in paidUsers %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    {% if user.avatarFile %}
+                                        <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('uploads/avatars/' ~ user.avatarFile) }}" alt="">
+                                    {% else %}
+                                        <div class="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center">
+                                            <span class="text-sm font-medium text-white">{{ user.firstName|slice(0,1)|upper }}{{ user.lastName|slice(0,1)|upper }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ user.fullName }}</div>
+                                    <div class="text-sm text-gray-500">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                {{ user.membershipSeason }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ user.membershipAmount|number_format(2, ',', ' ') }} €
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ paymentMethods[user.membershipPaymentMethod] ?? user.membershipPaymentMethod }}
+                            <br>
+                            <span class="text-xs">{{ user.membershipPaidAt|date('d/m/Y') }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if user.membershipValidatedBy %}
+                                {{ user.membershipValidatedBy.fullName }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <form method="POST" action="{{ path('dp_membership_cancel', {id: user.id}) }}" class="inline" onsubmit="return confirm('Annuler cette cotisation ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('membership_cancel_' ~ user.id) }}">
+                                <button type="submit" class="text-red-600 hover:text-red-900" title="Annuler">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tout est à jour -->
+    {% if unpaidUsers|length == 0 and paidUsers|length == 0 %}
+    <div class="bg-white shadow rounded-lg p-8 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun membre actif</h3>
+        <p class="text-gray-500">Il n'y a pas encore de membres approuvés dans le club.</p>
+    </div>
+    {% endif %}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('select-all-unpaid');
+        const unpaidCheckboxes = document.querySelectorAll('.unpaid-checkbox');
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                unpaidCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            });
+
+            unpaidCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const allChecked = Array.from(unpaidCheckboxes).every(cb => cb.checked);
+                    const someChecked = Array.from(unpaidCheckboxes).some(cb => cb.checked);
+                    selectAllCheckbox.checked = allChecked;
+                    selectAllCheckbox.indeterminate = someChecked && !allChecked;
+                });
+            });
+        }
+    });
+    </script>
+{% endblock %}

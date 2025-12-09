@@ -97,6 +97,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $medicalCertificateVerifiedBy = null;
 
+    // Cotisation club
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $membershipSeason = null; // ex: "2024-2025"
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $membershipPaidAt = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $membershipAmount = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $membershipPaymentMethod = null; // cash, check, transfer, card
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $membershipValidatedBy = null;
+
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $insuranceNumber = null;
 
@@ -693,6 +710,170 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $status = $this->getCaciStatus();
         return $status === 'valid' || $status === 'pending';
+    }
+
+    // ========================================
+    // Gestion des cotisations
+    // ========================================
+
+    /**
+     * Calcule la saison FFESSM courante (01/09 - 31/08)
+     */
+    public static function getCurrentSeason(): string
+    {
+        $now = new \DateTime();
+        $year = (int) $now->format('Y');
+        $month = (int) $now->format('m');
+
+        // Sept-Déc : saison year/year+1
+        // Jan-Août : saison year-1/year
+        if ($month >= 9) {
+            return $year . '-' . ($year + 1);
+        }
+        return ($year - 1) . '-' . $year;
+    }
+
+    /**
+     * Calcule la date d'expiration d'une saison (31/08 de l'année de fin)
+     */
+    public static function getSeasonEndDate(string $season): \DateTime
+    {
+        $endYear = (int) substr($season, -4);
+        return new \DateTime("{$endYear}-08-31");
+    }
+
+    public function getMembershipSeason(): ?string
+    {
+        return $this->membershipSeason;
+    }
+
+    public function setMembershipSeason(?string $season): static
+    {
+        $this->membershipSeason = $season;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getMembershipPaidAt(): ?\DateTimeImmutable
+    {
+        return $this->membershipPaidAt;
+    }
+
+    public function setMembershipPaidAt(?\DateTimeImmutable $paidAt): static
+    {
+        $this->membershipPaidAt = $paidAt;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getMembershipAmount(): ?string
+    {
+        return $this->membershipAmount;
+    }
+
+    public function setMembershipAmount(?string $amount): static
+    {
+        $this->membershipAmount = $amount;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getMembershipPaymentMethod(): ?string
+    {
+        return $this->membershipPaymentMethod;
+    }
+
+    public function setMembershipPaymentMethod(?string $method): static
+    {
+        $this->membershipPaymentMethod = $method;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getMembershipValidatedBy(): ?User
+    {
+        return $this->membershipValidatedBy;
+    }
+
+    public function setMembershipValidatedBy(?User $validatedBy): static
+    {
+        $this->membershipValidatedBy = $validatedBy;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Retourne le statut de la cotisation
+     * - 'missing' : pas de cotisation pour la saison courante
+     * - 'expired' : cotisation d'une saison passée
+     * - 'valid' : cotisation à jour pour la saison courante
+     */
+    public function getMembershipStatus(): string
+    {
+        if (!$this->membershipSeason || !$this->membershipPaidAt) {
+            return 'missing';
+        }
+
+        $currentSeason = self::getCurrentSeason();
+
+        if ($this->membershipSeason !== $currentSeason) {
+            // Vérifier si la saison enregistrée est passée
+            $seasonEnd = self::getSeasonEndDate($this->membershipSeason);
+            if ($seasonEnd < new \DateTime('today')) {
+                return 'expired';
+            }
+        }
+
+        return 'valid';
+    }
+
+    /**
+     * La cotisation est-elle à jour ?
+     */
+    public function isMembershipValid(): bool
+    {
+        return $this->getMembershipStatus() === 'valid';
+    }
+
+    /**
+     * Enregistre une cotisation (appelé par DP/trésorier)
+     */
+    public function registerMembership(
+        User $validatedBy,
+        string $amount,
+        string $paymentMethod,
+        ?string $season = null
+    ): static {
+        $this->membershipSeason = $season ?? self::getCurrentSeason();
+        $this->membershipPaidAt = new \DateTimeImmutable();
+        $this->membershipAmount = $amount;
+        $this->membershipPaymentMethod = $paymentMethod;
+        $this->membershipValidatedBy = $validatedBy;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Réinitialise la cotisation (annulation)
+     */
+    public function resetMembership(): static
+    {
+        $this->membershipSeason = null;
+        $this->membershipPaidAt = null;
+        $this->membershipAmount = null;
+        $this->membershipPaymentMethod = null;
+        $this->membershipValidatedBy = null;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Vérifie si le plongeur peut participer aux événements
+     * (CACI ok ET cotisation à jour)
+     */
+    public function canParticipateToEvents(): bool
+    {
+        return $this->canRegisterToEvents() && $this->isMembershipValid();
     }
 
     /**

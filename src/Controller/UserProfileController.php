@@ -17,6 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use App\Entity\User;
 
 #[Route('/profile')]
 #[IsGranted('ROLE_USER')]
@@ -44,6 +45,7 @@ class UserProfileController extends AbstractController
                 'user' => $user,
                 'divingLevels' => $divingLevels,
                 'freedivingLevels' => $freedivingLevels,
+                'currentSeason' => User::getCurrentSeason(),
             ]);
         } catch (\Exception $e) {
             // Debug temporaire
