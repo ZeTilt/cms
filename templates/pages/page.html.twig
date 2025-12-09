@@ -20,7 +20,11 @@
 
             <!-- Content -->
             <div class="static-body">
-                {{ page.content|render_page_content }}
+                {% if page.useBlocks and page.contentBlocks|length > 0 %}
+                    {{ render_page_blocks(page) }}
+                {% else %}
+                    {{ page.content|render_page_content }}
+                {% endif %}
             </div>
 
             <!-- Meta info -->

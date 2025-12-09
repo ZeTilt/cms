@@ -1,0 +1,1238 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}{{ isEdit ? 'Modifier l\'Article' : 'Nouvel Article' }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <style>
+        /* Block Editor Styles */
+        .block-editor {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            min-height: 400px;
+        }
+
+        .block-list {
+            min-height: 200px;
+        }
+
+        .block-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .block-item:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .block-item.dragging {
+            opacity: 0.5;
+            border-color: var(--club-orange);
+        }
+
+        .block-header {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0.5rem 0.5rem 0 0;
+            cursor: grab;
+        }
+
+        .block-header:active {
+            cursor: grabbing;
+        }
+
+        .block-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .block-actions {
+            display: flex;
+            gap: 0.25rem;
+            margin-left: auto;
+        }
+
+        .block-action-btn {
+            padding: 0.375rem;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .block-action-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .block-action-btn.delete:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .block-content {
+            padding: 1rem;
+        }
+
+        /* Add Block Button */
+        .add-block-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1rem;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            background: transparent;
+            color: #6b7280;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .add-block-btn:hover {
+            border-color: var(--club-orange);
+            color: var(--club-orange);
+            background: rgba(253, 126, 41, 0.05);
+        }
+
+        /* Block Type Selector */
+        .block-type-selector {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            padding: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .block-type-selector.show {
+            display: grid;
+        }
+
+        .block-type-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .block-type-option:hover {
+            border-color: var(--club-orange);
+            background: rgba(253, 126, 41, 0.05);
+        }
+
+        .block-type-option .icon {
+            color: #6b7280;
+        }
+
+        .block-type-option:hover .icon {
+            color: var(--club-orange);
+        }
+
+        /* Featured Image Section */
+        .featured-image-preview {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .featured-image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .featured-image-remove {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+        }
+
+        .featured-image-remove:hover {
+            background: #dc2626;
+        }
+
+        /* Gallery Block */
+        .gallery-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .gallery-image-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+
+        .gallery-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-image-remove {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            padding: 0.25rem;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        /* Video Preview */
+        .video-preview {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #1f2937;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .video-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Accordion Editor */
+        .accordion-item-editor {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .accordion-item-header {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: #f9fafb;
+        }
+
+        .accordion-item-content {
+            padding: 0.5rem;
+        }
+
+        /* Summernote in blocks */
+        .block-content .note-editor {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+        }
+
+        .block-content .note-toolbar {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .block-content .note-editable {
+            min-height: 150px;
+        }
+
+        /* Drag placeholder */
+        .block-placeholder {
+            border: 2px dashed var(--club-orange);
+            border-radius: 0.5rem;
+            background: rgba(253, 126, 41, 0.1);
+            margin-bottom: 0.75rem;
+            height: 60px;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <a href="{{ path('admin_articles_list') }}" class="text-gray-500 hover:text-gray-700">Articles</a>
+</li>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-500">{{ isEdit ? 'Modifier' : 'Nouveau' }}</span>
+</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="flex items-center space-x-3">
+    <a href="{{ path('admin_articles_list') }}"
+       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Retour
+    </a>
+    {% if isEdit and article.id %}
+        <a href="{{ path('blog_article', {slug: article.slug}) }}"
+           target="_blank"
+           class="inline-flex items-center px-4 py-2 border border-club-blue text-sm font-medium rounded-md text-club-blue bg-white hover:bg-club-blue hover:text-white">
+            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Prévisualiser
+        </a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="POST" id="article-form" class="space-y-6" enctype="multipart/form-data">
+    <input type="hidden" name="use_blocks" value="1">
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Title & Status -->
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="md:col-span-3">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                            Titre de l'article *
+                        </label>
+                        <input type="text" id="title" name="title"
+                               value="{{ article.title ?? '' }}"
+                               required
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                               placeholder="Entrez le titre de l'article...">
+                    </div>
+
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
+                            Statut
+                        </label>
+                        <select id="status" name="status"
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm">
+                            <option value="draft" {{ article.status == 'draft' ? 'selected' : '' }}>Brouillon</option>
+                            <option value="published" {{ article.status == 'published' ? 'selected' : '' }}>Publié</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Excerpt -->
+                <div class="mt-6">
+                    <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-2">
+                        Extrait
+                    </label>
+                    <textarea id="excerpt" name="excerpt" rows="2"
+                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                              placeholder="Résumé court de l'article...">{{ article.excerpt ?? '' }}</textarea>
+                </div>
+            </div>
+
+            <!-- Content Blocks -->
+            <div class="bg-white shadow-sm rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <h2 class="text-lg font-medium text-gray-900">Contenu</h2>
+                    <span class="text-sm text-gray-500" id="block-count">0 bloc(s)</span>
+                </div>
+
+                <div class="p-6 block-editor">
+                    <div class="block-list" id="block-list">
+                        <!-- Blocks will be rendered here by JavaScript -->
+                    </div>
+
+                    <button type="button" class="add-block-btn" id="add-block-btn">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Ajouter un bloc
+                    </button>
+
+                    <div class="block-type-selector" id="block-type-selector">
+                        <button type="button" class="block-type-option" data-type="text">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Texte</span>
+                        </button>
+                        <button type="button" class="block-type-option" data-type="image">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Image</span>
+                        </button>
+                        <button type="button" class="block-type-option" data-type="gallery">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Galerie</span>
+                        </button>
+                        <button type="button" class="block-type-option" data-type="video">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Vidéo</span>
+                        </button>
+                        <button type="button" class="block-type-option" data-type="quote">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Citation</span>
+                        </button>
+                        <button type="button" class="block-type-option" data-type="cta">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Bouton</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Featured Image -->
+            <div class="bg-white shadow-sm rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-sm font-medium text-gray-900">Image à la une</h3>
+                </div>
+                <div class="p-6">
+                    <div id="featured-image-container">
+                        {% if article.featuredImage %}
+                            <div class="featured-image-preview mb-4">
+                                <img src="{{ article.featuredImage }}" alt="">
+                                <button type="button" class="featured-image-remove" id="remove-featured-image">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <input type="hidden" name="featured_image" id="featured_image" value="{{ article.featuredImage ?? '' }}">
+
+                    <button type="button" id="select-featured-image"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ article.featuredImage ? 'Changer l\'image' : 'Sélectionner une image' }}
+                    </button>
+
+                    <div class="mt-4 space-y-3">
+                        <div>
+                            <label for="featured_image_alt" class="block text-xs font-medium text-gray-500 mb-1">Texte alternatif</label>
+                            <input type="text" name="featured_image_alt" id="featured_image_alt"
+                                   value="{{ article.featuredImageAlt ?? '' }}"
+                                   class="block w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-club-orange focus:border-club-orange"
+                                   placeholder="Description de l'image...">
+                        </div>
+                        <div>
+                            <label for="featured_image_caption" class="block text-xs font-medium text-gray-500 mb-1">Légende</label>
+                            <input type="text" name="featured_image_caption" id="featured_image_caption"
+                                   value="{{ article.featuredImageCaption ?? '' }}"
+                                   class="block w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-club-orange focus:border-club-orange"
+                                   placeholder="Légende optionnelle...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category & Tags -->
+            <div class="bg-white shadow-sm rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-sm font-medium text-gray-900">Organisation</h3>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+                        <input type="text" id="category" name="category"
+                               value="{{ article.category ?? '' }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                               placeholder="Ex: Formation, Sortie...">
+                    </div>
+
+                    <div>
+                        <label for="tags" class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                        <input type="text" id="tags" name="tags"
+                               value="{{ article.tags ? article.tags|join(', ') : '' }}"
+                               class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-club-orange focus:border-club-orange sm:text-sm"
+                               placeholder="plongée, formation...">
+                        <p class="mt-1 text-xs text-gray-500">Séparez les tags par des virgules</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <div class="flex flex-col gap-3">
+                    <button type="submit"
+                            class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark">
+                        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {{ isEdit ? 'Mettre à jour' : 'Créer l\'article' }}
+                    </button>
+
+                    <a href="{{ path('admin_articles_list') }}"
+                       class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Annuler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden field to store blocks data for form submission -->
+    <input type="hidden" name="blocks_data" id="blocks_data" value="">
+</form>
+
+<!-- Block Templates -->
+<template id="block-template-text">
+    <div class="block-item" data-block-id="" data-block-type="text">
+        <div class="block-header">
+            <span class="block-type-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                Texte
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn duplicate" title="Dupliquer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <textarea class="block-text-editor" name="block_content"></textarea>
+        </div>
+    </div>
+</template>
+
+<template id="block-template-image">
+    <div class="block-item" data-block-id="" data-block-type="image">
+        <div class="block-header">
+            <span class="block-type-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Image
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="image-preview-container mb-4" style="display: none;">
+                <img src="" alt="" class="max-w-full rounded-lg">
+            </div>
+            <button type="button" class="select-image-btn w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-club-orange hover:text-club-orange">
+                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Cliquez pour sélectionner une image
+            </button>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Texte alternatif</label>
+                    <input type="text" class="image-alt block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Description...">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Légende</label>
+                    <input type="text" class="image-caption block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Légende...">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Alignement</label>
+                    <select class="image-alignment block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="left">Gauche</option>
+                        <option value="center" selected>Centre</option>
+                        <option value="right">Droite</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Taille</label>
+                    <select class="image-size block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="small">Petite</option>
+                        <option value="medium">Moyenne</option>
+                        <option value="large" selected>Grande</option>
+                        <option value="full">Pleine largeur</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="block-template-gallery">
+    <div class="block-item" data-block-id="" data-block-type="gallery">
+        <div class="block-header">
+            <span class="block-type-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                Galerie
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="gallery-images mb-4"></div>
+            <button type="button" class="add-gallery-images w-full px-4 py-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-club-orange hover:text-club-orange text-sm">
+                + Ajouter des images
+            </button>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Disposition</label>
+                    <select class="gallery-layout block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="grid">Grille</option>
+                        <option value="carousel">Carousel</option>
+                        <option value="masonry">Masonry</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Colonnes</label>
+                    <select class="gallery-columns block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="block-template-video">
+    <div class="block-item" data-block-id="" data-block-type="video">
+        <div class="block-header">
+            <span class="block-type-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Vidéo
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="video-preview mb-4" style="display: none;"></div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">URL de la vidéo (YouTube ou Vimeo)</label>
+                <input type="url" class="video-url block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="mt-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Légende</label>
+                <input type="text" class="video-caption block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Description de la vidéo...">
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="block-template-quote">
+    <div class="block-item" data-block-id="" data-block-type="quote">
+        <div class="block-header">
+            <span class="block-type-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                Citation
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="border-l-4 border-club-orange pl-4">
+                <textarea class="quote-text block w-full border-gray-300 rounded-md shadow-sm text-sm" rows="3" placeholder="Texte de la citation..."></textarea>
+                <input type="text" class="quote-author mt-2 block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="— Auteur">
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="block-template-cta">
+    <div class="block-item" data-block-id="" data-block-type="cta">
+        <div class="block-header">
+            <span class="block-type-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+                Bouton
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Texte du bouton</label>
+                    <input type="text" class="cta-text block w-full border-gray-300 rounded-md shadow-sm text-sm" value="En savoir plus">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Lien</label>
+                    <input type="url" class="cta-url block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="https://...">
+                </div>
+            </div>
+            <div class="mt-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Style</label>
+                <select class="cta-style block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                    <option value="primary">Principal (orange)</option>
+                    <option value="secondary">Secondaire (bleu)</option>
+                    <option value="outline">Contour</option>
+                </select>
+            </div>
+            <div class="mt-4 text-center">
+                <span class="cta-preview inline-block px-6 py-2 rounded-md text-white bg-club-orange">En savoir plus</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const blockList = document.getElementById('block-list');
+    const addBlockBtn = document.getElementById('add-block-btn');
+    const blockTypeSelector = document.getElementById('block-type-selector');
+    const blocksDataInput = document.getElementById('blocks_data');
+    const blockCountEl = document.getElementById('block-count');
+    const articleId = {{ article.id ?? 'null' }};
+
+    let blocks = [];
+    let blockIdCounter = 0;
+
+    // Initialize Sortable for drag & drop
+    const sortable = new Sortable(blockList, {
+        animation: 150,
+        handle: '.block-header',
+        ghostClass: 'dragging',
+        onEnd: function() {
+            updateBlockPositions();
+            saveBlocksData();
+        }
+    });
+
+    // Toggle block type selector
+    addBlockBtn.addEventListener('click', function() {
+        blockTypeSelector.classList.toggle('show');
+    });
+
+    // Add block when type is selected
+    document.querySelectorAll('.block-type-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const type = this.dataset.type;
+            addBlock(type);
+            blockTypeSelector.classList.remove('show');
+        });
+    });
+
+    // Close selector when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!addBlockBtn.contains(e.target) && !blockTypeSelector.contains(e.target)) {
+            blockTypeSelector.classList.remove('show');
+        }
+    });
+
+    // Add a new block
+    function addBlock(type, data = null) {
+        const template = document.getElementById(`block-template-${type}`);
+        if (!template) {
+            console.error('Template not found for type:', type);
+            return;
+        }
+
+        const blockEl = template.content.cloneNode(true).firstElementChild;
+        const blockId = `new-${++blockIdCounter}`;
+        blockEl.dataset.blockId = blockId;
+
+        // Initialize block with data if provided
+        if (data) {
+            populateBlockData(blockEl, type, data);
+        }
+
+        blockList.appendChild(blockEl);
+
+        // Initialize editors for this block
+        initializeBlockEditors(blockEl, type);
+
+        // Bind events
+        bindBlockEvents(blockEl);
+
+        // Update blocks array
+        blocks.push({
+            id: blockId,
+            type: type,
+            data: data || getDefaultData(type),
+            position: blocks.length
+        });
+
+        updateBlockCount();
+        saveBlocksData();
+    }
+
+    function populateBlockData(blockEl, type, data) {
+        switch(type) {
+            case 'text':
+                // Will be set after Summernote init
+                blockEl.dataset.initialContent = data.content || '';
+                break;
+            case 'image':
+                if (data.url) {
+                    const preview = blockEl.querySelector('.image-preview-container');
+                    preview.querySelector('img').src = data.url;
+                    preview.style.display = 'block';
+                    blockEl.querySelector('.select-image-btn').style.display = 'none';
+                }
+                if (data.alt) blockEl.querySelector('.image-alt').value = data.alt;
+                if (data.caption) blockEl.querySelector('.image-caption').value = data.caption;
+                if (data.alignment) blockEl.querySelector('.image-alignment').value = data.alignment;
+                if (data.size) blockEl.querySelector('.image-size').value = data.size;
+                break;
+            case 'gallery':
+                if (data.images && data.images.length > 0) {
+                    const container = blockEl.querySelector('.gallery-images');
+                    data.images.forEach(img => {
+                        addGalleryImageToContainer(container, img);
+                    });
+                }
+                if (data.layout) blockEl.querySelector('.gallery-layout').value = data.layout;
+                if (data.columns) blockEl.querySelector('.gallery-columns').value = data.columns;
+                break;
+            case 'video':
+                if (data.url) {
+                    blockEl.querySelector('.video-url').value = data.url;
+                    updateVideoPreview(blockEl, data.url);
+                }
+                if (data.caption) blockEl.querySelector('.video-caption').value = data.caption;
+                break;
+            case 'quote':
+                if (data.text) blockEl.querySelector('.quote-text').value = data.text;
+                if (data.author) blockEl.querySelector('.quote-author').value = data.author;
+                break;
+            case 'cta':
+                if (data.text) blockEl.querySelector('.cta-text').value = data.text;
+                if (data.url) blockEl.querySelector('.cta-url').value = data.url;
+                if (data.style) blockEl.querySelector('.cta-style').value = data.style;
+                updateCtaPreview(blockEl);
+                break;
+        }
+    }
+
+    function initializeBlockEditors(blockEl, type) {
+        if (type === 'text') {
+            const textarea = blockEl.querySelector('.block-text-editor');
+            const initialContent = blockEl.dataset.initialContent || '';
+
+            $(textarea).summernote({
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline']],
+                    ['para', ['ul', 'ol']],
+                    ['insert', ['link']],
+                    ['view', ['codeview']]
+                ],
+                callbacks: {
+                    onChange: function() {
+                        saveBlocksData();
+                    },
+                    onInit: function() {
+                        if (initialContent) {
+                            $(textarea).summernote('code', initialContent);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function bindBlockEvents(blockEl) {
+        // Delete
+        blockEl.querySelector('.delete')?.addEventListener('click', function() {
+            if (confirm('Supprimer ce bloc ?')) {
+                const blockId = blockEl.dataset.blockId;
+                blocks = blocks.filter(b => b.id !== blockId);
+                blockEl.remove();
+                updateBlockPositions();
+                updateBlockCount();
+                saveBlocksData();
+            }
+        });
+
+        // Move up
+        blockEl.querySelector('.move-up')?.addEventListener('click', function() {
+            const prev = blockEl.previousElementSibling;
+            if (prev) {
+                blockList.insertBefore(blockEl, prev);
+                updateBlockPositions();
+                saveBlocksData();
+            }
+        });
+
+        // Move down
+        blockEl.querySelector('.move-down')?.addEventListener('click', function() {
+            const next = blockEl.nextElementSibling;
+            if (next) {
+                blockList.insertBefore(next, blockEl);
+                updateBlockPositions();
+                saveBlocksData();
+            }
+        });
+
+        // Duplicate
+        blockEl.querySelector('.duplicate')?.addEventListener('click', function() {
+            const type = blockEl.dataset.blockType;
+            const data = getBlockData(blockEl);
+            addBlock(type, data);
+        });
+
+        // Type-specific events
+        const type = blockEl.dataset.blockType;
+
+        if (type === 'image') {
+            blockEl.querySelector('.select-image-btn')?.addEventListener('click', function() {
+                selectImage(blockEl);
+            });
+            blockEl.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('change', () => saveBlocksData());
+            });
+        }
+
+        if (type === 'gallery') {
+            blockEl.querySelector('.add-gallery-images')?.addEventListener('click', function() {
+                selectGalleryImages(blockEl);
+            });
+            blockEl.querySelectorAll('select').forEach(el => {
+                el.addEventListener('change', () => saveBlocksData());
+            });
+        }
+
+        if (type === 'video') {
+            blockEl.querySelector('.video-url')?.addEventListener('change', function() {
+                updateVideoPreview(blockEl, this.value);
+                saveBlocksData();
+            });
+            blockEl.querySelector('.video-caption')?.addEventListener('change', () => saveBlocksData());
+        }
+
+        if (type === 'quote') {
+            blockEl.querySelectorAll('textarea, input').forEach(el => {
+                el.addEventListener('input', () => saveBlocksData());
+            });
+        }
+
+        if (type === 'cta') {
+            blockEl.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('input', function() {
+                    updateCtaPreview(blockEl);
+                    saveBlocksData();
+                });
+            });
+        }
+    }
+
+    function selectImage(blockEl) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e) {
+            if (e.target.files.length > 0) {
+                uploadImage(e.target.files[0]).then(url => {
+                    const preview = blockEl.querySelector('.image-preview-container');
+                    preview.querySelector('img').src = url;
+                    preview.style.display = 'block';
+                    blockEl.querySelector('.select-image-btn').style.display = 'none';
+                    saveBlocksData();
+                });
+            }
+        };
+        input.click();
+    }
+
+    function selectGalleryImages(blockEl) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.multiple = true;
+        input.onchange = function(e) {
+            const container = blockEl.querySelector('.gallery-images');
+            Array.from(e.target.files).forEach(file => {
+                uploadImage(file).then(url => {
+                    addGalleryImageToContainer(container, { url: url, alt: '' });
+                    saveBlocksData();
+                });
+            });
+        };
+        input.click();
+    }
+
+    function addGalleryImageToContainer(container, imageData) {
+        const div = document.createElement('div');
+        div.className = 'gallery-image-item';
+        div.innerHTML = `
+            <img src="${imageData.url}" alt="${imageData.alt || ''}">
+            <button type="button" class="gallery-image-remove">&times;</button>
+        `;
+        div.querySelector('.gallery-image-remove').addEventListener('click', function() {
+            div.remove();
+            saveBlocksData();
+        });
+        container.appendChild(div);
+    }
+
+    function updateVideoPreview(blockEl, url) {
+        const preview = blockEl.querySelector('.video-preview');
+        const videoId = extractVideoId(url);
+
+        if (videoId.provider === 'youtube') {
+            preview.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId.id}" allowfullscreen></iframe>`;
+            preview.style.display = 'block';
+        } else if (videoId.provider === 'vimeo') {
+            preview.innerHTML = `<iframe src="https://player.vimeo.com/video/${videoId.id}" allowfullscreen></iframe>`;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    function extractVideoId(url) {
+        let match;
+        if (match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/)) {
+            return { provider: 'youtube', id: match[1] };
+        }
+        if (match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)) {
+            return { provider: 'vimeo', id: match[1] };
+        }
+        return { provider: null, id: null };
+    }
+
+    function updateCtaPreview(blockEl) {
+        const text = blockEl.querySelector('.cta-text').value || 'En savoir plus';
+        const style = blockEl.querySelector('.cta-style').value;
+        const preview = blockEl.querySelector('.cta-preview');
+
+        preview.textContent = text;
+        preview.className = 'cta-preview inline-block px-6 py-2 rounded-md';
+
+        switch(style) {
+            case 'primary':
+                preview.classList.add('text-white', 'bg-club-orange');
+                break;
+            case 'secondary':
+                preview.classList.add('text-white', 'bg-club-blue');
+                break;
+            case 'outline':
+                preview.classList.add('text-club-orange', 'border-2', 'border-club-orange');
+                break;
+        }
+    }
+
+    function uploadImage(file) {
+        return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('{{ path("admin_upload_image") }}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    resolve(data.url);
+                } else {
+                    reject(data.error);
+                }
+            })
+            .catch(reject);
+        });
+    }
+
+    function getBlockData(blockEl) {
+        const type = blockEl.dataset.blockType;
+
+        switch(type) {
+            case 'text':
+                const textarea = blockEl.querySelector('.block-text-editor');
+                return { content: $(textarea).summernote('code') };
+            case 'image':
+                const img = blockEl.querySelector('.image-preview-container img');
+                return {
+                    url: img?.src || '',
+                    alt: blockEl.querySelector('.image-alt')?.value || '',
+                    caption: blockEl.querySelector('.image-caption')?.value || '',
+                    alignment: blockEl.querySelector('.image-alignment')?.value || 'center',
+                    size: blockEl.querySelector('.image-size')?.value || 'large'
+                };
+            case 'gallery':
+                const images = [];
+                blockEl.querySelectorAll('.gallery-image-item img').forEach(img => {
+                    images.push({ url: img.src, alt: img.alt || '' });
+                });
+                return {
+                    images: images,
+                    layout: blockEl.querySelector('.gallery-layout')?.value || 'grid',
+                    columns: parseInt(blockEl.querySelector('.gallery-columns')?.value) || 3
+                };
+            case 'video':
+                return {
+                    url: blockEl.querySelector('.video-url')?.value || '',
+                    caption: blockEl.querySelector('.video-caption')?.value || ''
+                };
+            case 'quote':
+                return {
+                    text: blockEl.querySelector('.quote-text')?.value || '',
+                    author: blockEl.querySelector('.quote-author')?.value || ''
+                };
+            case 'cta':
+                return {
+                    text: blockEl.querySelector('.cta-text')?.value || 'En savoir plus',
+                    url: blockEl.querySelector('.cta-url')?.value || '#',
+                    style: blockEl.querySelector('.cta-style')?.value || 'primary'
+                };
+            default:
+                return {};
+        }
+    }
+
+    function getDefaultData(type) {
+        const defaults = {
+            text: { content: '' },
+            image: { url: '', alt: '', caption: '', alignment: 'center', size: 'large' },
+            gallery: { images: [], layout: 'grid', columns: 3 },
+            video: { url: '', caption: '' },
+            quote: { text: '', author: '' },
+            cta: { text: 'En savoir plus', url: '#', style: 'primary' }
+        };
+        return defaults[type] || {};
+    }
+
+    function updateBlockPositions() {
+        const items = blockList.querySelectorAll('.block-item');
+        items.forEach((item, index) => {
+            const blockId = item.dataset.blockId;
+            const block = blocks.find(b => b.id === blockId);
+            if (block) {
+                block.position = index;
+            }
+        });
+    }
+
+    function updateBlockCount() {
+        const count = blockList.querySelectorAll('.block-item').length;
+        blockCountEl.textContent = `${count} bloc${count !== 1 ? 's' : ''}`;
+    }
+
+    function saveBlocksData() {
+        const items = blockList.querySelectorAll('.block-item');
+        const data = [];
+
+        items.forEach((item, index) => {
+            data.push({
+                id: item.dataset.blockId,
+                type: item.dataset.blockType,
+                data: getBlockData(item),
+                position: index
+            });
+        });
+
+        blocksDataInput.value = JSON.stringify(data);
+    }
+
+    // Load existing blocks if editing
+    {% if isEdit and article.contentBlocks is defined %}
+    const existingBlocks = {{ article.contentBlocks|map(b => {
+        id: b.id,
+        type: b.type,
+        data: b.data,
+        position: b.position
+    })|json_encode|raw }};
+
+    existingBlocks.sort((a, b) => a.position - b.position);
+    existingBlocks.forEach(block => {
+        addBlock(block.type, block.data);
+        // Update the block ID to the real one
+        const lastBlock = blockList.lastElementChild;
+        if (lastBlock) {
+            lastBlock.dataset.blockId = block.id;
+            blocks[blocks.length - 1].id = block.id;
+        }
+    });
+    {% endif %}
+
+    // Featured image selection
+    document.getElementById('select-featured-image')?.addEventListener('click', function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e) {
+            if (e.target.files.length > 0) {
+                uploadImage(e.target.files[0]).then(url => {
+                    document.getElementById('featured_image').value = url;
+
+                    const container = document.getElementById('featured-image-container');
+                    container.innerHTML = `
+                        <div class="featured-image-preview mb-4">
+                            <img src="${url}" alt="">
+                            <button type="button" class="featured-image-remove" id="remove-featured-image">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+
+                    document.getElementById('remove-featured-image')?.addEventListener('click', removeFeaturedImage);
+                });
+            }
+        };
+        input.click();
+    });
+
+    function removeFeaturedImage() {
+        document.getElementById('featured_image').value = '';
+        document.getElementById('featured-image-container').innerHTML = '';
+    }
+
+    document.getElementById('remove-featured-image')?.addEventListener('click', removeFeaturedImage);
+});
+</script>
+{% endblock %}

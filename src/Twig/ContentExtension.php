@@ -2,6 +2,9 @@
 
 namespace App\Twig;
 
+use App\Entity\Article;
+use App\Entity\Page;
+use App\Service\ContentBlockRenderer;
 use App\Service\PageContentRenderer;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -11,6 +14,7 @@ class ContentExtension extends AbstractExtension
 {
     public function __construct(
         private PageContentRenderer $pageContentRenderer,
+        private ?ContentBlockRenderer $blockRenderer,
         private string $projectDir
     ) {
     }
@@ -23,6 +27,8 @@ class ContentExtension extends AbstractExtension
             new TwigFunction('has_media', [$this, 'hasMedia']),
             new TwigFunction('youtube_thumbnail', [$this, 'getYoutubeThumbnail']),
             new TwigFunction('youtube_thumbnail_with_fallback', [$this, 'getYoutubeThumbnailWithFallback'], ['is_safe' => ['html']]),
+            new TwigFunction('render_article_blocks', [$this, 'renderArticleBlocks'], ['is_safe' => ['html']]),
+            new TwigFunction('render_page_blocks', [$this, 'renderPageBlocks'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -30,11 +36,36 @@ class ContentExtension extends AbstractExtension
     {
         return [
             new TwigFilter('render_page_content', [$this, 'renderPageContent'], ['is_safe' => ['html']]),
+            new TwigFilter('render_blocks', [$this, 'renderArticleBlocks'], ['is_safe' => ['html']]),
             new TwigFilter('youtube_thumbnails', [$this, 'replaceYoutubeThumbnails'], ['is_safe' => ['html']]),
             new TwigFilter('lazy_images', [$this, 'addLazyLoadingToImages'], ['is_safe' => ['html']]),
             new TwigFilter('webp', [$this, 'toWebp']),
             new TwigFilter('webp_thumb', [$this, 'toWebpThumb']),
         ];
+    }
+
+    /**
+     * Render content blocks for an article
+     */
+    public function renderArticleBlocks(Article $article): string
+    {
+        if (!$this->blockRenderer) {
+            return $article->getContent();
+        }
+
+        return $this->blockRenderer->renderArticleBlocks($article);
+    }
+
+    /**
+     * Render content blocks for a page
+     */
+    public function renderPageBlocks(Page $page): string
+    {
+        if (!$this->blockRenderer) {
+            return '';
+        }
+
+        return $this->blockRenderer->renderPageBlocks($page);
     }
 
     /**

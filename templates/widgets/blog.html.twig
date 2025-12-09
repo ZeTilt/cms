@@ -1,0 +1,36 @@
+<div class="widget-blog">
+    <h3 class="widget-title">{{ config.title|default('Dernières actualités') }}</h3>
+    {% if articles|length > 0 %}
+        <div class="widget-blog-grid">
+            {% for article in articles %}
+                <article class="widget-blog-item">
+                    {% if article.featuredImage %}
+                        <a href="{{ path('blog_article', {slug: article.slug}) }}" class="widget-blog-image">
+                            <img src="{{ article.featuredImage|webp }}" alt="{{ article.title }}" loading="lazy">
+                        </a>
+                    {% endif %}
+                    <div class="widget-blog-content">
+                        <h4>
+                            <a href="{{ path('blog_article', {slug: article.slug}) }}">{{ article.title }}</a>
+                        </h4>
+                        {% if article.excerpt %}
+                            <p>{{ article.excerpt|slice(0, 120) }}{% if article.excerpt|length > 120 %}...{% endif %}</p>
+                        {% endif %}
+                        <time datetime="{{ article.publishedAt|date('Y-m-d') }}">
+                            {{ article.publishedAt|date('d/m/Y') }}
+                        </time>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        {% if config.show_more|default(true) %}
+            <div class="widget-blog-more">
+                <a href="{{ path('blog_index') }}" class="bg-club-orange text-white px-4 py-2 rounded hover:bg-club-orange-dark">
+                    Voir toutes les actualités
+                </a>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="widget-empty">Aucun article pour le moment.</p>
+    {% endif %}
+</div>

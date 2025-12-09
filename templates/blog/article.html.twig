@@ -64,12 +64,21 @@
 
         {% if article.featuredImage %}
             <figure class="article-detail-figure">
-                <img src="{{ article.featuredImage|webp }}" alt="{{ article.title }}" loading="lazy">
+                <img src="{{ article.featuredImage|webp }}"
+                     alt="{{ article.featuredImageAlt|default(article.title) }}"
+                     loading="lazy">
+                {% if article.featuredImageCaption %}
+                    <figcaption class="article-detail-figcaption">{{ article.featuredImageCaption }}</figcaption>
+                {% endif %}
             </figure>
         {% endif %}
 
         <div class="article-detail-content article-content">
-            {{ article.content|youtube_thumbnails|lazy_images }}
+            {% if article.useBlocks %}
+                {{ render_article_blocks(article) }}
+            {% else %}
+                {{ article.content|render_page_content|youtube_thumbnails|lazy_images }}
+            {% endif %}
         </div>
 
         <div class="article-detail-footer">

@@ -97,6 +97,11 @@
                                 <a href="{{ path('admin_pages_edit', {id: page.id}) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
                                     Edit
                                 </a>
+                                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                    <a href="{{ path('admin_pages_edit_blocks', {id: page.id}) }}" class="text-blue-600 hover:text-blue-900 text-sm font-medium" title="Éditer le contenu avec des blocs">
+                                        Blocs
+                                    </a>
+                                {% endif %}
                                 {% if page.status == 'draft' %}
                                     <form method="post" action="{{ path('admin_pages_publish', {id: page.id}) }}" class="inline">
                                         <button type="submit" class="text-green-600 hover:text-green-900 text-sm font-medium">

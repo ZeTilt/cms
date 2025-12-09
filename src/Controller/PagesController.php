@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\ContentBlock;
 use App\Entity\Page;
 use App\Entity\User;
+use App\Repository\ContentBlockRepository;
+use App\Repository\GalleryRepository;
+use App\Service\ContentSanitizer;
 use App\Service\PageTemplateService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +22,10 @@ class PagesController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private PageTemplateService $templateService
+        private PageTemplateService $templateService,
+        private ContentBlockRepository $blockRepository,
+        private ContentSanitizer $contentSanitizer,
+        private GalleryRepository $galleryRepository
     ) {
     }
 
@@ -91,17 +98,101 @@ class PagesController extends AbstractController
     public function preview(Page $page): Response
     {
         // Render the page using the public template but with admin privileges
-        if ($page->getType() === 'blog') {
-            return $this->render('public/blog/show.html.twig', [
-                'page' => $page,
-                'is_preview' => true,
-            ]);
-        } else {
-            return $this->render('public/page/show.html.twig', [
-                'page' => $page,
-                'is_preview' => true,
-            ]);
+        return $this->render('pages/page.html.twig', [
+            'page' => $page,
+            'is_preview' => true,
+        ]);
+    }
+
+    #[Route('/{id}/edit-blocks', name: 'admin_pages_edit_blocks', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
+    public function editBlocks(Page $page, Request $request): Response
+    {
+        if ($request->isMethod('POST')) {
+            return $this->handleBlocksSave($request, $page);
         }
+
+        return $this->render('admin/pages/edit_blocks.html.twig', [
+            'page' => $page,
+            'widgets' => ContentBlock::WIDGETS,
+            'galleries' => $this->galleryRepository->findBy([], ['title' => 'ASC']),
+        ]);
+    }
+
+    #[Route('/{id}/convert-to-blocks', name: 'admin_pages_convert_to_blocks', methods: ['POST'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
+    public function convertToBlocks(Page $page, Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('convert_blocks', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de sécurité invalide.');
+            return $this->redirectToRoute('admin_pages_edit', ['id' => $page->getId()]);
+        }
+
+        $page->setUseBlocks(true);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Page convertie vers l\'éditeur de blocs.');
+        return $this->redirectToRoute('admin_pages_edit_blocks', ['id' => $page->getId()]);
+    }
+
+    private function handleBlocksSave(Request $request, Page $page): Response
+    {
+        if (!$this->isCsrfTokenValid('page_blocks', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de sécurité invalide.');
+            return $this->redirectToRoute('admin_pages_edit_blocks', ['id' => $page->getId()]);
+        }
+
+        $blocksData = json_decode($request->request->get('blocks_data', '[]'), true);
+
+        // Remove existing blocks that are not in the new data
+        $newBlockIds = [];
+        foreach ($blocksData as $blockData) {
+            if (is_numeric($blockData['id'])) {
+                $newBlockIds[] = (int) $blockData['id'];
+            }
+        }
+
+        // Delete blocks that are no longer present
+        foreach ($page->getContentBlocks()->toArray() as $existingBlock) {
+            if (!in_array($existingBlock->getId(), $newBlockIds)) {
+                $page->removeContentBlock($existingBlock);
+                $this->entityManager->remove($existingBlock);
+            }
+        }
+
+        // Update or create blocks
+        foreach ($blocksData as $position => $blockData) {
+            $block = null;
+
+            // Check if it's an existing block
+            if (is_numeric($blockData['id'])) {
+                $block = $this->blockRepository->find($blockData['id']);
+            }
+
+            if (!$block) {
+                $block = new ContentBlock();
+                $block->setPage($page);
+                $block->setType($blockData['type']);
+                $page->addContentBlock($block);
+            }
+
+            // Sanitize text content
+            $data = $blockData['data'] ?? [];
+            if ($blockData['type'] === ContentBlock::TYPE_TEXT && isset($data['content'])) {
+                $data['content'] = $this->contentSanitizer->sanitizeContent($data['content']);
+            }
+
+            $block->setData($data);
+            $block->setPosition($position);
+
+            $this->entityManager->persist($block);
+        }
+
+        $page->setUseBlocks(true);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Blocs de la page mis à jour avec succès.');
+        return $this->redirectToRoute('admin_pages_edit_blocks', ['id' => $page->getId()]);
     }
 
     private function handleSave(Request $request, ?Page $page = null): Response

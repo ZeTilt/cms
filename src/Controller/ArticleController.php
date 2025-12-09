@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\ContentBlock;
 use App\Repository\ArticleRepository;
+use App\Repository\ContentBlockRepository;
 use App\Service\ModuleManager;
 use App\Service\ContentSanitizer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +23,7 @@ class ArticleController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ArticleRepository $articleRepository,
+        private ContentBlockRepository $blockRepository,
         private ModuleManager $moduleManager,
         private SluggerInterface $slugger,
         private ContentSanitizer $contentSanitizer
@@ -63,7 +66,8 @@ class ArticleController extends AbstractController
             }
         }
 
-        return $this->render('admin/articles/edit.html.twig', [
+        // Use block editor by default for new articles
+        return $this->render('admin/articles/edit_blocks.html.twig', [
             'article' => new Article(),
             'isEdit' => false
         ]);
@@ -83,10 +87,38 @@ class ArticleController extends AbstractController
             }
         }
 
-        return $this->render('admin/articles/edit.html.twig', [
+        // Use block editor if article uses blocks, otherwise classic editor
+        $template = $article->getUseBlocks() ? 'admin/articles/edit_blocks.html.twig' : 'admin/articles/edit.html.twig';
+
+        return $this->render($template, [
             'article' => $article,
             'isEdit' => true
         ]);
+    }
+
+    #[Route('/{id}/convert-to-blocks', name: 'admin_articles_convert_to_blocks', methods: ['POST'])]
+    public function convertToBlocks(Article $article, Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('convert_blocks', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de sécurité invalide.');
+            return $this->redirectToRoute('admin_articles_edit', ['id' => $article->getId()]);
+        }
+
+        // Create a text block with existing content
+        if (!empty($article->getContent())) {
+            $block = new ContentBlock();
+            $block->setArticle($article);
+            $block->setType(ContentBlock::TYPE_TEXT);
+            $block->setData(['content' => $article->getContent()]);
+            $block->setPosition(0);
+            $this->entityManager->persist($block);
+        }
+
+        $article->setUseBlocks(true);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Article converti vers l\'éditeur de blocs.');
+        return $this->redirectToRoute('admin_articles_edit', ['id' => $article->getId()]);
     }
 
     #[Route('/{id}', name: 'admin_articles_show', methods: ['GET'])]
@@ -151,22 +183,33 @@ class ArticleController extends AbstractController
             $article = new Article();
         }
 
+        $useBlocks = $request->request->get('use_blocks') === '1';
+
         // Validation
         $errors = [];
-        
+
         $title = trim($request->request->get('title', ''));
         if (empty($title)) {
-            $errors[] = 'Title is required.';
+            $errors[] = 'Le titre est requis.';
         }
 
-        $content = trim($request->request->get('content', ''));
-        if (empty($content)) {
-            $errors[] = 'Content is required.';
+        // For block-based editor, content is in blocks_data
+        if ($useBlocks) {
+            $blocksData = $request->request->get('blocks_data', '');
+            $blocks = json_decode($blocksData, true) ?? [];
+            if (empty($blocks)) {
+                $errors[] = 'Au moins un bloc de contenu est requis.';
+            }
+        } else {
+            $content = trim($request->request->get('content', ''));
+            if (empty($content)) {
+                $errors[] = 'Le contenu est requis.';
+            }
         }
 
         $status = $request->request->get('status', 'draft');
         if (!in_array($status, ['draft', 'published'])) {
-            $errors[] = 'Invalid status.';
+            $errors[] = 'Statut invalide.';
         }
 
         if (!empty($errors)) {
@@ -176,31 +219,114 @@ class ArticleController extends AbstractController
             return null;
         }
 
-        // Sanitize content for security
-        $sanitizedContent = $this->contentSanitizer->sanitizeContent($content);
-        $excerpt = trim($request->request->get('excerpt', ''));
-        
-        // Auto-generate excerpt if empty
-        if (empty($excerpt)) {
-            $excerpt = $this->contentSanitizer->generateExcerpt($sanitizedContent, 160);
-        }
-
-        // Update article
+        // Update article basic fields
         $article->setTitle($title);
-        $article->setContent($sanitizedContent);
-        $article->setExcerpt($excerpt);
-        $article->setCategory($request->request->get('category', ''));
         $article->setStatus($status);
+        $article->setCategory($request->request->get('category', ''));
+
+        // Handle excerpt
+        $excerpt = trim($request->request->get('excerpt', ''));
+
+        // Handle featured image
+        $featuredImage = $request->request->get('featured_image', '');
+        $article->setFeaturedImage($featuredImage ?: null);
+        $article->setFeaturedImageAlt($request->request->get('featured_image_alt', ''));
+        $article->setFeaturedImageCaption($request->request->get('featured_image_caption', ''));
 
         // Handle tags
         $tagsString = $request->request->get('tags', '');
         if (!empty($tagsString)) {
             $tags = array_map('trim', explode(',', $tagsString));
-            $tags = array_filter($tags); // Remove empty tags
+            $tags = array_filter($tags);
             $article->setTags($tags);
         } else {
             $article->setTags([]);
         }
+
+        if ($useBlocks) {
+            $article->setUseBlocks(true);
+
+            // Process blocks
+            $blocksData = json_decode($request->request->get('blocks_data', '[]'), true);
+
+            // Remove existing blocks that are not in the new data
+            $existingBlockIds = [];
+            foreach ($article->getContentBlocks() as $existingBlock) {
+                $existingBlockIds[] = $existingBlock->getId();
+            }
+
+            $newBlockIds = [];
+            foreach ($blocksData as $blockData) {
+                if (is_numeric($blockData['id'])) {
+                    $newBlockIds[] = (int) $blockData['id'];
+                }
+            }
+
+            // Delete blocks that are no longer present
+            foreach ($article->getContentBlocks()->toArray() as $existingBlock) {
+                if (!in_array($existingBlock->getId(), $newBlockIds)) {
+                    $article->removeContentBlock($existingBlock);
+                    $this->entityManager->remove($existingBlock);
+                }
+            }
+
+            // Update or create blocks
+            foreach ($blocksData as $position => $blockData) {
+                $block = null;
+
+                // Check if it's an existing block
+                if (is_numeric($blockData['id'])) {
+                    $block = $this->blockRepository->find($blockData['id']);
+                }
+
+                if (!$block) {
+                    $block = new ContentBlock();
+                    $block->setArticle($article);
+                    $block->setType($blockData['type']);
+                    $article->addContentBlock($block);
+                }
+
+                // Sanitize text content
+                $data = $blockData['data'] ?? [];
+                if ($blockData['type'] === ContentBlock::TYPE_TEXT && isset($data['content'])) {
+                    $data['content'] = $this->contentSanitizer->sanitizeContent($data['content']);
+                }
+
+                $block->setData($data);
+                $block->setPosition($position);
+
+                $this->entityManager->persist($block);
+            }
+
+            // Generate content from blocks for excerpt and search
+            $contentParts = [];
+            foreach ($blocksData as $blockData) {
+                if ($blockData['type'] === ContentBlock::TYPE_TEXT && isset($blockData['data']['content'])) {
+                    $contentParts[] = $blockData['data']['content'];
+                } elseif ($blockData['type'] === ContentBlock::TYPE_QUOTE && isset($blockData['data']['text'])) {
+                    $contentParts[] = $blockData['data']['text'];
+                }
+            }
+            $generatedContent = implode("\n", $contentParts);
+            $article->setContent($generatedContent);
+
+            // Auto-generate excerpt if empty
+            if (empty($excerpt) && !empty($generatedContent)) {
+                $excerpt = $this->contentSanitizer->generateExcerpt($generatedContent, 160);
+            }
+        } else {
+            // Classic editor
+            $content = trim($request->request->get('content', ''));
+            $sanitizedContent = $this->contentSanitizer->sanitizeContent($content);
+            $article->setContent($sanitizedContent);
+
+            // Auto-generate excerpt if empty
+            if (empty($excerpt)) {
+                $excerpt = $this->contentSanitizer->generateExcerpt($sanitizedContent, 160);
+            }
+        }
+
+        $article->setExcerpt($excerpt);
 
         // Generate slug
         $article->generateSlug($this->slugger);
@@ -219,8 +345,8 @@ class ArticleController extends AbstractController
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        $this->addFlash('success', ($isEdit ? 'Article updated' : 'Article created') . ' successfully!');
-        
+        $this->addFlash('success', ($isEdit ? 'Article mis à jour' : 'Article créé') . ' avec succès !');
+
         return $this->redirectToRoute('admin_articles_show', ['id' => $article->getId()]);
     }
 }

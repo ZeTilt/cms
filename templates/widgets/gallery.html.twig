@@ -1,0 +1,51 @@
+<div class="widget-gallery">
+    {% if gallery %}
+        <h3 class="widget-title">{{ gallery.title }}</h3>
+        {% if gallery.description %}
+            <p class="widget-description">{{ gallery.description }}</p>
+        {% endif %}
+    {% elseif config.title is defined and config.title %}
+        <h3 class="widget-title">{{ config.title }}</h3>
+    {% endif %}
+
+    {% if images|length > 0 %}
+        {% if layout == 'carousel' %}
+            <div class="widget-gallery-carousel">
+                <div class="carousel-container">
+                    {% for image in images %}
+                        <div class="carousel-slide {{ loop.first ? 'active' : '' }}" data-slide="{{ loop.index0 }}">
+                            <img src="{{ image.url|webp }}" alt="{{ image.alt }}" loading="lazy">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if images|length > 1 %}
+                    <button class="carousel-prev" aria-label="Image précédente">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <button class="carousel-next" aria-label="Image suivante">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                    <div class="carousel-indicators">
+                        {% for image in images %}
+                            <button class="carousel-dot {{ loop.first ? 'active' : '' }}" data-slide="{{ loop.index0 }}"></button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="widget-gallery-grid grid-cols-{{ columns }}">
+                {% for image in images %}
+                    <a href="{{ image.url }}" class="widget-gallery-item" data-lightbox="widget-gallery">
+                        <img src="{{ image.thumbnail|webp_thumb }}" alt="{{ image.alt }}" loading="lazy">
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="widget-empty">Aucune image dans cette galerie.</p>
+    {% endif %}
+</div>

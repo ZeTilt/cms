@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PageRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -64,9 +66,17 @@ class Page
     #[ORM\Column]
     private int $sortOrder = 0;
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $useBlocks = false;
+
+    #[ORM\OneToMany(mappedBy: 'page', targetEntity: ContentBlock::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $contentBlocks;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->contentBlocks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -288,6 +298,44 @@ class Page
     {
         $this->updatedAt = $updatedAt;
 
+        return $this;
+    }
+
+    public function getUseBlocks(): bool
+    {
+        return $this->useBlocks;
+    }
+
+    public function setUseBlocks(bool $useBlocks): static
+    {
+        $this->useBlocks = $useBlocks;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ContentBlock>
+     */
+    public function getContentBlocks(): Collection
+    {
+        return $this->contentBlocks;
+    }
+
+    public function addContentBlock(ContentBlock $contentBlock): static
+    {
+        if (!$this->contentBlocks->contains($contentBlock)) {
+            $this->contentBlocks->add($contentBlock);
+            $contentBlock->setPage($this);
+        }
+        return $this;
+    }
+
+    public function removeContentBlock(ContentBlock $contentBlock): static
+    {
+        if ($this->contentBlocks->removeElement($contentBlock)) {
+            if ($contentBlock->getPage() === $this) {
+                $contentBlock->setPage(null);
+            }
+        }
         return $this;
     }
 }

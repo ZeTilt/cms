@@ -59,11 +59,24 @@ services:
             $vapidPublicKey: '%env(VAPID_PUBLIC_KEY)%'
         tags: ['twig.extension']
 
+    # Content Block Renderer Service
+    App\Service\ContentBlockRenderer:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+        calls:
+            - setWidgetRenderer: ['@App\Service\WidgetRenderer']
+
     # Content Extension (WebP support)
     App\Twig\ContentExtension:
         arguments:
+            $blockRenderer: '@App\Service\ContentBlockRenderer'
             $projectDir: '%kernel.project_dir%'
         tags: ['twig.extension']
+
+    # Widget Renderer Service
+    App\Service\WidgetRenderer:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

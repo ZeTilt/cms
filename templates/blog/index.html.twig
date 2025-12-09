@@ -43,7 +43,7 @@
                             {% set articleImages = extract_images(article.content) %}
                             {% if articleImages|length > 0 %}
                                 <div class="blog-article-image">
-                                    <img src="{{ articleImages[0] }}" alt="{{ article.title }}">
+                                    <img src="{{ articleImages[0] }}" alt="{{ article.title }}" loading="lazy">
                                 </div>
                             {% endif %}
 

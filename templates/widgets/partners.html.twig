@@ -1,0 +1,20 @@
+<div class="widget-partners">
+    <h3 class="widget-title">{{ config.title|default('Nos partenaires') }}</h3>
+    {% if partners|length > 0 %}
+        {% if config.layout|default('grid') == 'carousel' %}
+            <div class="widget-partners-carousel">
+                [carousel]{{ partners|map(p => p.image)|join(',') }}[/carousel]
+            </div>
+        {% else %}
+            <div class="widget-partners-grid">
+                {% for partner in partners %}
+                    <div class="widget-partner-item">
+                        <img src="{{ partner.image|webp }}" alt="{{ partner.name }}" loading="lazy">
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="widget-empty">Aucun partenaire pour le moment.</p>
+    {% endif %}
+</div>

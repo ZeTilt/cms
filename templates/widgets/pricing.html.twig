@@ -1,0 +1,43 @@
+<div class="widget-pricing">
+    <h3 class="widget-title">{{ config.title|default('Tarifs ' ~ year) }}</h3>
+    <div class="widget-pricing-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Formule</th>
+                    <th>Tarif</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Licence FFESSM</td>
+                    <td>45 €</td>
+                    <td>Obligatoire pour la pratique</td>
+                </tr>
+                <tr>
+                    <td>Cotisation Club</td>
+                    <td>180 €</td>
+                    <td>Accès aux entraînements piscine</td>
+                </tr>
+                <tr>
+                    <td>Cotisation Jeune (-18 ans)</td>
+                    <td>120 €</td>
+                    <td>Tarif réduit pour les mineurs</td>
+                </tr>
+                <tr>
+                    <td>Pack Découverte</td>
+                    <td>50 €</td>
+                    <td>Baptême + 3 séances d'essai</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% if config.show_more|default(true) %}
+        <div class="widget-pricing-more">
+            <a href="{{ path('public_page_show', {slug: 'tarifs-' ~ year}) }}" class="bg-club-orange text-white px-4 py-2 rounded hover:bg-club-orange-dark">
+                Voir tous les tarifs
+            </a>
+        </div>
+    {% endif %}
+</div>

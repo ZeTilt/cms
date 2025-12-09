@@ -113,6 +113,28 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find latest published articles (for widgets)
+     */
+    public function findLatestPublished(int $limit = 3, ?string $category = null): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->where('a.status = :status')
+            ->andWhere('a.published_at IS NOT NULL')
+            ->andWhere('a.published_at <= :now')
+            ->setParameter('status', 'published')
+            ->setParameter('now', new \DateTime())
+            ->orderBy('a.published_at', 'DESC')
+            ->setMaxResults($limit);
+
+        if ($category) {
+            $qb->andWhere('a.category = :category')
+               ->setParameter('category', $category);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Find published articles by category
      */
     public function findPublishedByCategory(string $category, int $limit = null): array

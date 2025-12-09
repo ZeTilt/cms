@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -57,6 +59,31 @@ class Article
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $tags = null;
 
+    /**
+     * @var Collection<int, ContentBlock>
+     */
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: ContentBlock::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $contentBlocks;
+
+    /**
+     * Whether this article uses the new block-based editor
+     */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $useBlocks = false;
+
+    /**
+     * Featured image alt text for accessibility
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $featuredImageAlt = null;
+
+    /**
+     * Featured image caption
+     */
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $featuredImageCaption = null;
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -64,6 +91,7 @@ class Article
         $this->status = 'draft';
         $this->tags = [];
         $this->meta_data = [];
+        $this->contentBlocks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -278,5 +306,129 @@ class Article
             $this->slug = $slugger->slug(strtolower($this->title))->toString();
         }
         return $this;
+    }
+
+    // ========== Content Blocks methods ==========
+
+    /**
+     * @return Collection<int, ContentBlock>
+     */
+    public function getContentBlocks(): Collection
+    {
+        return $this->contentBlocks;
+    }
+
+    public function addContentBlock(ContentBlock $block): static
+    {
+        if (!$this->contentBlocks->contains($block)) {
+            $this->contentBlocks->add($block);
+            $block->setArticle($this);
+        }
+        return $this;
+    }
+
+    public function removeContentBlock(ContentBlock $block): static
+    {
+        if ($this->contentBlocks->removeElement($block)) {
+            if ($block->getArticle() === $this) {
+                $block->setArticle(null);
+            }
+        }
+        return $this;
+    }
+
+    public function clearContentBlocks(): static
+    {
+        $this->contentBlocks->clear();
+        return $this;
+    }
+
+    public function getUseBlocks(): bool
+    {
+        return $this->useBlocks;
+    }
+
+    public function setUseBlocks(bool $useBlocks): static
+    {
+        $this->useBlocks = $useBlocks;
+        return $this;
+    }
+
+    public function getFeaturedImageAlt(): ?string
+    {
+        return $this->featuredImageAlt;
+    }
+
+    public function setFeaturedImageAlt(?string $alt): static
+    {
+        $this->featuredImageAlt = $alt;
+        return $this;
+    }
+
+    public function getFeaturedImageCaption(): ?string
+    {
+        return $this->featuredImageCaption;
+    }
+
+    public function setFeaturedImageCaption(?string $caption): static
+    {
+        $this->featuredImageCaption = $caption;
+        return $this;
+    }
+
+    /**
+     * Get all images from content blocks (for sitemap, meta, etc.)
+     *
+     * @return array<string>
+     */
+    public function getAllBlockImages(): array
+    {
+        $images = [];
+
+        if ($this->featured_image) {
+            $images[] = $this->featured_image;
+        }
+
+        foreach ($this->contentBlocks as $block) {
+            if ($block->getType() === ContentBlock::TYPE_IMAGE) {
+                $url = $block->getImageUrl();
+                if ($url) {
+                    $images[] = $url;
+                }
+            } elseif ($block->getType() === ContentBlock::TYPE_GALLERY) {
+                foreach ($block->getGalleryImages() as $image) {
+                    if (isset($image['url'])) {
+                        $images[] = $image['url'];
+                    }
+                }
+            }
+        }
+
+        return array_unique($images);
+    }
+
+    /**
+     * Get all videos from content blocks
+     *
+     * @return array<array{url: string, provider: string|null}>
+     */
+    public function getAllBlockVideos(): array
+    {
+        $videos = [];
+
+        foreach ($this->contentBlocks as $block) {
+            if ($block->getType() === ContentBlock::TYPE_VIDEO) {
+                $url = $block->getVideoUrl();
+                if ($url) {
+                    $videos[] = [
+                        'url' => $url,
+                        'provider' => $block->getVideoProvider(),
+                        'id' => $block->getVideoId(),
+                    ];
+                }
+            }
+        }
+
+        return $videos;
     }
 }

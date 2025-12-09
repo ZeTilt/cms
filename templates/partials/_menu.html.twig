@@ -1,0 +1,117 @@
+{#
+    Partial template for rendering dynamic menus
+    Usage: {% include 'partials/_menu.html.twig' with {location: 'main', mode: 'desktop'} %}
+
+    Parameters:
+    - location: Menu identifier (default: 'main')
+    - mode: 'desktop' or 'mobile' (default: 'desktop')
+#}
+
+{% set menuItems = menu_items(location|default('main')) %}
+{% set mode = mode|default('desktop') %}
+
+{% if mode == 'desktop' %}
+    {# Desktop Navigation #}
+    {% for entry in menuItems %}
+        {% set item = entry.item %}
+        {% set children = entry.children %}
+
+        {% if item.isDropdown and children|length > 0 %}
+            {# Dropdown menu desktop #}
+            <div class="nav-dropdown dropdown">
+                <button class="nav-dropdown-btn">
+                    {% if item.icon %}<span class="nav-emoji">{{ item.icon }}</span>{% endif %}
+                    {{ item.label }}
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <div class="dropdown-menu nav-dropdown-menu {{ item.cssClass }}">
+                    <div class="nav-menu-inner">
+                        {% for childEntry in children %}
+                            {% set child = childEntry.item %}
+                            {% if child.cssClass starts with 'nav-menu-header' %}
+                                <div class="{{ child.cssClass }}">{{ child.label }}</div>
+                            {% else %}
+                                <a href="{{ menu_url(child) }}"
+                                   {% if child.openInNewTab %}target="_blank" rel="noopener"{% endif %}>
+                                    {% if child.icon %}<span class="nav-emoji">{{ child.icon }}</span>{% endif %}
+                                    {{ child.label }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            {# Simple link desktop #}
+            {% set linkClass = item.cssClass|default('nav-link') %}
+            {% if 'nav-btn' in linkClass %}
+                <a href="{{ menu_url(item) }}"
+                   class="{{ linkClass }}"
+                   {% if item.openInNewTab %}target="_blank" rel="noopener"{% endif %}>
+                    {% if item.icon %}<span class="nav-emoji">{{ item.icon }}</span>{% endif %}
+                    {{ item.label }}
+                </a>
+            {% else %}
+                <a href="{{ menu_url(item) }}"
+                   class="nav-link {{ linkClass }}"
+                   {% if item.openInNewTab %}target="_blank" rel="noopener"{% endif %}>
+                    {% if item.icon %}<span class="nav-emoji">{{ item.icon }}</span>{% endif %}
+                    {{ item.label }}
+                </a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% else %}
+    {# Mobile Navigation #}
+    {% for entry in menuItems %}
+        {% set item = entry.item %}
+        {% set children = entry.children %}
+
+        {% if item.isDropdown and children|length > 0 %}
+            {# Dropdown menu mobile #}
+            <div class="nav-mobile-dropdown">
+                <button class="mobile-dropdown-toggle nav-mobile-dropdown-btn">
+                    {% if item.icon %}<span class="nav-emoji">{{ item.icon }}</span>{% endif %}
+                    {{ item.label }}
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <div class="mobile-dropdown-menu nav-mobile-dropdown-menu">
+                    {% for childEntry in children %}
+                        {% set child = childEntry.item %}
+                        {% if child.cssClass starts with 'nav-mobile-header' or child.cssClass starts with 'nav-menu-header' %}
+                            <div class="nav-mobile-header">{{ child.label }}</div>
+                        {% else %}
+                            <a href="{{ menu_url(child) }}"
+                               {% if child.openInNewTab %}target="_blank" rel="noopener"{% endif %}>
+                                {{ child.label }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            {# Simple link mobile #}
+            {% set linkClass = item.cssClass|default('') %}
+            {% if 'nav-btn' in linkClass or 'nav-mobile-btn' in linkClass %}
+                {% set mobileClass = linkClass|replace({'nav-btn-orange': 'nav-mobile-btn-orange', 'nav-btn-blue': 'nav-mobile-btn-blue', 'nav-btn-gray': 'nav-mobile-btn-gray', 'nav-btn': 'nav-mobile-btn'}) %}
+                <a href="{{ menu_url(item) }}"
+                   class="{{ mobileClass }}"
+                   {% if item.openInNewTab %}target="_blank" rel="noopener"{% endif %}>
+                    {% if item.icon %}<span class="nav-emoji">{{ item.icon }}</span>{% endif %}
+                    {{ item.label }}
+                </a>
+            {% else %}
+                <a href="{{ menu_url(item) }}"
+                   class="nav-mobile-link"
+                   {% if item.openInNewTab %}target="_blank" rel="noopener"{% endif %}>
+                    {% if item.icon %}<span class="nav-emoji">{{ item.icon }}</span>{% endif %}
+                    {{ item.label }}
+                </a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endif %}

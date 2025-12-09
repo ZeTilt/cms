@@ -1,0 +1,37 @@
+<div class="widget-calendar">
+    <h3 class="widget-title">{{ config.title|default('Prochains événements') }}</h3>
+    {% if events|length > 0 %}
+        <div class="widget-calendar-list">
+            {% for event in events %}
+                <div class="widget-calendar-item">
+                    <div class="widget-calendar-date">
+                        <span class="day">{{ event.startDate|date('d') }}</span>
+                        <span class="month">{{ event.startDate|date('M') }}</span>
+                    </div>
+                    <div class="widget-calendar-info">
+                        <h4>
+                            <a href="{{ path('calendar_event_detail', {id: event.id}) }}">{{ event.title }}</a>
+                        </h4>
+                        {% if event.eventType %}
+                            <span class="widget-calendar-type" style="background-color: {{ event.eventType.color }}">
+                                {{ event.eventType.name }}
+                            </span>
+                        {% endif %}
+                        {% if event.location %}
+                            <p class="widget-calendar-location">{{ event.location }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if config.show_more|default(true) %}
+            <div class="widget-calendar-more">
+                <a href="{{ path('public_calendar') }}" class="bg-club-orange text-white px-4 py-2 rounded hover:bg-club-orange-dark">
+                    Voir le calendrier complet
+                </a>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="widget-empty">Aucun événement à venir.</p>
+    {% endif %}
+</div>

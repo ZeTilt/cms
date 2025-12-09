@@ -1,0 +1,776 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}Modifier le contenu : {{ page.title }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <style>
+        .block-editor { background: #f9fafb; border-radius: 0.5rem; min-height: 400px; }
+        .block-list { min-height: 200px; }
+        .block-item { background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; margin-bottom: 0.75rem; transition: all 0.2s; }
+        .block-item:hover { border-color: #d1d5db; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .block-item.dragging { opacity: 0.5; border-color: var(--club-orange); }
+        .block-header { display: flex; align-items: center; padding: 0.75rem 1rem; background: #f9fafb; border-bottom: 1px solid #e5e7eb; border-radius: 0.5rem 0.5rem 0 0; cursor: grab; }
+        .block-header:active { cursor: grabbing; }
+        .block-type-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; background: #e5e7eb; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; color: #374151; }
+        .block-type-badge.widget { background: #dbeafe; color: #1e40af; }
+        .block-type-badge.row { background: #fce7f3; color: #9d174d; }
+        .block-actions { display: flex; gap: 0.25rem; margin-left: auto; }
+        .block-action-btn { padding: 0.375rem; border: none; background: transparent; color: #9ca3af; border-radius: 0.25rem; cursor: pointer; transition: all 0.15s; }
+        .block-action-btn:hover { background: #e5e7eb; color: #374151; }
+        .block-action-btn.delete:hover { background: #fee2e2; color: #dc2626; }
+        .block-content { padding: 1rem; }
+        .add-block-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 1rem; border: 2px dashed #d1d5db; border-radius: 0.5rem; background: transparent; color: #6b7280; font-size: 0.875rem; cursor: pointer; transition: all 0.15s; }
+        .add-block-btn:hover { border-color: var(--club-orange); color: var(--club-orange); background: rgba(253, 126, 41, 0.05); }
+        .block-type-selector { display: none; gap: 0.5rem; padding: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .block-type-selector.show { display: flex; }
+        .block-type-option { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; background: white; cursor: pointer; transition: all 0.15s; min-width: 80px; }
+        .block-type-option:hover { border-color: var(--club-orange); background: rgba(253, 126, 41, 0.05); }
+        .block-type-option .icon { color: #6b7280; }
+        .block-type-option:hover .icon { color: var(--club-orange); }
+        .block-type-option.widget-type { border-color: #bfdbfe; }
+        .block-type-option.widget-type:hover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+        .block-type-option.row-type { border-color: #fbcfe8; background: #fdf2f8; }
+        .block-type-option.row-type:hover { border-color: #ec4899; }
+
+        /* Row block styles */
+        .row-settings { background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
+        .row-cells { display: grid; gap: 0.75rem; min-height: 100px; }
+        .row-cell { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 0.5rem; padding: 0.75rem; min-height: 120px; position: relative; }
+        .row-cell:hover { border-color: #9ca3af; }
+        .row-cell.has-content { border-style: solid; border-color: #e5e7eb; background: white; }
+        .row-cell-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; }
+        .row-cell-header .colspan-select { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid #d1d5db; }
+        .row-cell-content { min-height: 60px; }
+        .row-cell-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #9ca3af; }
+        .row-cell-empty button { margin-top: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; cursor: pointer; }
+        .row-cell-empty button:hover { border-color: var(--club-orange); color: var(--club-orange); }
+
+        /* Cell type selector */
+        .cell-type-selector { display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.5rem; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .cell-type-selector.show { display: block; }
+        .cell-type-btn { display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0.5rem; border: none; background: transparent; cursor: pointer; border-radius: 0.25rem; font-size: 0.8rem; text-align: left; }
+        .cell-type-btn:hover { background: #f3f4f6; }
+
+        .widget-config { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.375rem; padding: 0.75rem; }
+        .widget-config label { font-size: 0.7rem; font-weight: 500; color: #1e40af; }
+
+        .block-content .note-editor { border: 1px solid #e5e7eb; border-radius: 0.375rem; }
+        .block-content .note-toolbar { background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+        .block-content .note-editable { min-height: 100px; }
+    </style>
+{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+    <a href="{{ path('admin_pages_list') }}" class="text-gray-500 hover:text-gray-700">Pages</a>
+</li>
+<li class="flex items-center">
+    <svg class="flex-shrink-0 h-4 w-4 text-gray-300 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+    <span class="text-gray-500">Contenu de {{ page.title }}</span>
+</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="flex items-center space-x-3">
+    <a href="{{ path('admin_pages_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Retour
+    </a>
+    <a href="{{ path('admin_pages_preview', {id: page.id}) }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-club-blue text-sm font-medium rounded-md text-club-blue bg-white hover:bg-club-blue hover:text-white">
+        <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        Prévisualiser
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="POST" id="page-blocks-form" class="space-y-6">
+    <input type="hidden" name="_token" value="{{ csrf_token('page_blocks') }}">
+
+    <div class="bg-white shadow-sm rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-medium text-gray-900">{{ page.title }}</h2>
+                <p class="text-sm text-gray-500">Éditez le contenu dynamique de cette page</p>
+            </div>
+            <span class="text-sm text-gray-500" id="block-count">0 bloc(s)</span>
+        </div>
+
+        <div class="p-6 block-editor">
+            <div class="block-list" id="block-list"></div>
+
+            <button type="button" class="add-block-btn" id="add-block-btn">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                Ajouter un bloc
+            </button>
+
+            <div class="block-type-selector" id="block-type-selector">
+                <button type="button" class="block-type-option row-type" data-type="row">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></span>
+                    <span class="text-xs font-medium">Grille</span>
+                </button>
+                <button type="button" class="block-type-option" data-type="text">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg></span>
+                    <span class="text-xs font-medium">Texte</span>
+                </button>
+                <button type="button" class="block-type-option" data-type="image">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></span>
+                    <span class="text-xs font-medium">Image</span>
+                </button>
+                <button type="button" class="block-type-option" data-type="cta">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg></span>
+                    <span class="text-xs font-medium">Bouton</span>
+                </button>
+                {% for widgetKey, widgetLabel in widgets %}
+                <button type="button" class="block-type-option widget-type" data-type="widget" data-widget="{{ widgetKey }}">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2"/></svg></span>
+                    <span class="text-xs font-medium">{{ widgetLabel }}</span>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end space-x-3">
+        <a href="{{ path('admin_pages_list') }}" class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Annuler</a>
+        <button type="submit" class="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark">
+            <svg class="-ml-1 mr-2 h-4 w-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Enregistrer
+        </button>
+    </div>
+
+    <input type="hidden" name="blocks_data" id="blocks_data" value="">
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const blockList = document.getElementById('block-list');
+    const addBlockBtn = document.getElementById('add-block-btn');
+    const blockTypeSelector = document.getElementById('block-type-selector');
+    const blocksDataInput = document.getElementById('blocks_data');
+    const blockCountEl = document.getElementById('block-count');
+
+    const widgetLabels = {{ widgets|json_encode|raw }};
+    const availableGalleries = [
+        {% for gallery in galleries %}
+        {id: {{ gallery.id }}, title: "{{ gallery.title|e('js') }}", imageCount: {{ gallery.imageCount }}}{% if not loop.last %},{% endif %}
+
+        {% endfor %}
+    ];
+    const widgetConfigs = {
+        'blog': [{key: 'title', label: 'Titre', type: 'text', default: 'Derniers articles'}, {key: 'limit', label: 'Nombre', type: 'number', default: 3}],
+        'calendar': [{key: 'title', label: 'Titre', type: 'text', default: 'Prochains événements'}, {key: 'limit', label: 'Nombre', type: 'number', default: 5}],
+        'partners': [{key: 'title', label: 'Titre', type: 'text', default: 'Nos partenaires'}],
+        'contact': [{key: 'title', label: 'Titre', type: 'text', default: 'Contactez-nous'}],
+        'pricing': [{key: 'title', label: 'Titre', type: 'text', default: 'Tarifs'}],
+        'map': [{key: 'title', label: 'Titre', type: 'text', default: 'Où nous trouver'}, {key: 'address', label: 'Adresse', type: 'text', default: 'Vannes, France'}],
+        'gallery': [
+            {key: 'gallery_id', label: 'Galerie', type: 'select', options: availableGalleries.map(g => ({value: g.id, label: `${g.title} (${g.imageCount} photos)`})), default: ''},
+            {key: 'columns', label: 'Colonnes', type: 'number', default: 3},
+            {key: 'layout', label: 'Disposition', type: 'select', options: [{value: 'grid', label: 'Grille'}, {value: 'carousel', label: 'Carousel'}], default: 'grid'}
+        ]
+    };
+
+    const cellTypes = [
+        {type: 'text', label: 'Texte', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>'},
+        {type: 'image', label: 'Image', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>'},
+        {type: 'cta', label: 'Bouton', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>'},
+    ];
+    // Add widgets to cell types
+    Object.keys(widgetLabels).forEach(key => {
+        cellTypes.push({type: 'widget', widgetType: key, label: widgetLabels[key], icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2"/></svg>'});
+    });
+
+    let blocks = [];
+    let blockIdCounter = 0;
+
+    new Sortable(blockList, {
+        animation: 150,
+        handle: '.block-header',
+        ghostClass: 'dragging',
+        onEnd: () => { updateBlockPositions(); saveBlocksData(); }
+    });
+
+    addBlockBtn.addEventListener('click', () => blockTypeSelector.classList.toggle('show'));
+
+    document.querySelectorAll('.block-type-option').forEach(option => {
+        option.addEventListener('click', function() {
+            addBlock(this.dataset.type, null, this.dataset.widget || null);
+            blockTypeSelector.classList.remove('show');
+        });
+    });
+
+    document.addEventListener('click', e => {
+        if (!addBlockBtn.contains(e.target) && !blockTypeSelector.contains(e.target)) {
+            blockTypeSelector.classList.remove('show');
+        }
+    });
+
+    function addBlock(type, data = null, widgetType = null) {
+        const blockId = `new-${++blockIdCounter}`;
+        const blockEl = document.createElement('div');
+        blockEl.className = 'block-item';
+        blockEl.dataset.blockId = blockId;
+        blockEl.dataset.blockType = type;
+
+        if (type === 'row') {
+            blockEl.innerHTML = createRowBlockHTML(data);
+            if (data) populateRowBlock(blockEl, data);
+        } else if (type === 'widget') {
+            blockEl.dataset.widgetType = widgetType || (data && data.widget_type) || '';
+            blockEl.innerHTML = createWidgetBlockHTML(widgetType || (data && data.widget_type), data);
+        } else if (type === 'text') {
+            blockEl.innerHTML = createTextBlockHTML();
+            if (data) blockEl.dataset.initialContent = data.content || '';
+        } else if (type === 'image') {
+            blockEl.innerHTML = createImageBlockHTML(data);
+        } else if (type === 'cta') {
+            blockEl.innerHTML = createCtaBlockHTML(data);
+        }
+
+        blockList.appendChild(blockEl);
+        initializeBlock(blockEl, type);
+        bindBlockEvents(blockEl);
+
+        blocks.push({
+            id: blockId,
+            type: type,
+            data: data || getDefaultData(type, widgetType),
+            position: blocks.length
+        });
+
+        updateBlockCount();
+        saveBlocksData();
+    }
+
+    function createBlockHeader(label, badgeClass = '') {
+        return `<div class="block-header">
+            <span class="block-type-badge ${badgeClass}">${label}</span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>`;
+    }
+
+    function createRowBlockHTML(data) {
+        const cols = data?.columns || 3;
+        const cells = data?.cells || [{colspan: 1}, {colspan: 1}, {colspan: 1}];
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg> Grille', 'row')}
+        <div class="block-content">
+            <div class="row-settings">
+                <div class="flex items-center gap-4 flex-wrap">
+                    <div>
+                        <label class="text-xs font-medium text-pink-700">Colonnes</label>
+                        <select class="row-columns ml-2 text-sm border-gray-300 rounded">
+                            <option value="2" ${cols == 2 ? 'selected' : ''}>2</option>
+                            <option value="3" ${cols == 3 ? 'selected' : ''}>3</option>
+                            <option value="4" ${cols == 4 ? 'selected' : ''}>4</option>
+                            <option value="6" ${cols == 6 ? 'selected' : ''}>6</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-pink-700">Espacement</label>
+                        <select class="row-gap ml-2 text-sm border-gray-300 rounded">
+                            <option value="none">Aucun</option>
+                            <option value="small">Petit</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="large">Grand</option>
+                        </select>
+                    </div>
+                    <button type="button" class="add-cell-btn text-xs px-2 py-1 bg-pink-100 text-pink-700 rounded hover:bg-pink-200">+ Ajouter cellule</button>
+                </div>
+            </div>
+            <div class="row-cells" style="grid-template-columns: repeat(${cols}, 1fr);"></div>
+        </div>`;
+    }
+
+    function createCellHTML(cellData, totalCols) {
+        const colspan = cellData?.colspan || 1;
+        const colspanOptions = Array.from({length: totalCols}, (_, i) =>
+            `<option value="${i+1}" ${colspan == i+1 ? 'selected' : ''}>${i+1}</option>`
+        ).join('');
+
+        return `<div class="row-cell" data-cell-type="${cellData?.type || ''}" style="grid-column: span ${colspan};">
+            <div class="row-cell-header">
+                <span class="text-xs text-gray-500">${cellData?.type ? getCellTypeLabel(cellData.type, cellData.data?.widget_type) : 'Vide'}</span>
+                <div class="flex items-center gap-2">
+                    <select class="colspan-select">${colspanOptions}</select>
+                    <button type="button" class="remove-cell-btn text-gray-400 hover:text-red-500" title="Supprimer">&times;</button>
+                </div>
+            </div>
+            <div class="row-cell-content"></div>
+            <div class="cell-type-selector"></div>
+        </div>`;
+    }
+
+    function getCellTypeLabel(type, widgetType) {
+        if (type === 'widget' && widgetType) return widgetLabels[widgetType] || 'Widget';
+        return {text: 'Texte', image: 'Image', cta: 'Bouton'}[type] || type;
+    }
+
+    function createTextBlockHTML() {
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg> Texte')}
+        <div class="block-content"><textarea class="block-text-editor"></textarea></div>`;
+    }
+
+    function createImageBlockHTML(data) {
+        const hasImage = data?.url;
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> Image')}
+        <div class="block-content">
+            <div class="image-preview" style="display: ${hasImage ? 'block' : 'none'};"><img src="${data?.url || ''}" class="max-w-full rounded-lg mb-3"></div>
+            <button type="button" class="select-image-btn w-full py-6 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-club-orange" style="display: ${hasImage ? 'none' : 'block'};">Cliquez pour sélectionner une image</button>
+            <div class="grid grid-cols-2 gap-3 mt-3">
+                <input type="text" class="image-alt text-sm border-gray-300 rounded" placeholder="Texte alternatif" value="${data?.alt || ''}">
+                <input type="text" class="image-caption text-sm border-gray-300 rounded" placeholder="Légende" value="${data?.caption || ''}">
+            </div>
+        </div>`;
+    }
+
+    function createCtaBlockHTML(data) {
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg> Bouton')}
+        <div class="block-content">
+            <div class="grid grid-cols-3 gap-3">
+                <input type="text" class="cta-text text-sm border-gray-300 rounded" placeholder="Texte" value="${data?.text || 'En savoir plus'}">
+                <input type="url" class="cta-url text-sm border-gray-300 rounded" placeholder="URL" value="${data?.url || ''}">
+                <select class="cta-style text-sm border-gray-300 rounded">
+                    <option value="primary" ${(data?.style || 'primary') === 'primary' ? 'selected' : ''}>Orange</option>
+                    <option value="secondary" ${data?.style === 'secondary' ? 'selected' : ''}>Bleu</option>
+                    <option value="outline" ${data?.style === 'outline' ? 'selected' : ''}>Contour</option>
+                </select>
+            </div>
+        </div>`;
+    }
+
+    function createWidgetBlockHTML(widgetType, data) {
+        const label = widgetLabels[widgetType] || 'Widget';
+        const configs = widgetConfigs[widgetType] || [];
+        let configHTML = '';
+        configs.forEach(cfg => {
+            const value = data?.config?.[cfg.key] ?? cfg.default;
+            if (cfg.type === 'select' && cfg.options) {
+                const options = cfg.options.map(opt =>
+                    `<option value="${opt.value}" ${value == opt.value ? 'selected' : ''}>${opt.label}</option>`
+                ).join('');
+                configHTML += `<div class="mb-2">
+                    <label class="text-xs font-medium text-blue-700">${cfg.label}</label>
+                    <select class="widget-cfg block w-full text-sm border-gray-300 rounded mt-1" data-key="${cfg.key}">
+                        <option value="">-- Choisir --</option>
+                        ${options}
+                    </select>
+                </div>`;
+            } else {
+                configHTML += `<div class="mb-2">
+                    <label class="text-xs font-medium text-blue-700">${cfg.label}</label>
+                    <input type="${cfg.type}" class="widget-cfg block w-full text-sm border-gray-300 rounded mt-1" data-key="${cfg.key}" value="${value}">
+                </div>`;
+            }
+        });
+
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2"/></svg> ' + label, 'widget')}
+        <div class="block-content">
+            <div class="widget-config">
+                <p class="text-xs text-blue-600 mb-2">Widget dynamique</p>
+                ${configHTML}
+            </div>
+        </div>`;
+    }
+
+    function initializeBlock(blockEl, type) {
+        if (type === 'text') {
+            const ta = blockEl.querySelector('.block-text-editor');
+            const content = blockEl.dataset.initialContent || '';
+            $(ta).summernote({
+                height: 150,
+                toolbar: [['style', ['style']], ['font', ['bold', 'italic']], ['para', ['ul', 'ol']], ['insert', ['link']]],
+                callbacks: { onChange: () => saveBlocksData(), onInit: function() { if (content) $(ta).summernote('code', content); } }
+            });
+        } else if (type === 'row') {
+            initializeRowBlock(blockEl);
+        }
+    }
+
+    function initializeRowBlock(blockEl) {
+        const cellsContainer = blockEl.querySelector('.row-cells');
+        const colsSelect = blockEl.querySelector('.row-columns');
+        const addCellBtn = blockEl.querySelector('.add-cell-btn');
+
+        // Initialize cells if empty
+        if (!cellsContainer.children.length) {
+            const numCols = parseInt(colsSelect.value);
+            for (let i = 0; i < numCols; i++) {
+                addCellToRow(cellsContainer, {colspan: 1}, numCols);
+            }
+        }
+
+        colsSelect.addEventListener('change', function() {
+            cellsContainer.style.gridTemplateColumns = `repeat(${this.value}, 1fr)`;
+            // Update colspan selects
+            cellsContainer.querySelectorAll('.colspan-select').forEach(sel => {
+                const current = parseInt(sel.value);
+                sel.innerHTML = Array.from({length: parseInt(this.value)}, (_, i) =>
+                    `<option value="${i+1}" ${current == i+1 ? 'selected' : ''}>${i+1}</option>`
+                ).join('');
+            });
+            saveBlocksData();
+        });
+
+        blockEl.querySelector('.row-gap').addEventListener('change', () => saveBlocksData());
+
+        addCellBtn.addEventListener('click', () => {
+            addCellToRow(cellsContainer, {colspan: 1}, parseInt(colsSelect.value));
+            saveBlocksData();
+        });
+    }
+
+    function addCellToRow(container, cellData, totalCols) {
+        const cellEl = document.createElement('div');
+        cellEl.innerHTML = createCellHTML(cellData, totalCols);
+        const cell = cellEl.firstElementChild;
+        container.appendChild(cell);
+        initializeCell(cell, cellData, totalCols);
+
+        if (cellData.type) {
+            populateCellContent(cell, cellData);
+        }
+    }
+
+    function initializeCell(cell, cellData, totalCols) {
+        const colspanSelect = cell.querySelector('.colspan-select');
+        const removeBtn = cell.querySelector('.remove-cell-btn');
+        const content = cell.querySelector('.row-cell-content');
+        const selector = cell.querySelector('.cell-type-selector');
+
+        colspanSelect.addEventListener('change', function() {
+            cell.style.gridColumn = `span ${this.value}`;
+            saveBlocksData();
+        });
+
+        removeBtn.addEventListener('click', () => {
+            cell.remove();
+            saveBlocksData();
+        });
+
+        // Build cell type selector
+        selector.innerHTML = cellTypes.map(ct =>
+            `<button type="button" class="cell-type-btn" data-type="${ct.type}" ${ct.widgetType ? `data-widget="${ct.widgetType}"` : ''}>
+                ${ct.icon} ${ct.label}
+            </button>`
+        ).join('');
+
+        selector.querySelectorAll('.cell-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                setCellType(cell, this.dataset.type, this.dataset.widget);
+                selector.classList.remove('show');
+            });
+        });
+
+        if (!cellData.type) {
+            content.innerHTML = `<div class="row-cell-empty">
+                <span class="text-xs">Cellule vide</span>
+                <button type="button" class="choose-type-btn">Choisir le type</button>
+            </div>`;
+            content.querySelector('.choose-type-btn').addEventListener('click', () => selector.classList.toggle('show'));
+        }
+
+        document.addEventListener('click', e => {
+            if (!cell.contains(e.target)) selector.classList.remove('show');
+        });
+    }
+
+    function setCellType(cell, type, widgetType = null) {
+        cell.dataset.cellType = type;
+        if (widgetType) cell.dataset.widgetType = widgetType;
+        cell.classList.add('has-content');
+
+        const label = cell.querySelector('.row-cell-header span');
+        label.textContent = getCellTypeLabel(type, widgetType);
+
+        const content = cell.querySelector('.row-cell-content');
+
+        if (type === 'text') {
+            content.innerHTML = '<textarea class="cell-text-editor"></textarea>';
+            $(content.querySelector('.cell-text-editor')).summernote({
+                height: 100,
+                toolbar: [['font', ['bold', 'italic']], ['para', ['ul', 'ol']], ['insert', ['link']]],
+                callbacks: { onChange: () => saveBlocksData() }
+            });
+        } else if (type === 'image') {
+            content.innerHTML = `<div class="cell-image-preview" style="display:none;"><img class="w-full rounded"></div>
+                <button type="button" class="cell-select-image w-full py-4 border-2 border-dashed border-gray-300 rounded text-gray-500 text-sm">+ Image</button>
+                <input type="text" class="cell-image-alt mt-2 w-full text-xs border-gray-300 rounded" placeholder="Alt">`;
+            content.querySelector('.cell-select-image').addEventListener('click', () => selectCellImage(cell));
+        } else if (type === 'cta') {
+            content.innerHTML = `<input type="text" class="cell-cta-text w-full text-sm border-gray-300 rounded mb-2" placeholder="Texte" value="En savoir plus">
+                <input type="url" class="cell-cta-url w-full text-sm border-gray-300 rounded" placeholder="URL">`;
+            content.querySelectorAll('input').forEach(el => el.addEventListener('input', () => saveBlocksData()));
+        } else if (type === 'widget') {
+            const configs = widgetConfigs[widgetType] || [];
+            let html = `<p class="text-xs text-blue-600 mb-2">${widgetLabels[widgetType]}</p>`;
+            configs.forEach(cfg => {
+                if (cfg.type === 'select' && cfg.options) {
+                    const options = cfg.options.map(opt =>
+                        `<option value="${opt.value}">${opt.label}</option>`
+                    ).join('');
+                    html += `<select class="cell-widget-cfg w-full text-xs border-gray-300 rounded mb-1" data-key="${cfg.key}">
+                        <option value="">-- ${cfg.label} --</option>
+                        ${options}
+                    </select>`;
+                } else {
+                    html += `<input type="${cfg.type}" class="cell-widget-cfg w-full text-xs border-gray-300 rounded mb-1" data-key="${cfg.key}" placeholder="${cfg.label}" value="${cfg.default || ''}">`;
+                }
+            });
+            content.innerHTML = html;
+            content.querySelectorAll('.cell-widget-cfg').forEach(el => el.addEventListener('change', () => saveBlocksData()));
+        }
+
+        saveBlocksData();
+    }
+
+    function populateCellContent(cell, cellData) {
+        setCellType(cell, cellData.type, cellData.data?.widget_type);
+        const content = cell.querySelector('.row-cell-content');
+
+        if (cellData.type === 'text' && cellData.data?.content) {
+            $(content.querySelector('.cell-text-editor')).summernote('code', cellData.data.content);
+        } else if (cellData.type === 'image' && cellData.data?.url) {
+            const preview = content.querySelector('.cell-image-preview');
+            preview.querySelector('img').src = cellData.data.url;
+            preview.style.display = 'block';
+            content.querySelector('.cell-select-image').style.display = 'none';
+            if (cellData.data.alt) content.querySelector('.cell-image-alt').value = cellData.data.alt;
+        } else if (cellData.type === 'cta') {
+            if (cellData.data?.text) content.querySelector('.cell-cta-text').value = cellData.data.text;
+            if (cellData.data?.url) content.querySelector('.cell-cta-url').value = cellData.data.url;
+        } else if (cellData.type === 'widget') {
+            content.querySelectorAll('.cell-widget-cfg').forEach(el => {
+                if (cellData.data?.config?.[el.dataset.key]) el.value = cellData.data.config[el.dataset.key];
+            });
+        }
+    }
+
+    function populateRowBlock(blockEl, data) {
+        const cellsContainer = blockEl.querySelector('.row-cells');
+        const numCols = data.columns || 3;
+        cellsContainer.style.gridTemplateColumns = `repeat(${numCols}, 1fr)`;
+        blockEl.querySelector('.row-columns').value = numCols;
+        if (data.gap) blockEl.querySelector('.row-gap').value = data.gap;
+
+        (data.cells || []).forEach(cellData => {
+            addCellToRow(cellsContainer, cellData, numCols);
+        });
+    }
+
+    function selectCellImage(cell) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = e => {
+            if (e.target.files.length > 0) {
+                uploadImage(e.target.files[0]).then(url => {
+                    const content = cell.querySelector('.row-cell-content');
+                    const preview = content.querySelector('.cell-image-preview');
+                    preview.querySelector('img').src = url;
+                    preview.style.display = 'block';
+                    content.querySelector('.cell-select-image').style.display = 'none';
+                    saveBlocksData();
+                });
+            }
+        };
+        input.click();
+    }
+
+    function bindBlockEvents(blockEl) {
+        blockEl.querySelector('.delete')?.addEventListener('click', function() {
+            if (confirm('Supprimer ce bloc ?')) {
+                blocks = blocks.filter(b => b.id !== blockEl.dataset.blockId);
+                blockEl.remove();
+                updateBlockPositions();
+                updateBlockCount();
+                saveBlocksData();
+            }
+        });
+
+        blockEl.querySelector('.move-up')?.addEventListener('click', function() {
+            const prev = blockEl.previousElementSibling;
+            if (prev) { blockList.insertBefore(blockEl, prev); updateBlockPositions(); saveBlocksData(); }
+        });
+
+        blockEl.querySelector('.move-down')?.addEventListener('click', function() {
+            const next = blockEl.nextElementSibling;
+            if (next) { blockList.insertBefore(next, blockEl); updateBlockPositions(); saveBlocksData(); }
+        });
+
+        const type = blockEl.dataset.blockType;
+
+        if (type === 'image') {
+            blockEl.querySelector('.select-image-btn')?.addEventListener('click', () => selectBlockImage(blockEl));
+            blockEl.querySelectorAll('input').forEach(el => el.addEventListener('change', () => saveBlocksData()));
+        }
+
+        if (type === 'cta') {
+            blockEl.querySelectorAll('input, select').forEach(el => el.addEventListener('input', () => saveBlocksData()));
+        }
+
+        if (type === 'widget') {
+            blockEl.querySelectorAll('.widget-cfg').forEach(el => el.addEventListener('change', () => saveBlocksData()));
+        }
+    }
+
+    function selectBlockImage(blockEl) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = e => {
+            if (e.target.files.length > 0) {
+                uploadImage(e.target.files[0]).then(url => {
+                    const preview = blockEl.querySelector('.image-preview');
+                    preview.querySelector('img').src = url;
+                    preview.style.display = 'block';
+                    blockEl.querySelector('.select-image-btn').style.display = 'none';
+                    saveBlocksData();
+                });
+            }
+        };
+        input.click();
+    }
+
+    function uploadImage(file) {
+        return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            fetch('{{ path("admin_upload_image") }}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(r => r.json()).then(data => {
+                if (data.success) resolve(data.url);
+                else reject(data.error);
+            }).catch(reject);
+        });
+    }
+
+    function getBlockData(blockEl) {
+        const type = blockEl.dataset.blockType;
+
+        if (type === 'text') {
+            return { content: $(blockEl.querySelector('.block-text-editor')).summernote('code') };
+        } else if (type === 'image') {
+            return {
+                url: blockEl.querySelector('.image-preview img')?.src || '',
+                alt: blockEl.querySelector('.image-alt')?.value || '',
+                caption: blockEl.querySelector('.image-caption')?.value || ''
+            };
+        } else if (type === 'cta') {
+            return {
+                text: blockEl.querySelector('.cta-text')?.value || '',
+                url: blockEl.querySelector('.cta-url')?.value || '',
+                style: blockEl.querySelector('.cta-style')?.value || 'primary'
+            };
+        } else if (type === 'widget') {
+            const config = {};
+            blockEl.querySelectorAll('.widget-cfg').forEach(el => { config[el.dataset.key] = el.value; });
+            return { widget_type: blockEl.dataset.widgetType, config };
+        } else if (type === 'row') {
+            const cells = [];
+            blockEl.querySelectorAll('.row-cell').forEach(cell => {
+                const cellType = cell.dataset.cellType;
+                const colspan = parseInt(cell.querySelector('.colspan-select')?.value) || 1;
+                const cellData = { colspan, type: cellType, data: {} };
+
+                if (cellType === 'text') {
+                    const ta = cell.querySelector('.cell-text-editor');
+                    cellData.data.content = ta ? $(ta).summernote('code') : '';
+                } else if (cellType === 'image') {
+                    cellData.data = {
+                        url: cell.querySelector('.cell-image-preview img')?.src || '',
+                        alt: cell.querySelector('.cell-image-alt')?.value || ''
+                    };
+                } else if (cellType === 'cta') {
+                    cellData.data = {
+                        text: cell.querySelector('.cell-cta-text')?.value || '',
+                        url: cell.querySelector('.cell-cta-url')?.value || ''
+                    };
+                } else if (cellType === 'widget') {
+                    cellData.data = { widget_type: cell.dataset.widgetType, config: {} };
+                    cell.querySelectorAll('.cell-widget-cfg').forEach(el => {
+                        cellData.data.config[el.dataset.key] = el.value;
+                    });
+                }
+
+                cells.push(cellData);
+            });
+
+            return {
+                columns: parseInt(blockEl.querySelector('.row-columns')?.value) || 3,
+                gap: blockEl.querySelector('.row-gap')?.value || 'normal',
+                cells
+            };
+        }
+
+        return {};
+    }
+
+    function getDefaultData(type, widgetType = null) {
+        const defaults = {
+            text: { content: '' },
+            image: { url: '', alt: '', caption: '' },
+            cta: { text: 'En savoir plus', url: '', style: 'primary' },
+            widget: { widget_type: widgetType, config: {} },
+            row: { columns: 3, gap: 'normal', cells: [{colspan: 1}, {colspan: 1}, {colspan: 1}] }
+        };
+        return defaults[type] || {};
+    }
+
+    function updateBlockPositions() {
+        blockList.querySelectorAll('.block-item').forEach((item, index) => {
+            const block = blocks.find(b => b.id === item.dataset.blockId);
+            if (block) block.position = index;
+        });
+    }
+
+    function updateBlockCount() {
+        blockCountEl.textContent = `${blockList.querySelectorAll('.block-item').length} bloc(s)`;
+    }
+
+    function saveBlocksData() {
+        const data = [];
+        blockList.querySelectorAll('.block-item').forEach((item, index) => {
+            data.push({
+                id: item.dataset.blockId,
+                type: item.dataset.blockType,
+                data: getBlockData(item),
+                position: index
+            });
+        });
+        blocksDataInput.value = JSON.stringify(data);
+    }
+
+    // Load existing blocks
+    {% if page.contentBlocks is defined and page.contentBlocks|length > 0 %}
+    const existingBlocks = {{ page.contentBlocks|map(b => {id: b.id, type: b.type, data: b.data, position: b.position})|json_encode|raw }};
+    existingBlocks.sort((a, b) => a.position - b.position);
+    existingBlocks.forEach(block => {
+        if (block.type === 'widget') {
+            addBlock(block.type, block.data, block.data.widget_type);
+        } else {
+            addBlock(block.type, block.data);
+        }
+        const lastBlock = blockList.lastElementChild;
+        if (lastBlock) {
+            lastBlock.dataset.blockId = block.id;
+            blocks[blocks.length - 1].id = block.id;
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}
