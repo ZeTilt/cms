@@ -48,6 +48,12 @@
     inset: 0;
     background-size: cover;
     background-position: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.hero-carousel .hero-slide.active {
+    opacity: 1;
 }
 
 /* Hero navigation arrows */
@@ -172,6 +178,12 @@
     position: relative;
     overflow: hidden;
     border-radius: 0.5rem;
+    cursor: grab;
+    user-select: none;
+}
+
+.carousel-container:active {
+    cursor: grabbing;
 }
 
 .carousel-slide {
@@ -205,29 +217,35 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
-    padding: 0.5rem;
-    border-radius: 9999px;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 50%;
     border: none;
     cursor: pointer;
-    z-index: 10;
+    z-index: 20;
     transition: all 0.2s ease;
-    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .carousel-prev {
-    left: 0.5rem;
+    left: 0.75rem;
 }
 
 .carousel-next {
-    right: 0.5rem;
+    right: 0.75rem;
 }
 
 .carousel-prev svg,
 .carousel-next svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke: white;
+    flex-shrink: 0;
 }
 
 .carousel-prev:hover,
@@ -256,8 +274,9 @@
     width: 0.75rem; /* 12px */
     height: 0.75rem; /* 12px */
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
-    border: none;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -301,15 +320,6 @@
     transition: all 0.5s ease-in-out;
 }
 
-.carousel-container:hover .carousel-prev,
-.carousel-container:hover .carousel-next {
-    opacity: 1;
-}
-
-.carousel-prev,
-.carousel-next {
-    opacity: 0.7;
-}
 
 /* Focus styles for accessibility */
 .carousel-prev:focus,

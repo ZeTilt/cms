@@ -1,3 +1,156 @@
+/**
+ * Hero Carousel - Vanilla JS replacement for Alpine.js
+ */
+class HeroCarousel {
+    constructor(element) {
+        this.container = element;
+        this.slides = [];
+        this.currentSlide = 0;
+        this.autoAdvanceInterval = null;
+        this.init();
+    }
+
+    init() {
+        // Read slides from data attribute
+        let slidesData = this.container.dataset.slides;
+        if (slidesData) {
+            try {
+                // Decode HTML entities if present
+                const textarea = document.createElement('textarea');
+                textarea.innerHTML = slidesData;
+                slidesData = textarea.value;
+
+                this.slides = JSON.parse(slidesData);
+            } catch (e) {
+                console.error('Error parsing slides data:', e);
+                return;
+            }
+        }
+
+        if (this.slides.length === 0) return;
+
+        this.render();
+        this.bindEvents();
+        this.startAutoAdvance();
+    }
+
+    render() {
+        const slidesContainer = this.container.querySelector('.hero-slides');
+        if (!slidesContainer) return;
+
+        // Create slides HTML
+        let slidesHtml = this.slides.map((slide, index) => `
+            <div class="hero-slide ${index === 0 ? 'active' : ''}"
+                 data-index="${index}"
+                 style="background-image: url(${slide.image})"></div>
+        `).join('');
+
+        // Add navigation
+        slidesHtml += `
+            <button class="hero-nav-btn hero-nav-prev" aria-label="Image précédente">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <button class="hero-nav-btn hero-nav-next" aria-label="Image suivante">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+            <div class="hero-dots">
+                ${this.slides.map((_, index) => `
+                    <button class="hero-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></button>
+                `).join('')}
+            </div>
+        `;
+
+        slidesContainer.innerHTML = slidesHtml;
+    }
+
+    bindEvents() {
+        const prevBtn = this.container.querySelector('.hero-nav-prev');
+        const nextBtn = this.container.querySelector('.hero-nav-next');
+        const dots = this.container.querySelectorAll('.hero-dot');
+
+        if (prevBtn) prevBtn.addEventListener('click', () => this.prevSlide());
+        if (nextBtn) nextBtn.addEventListener('click', () => this.nextSlide());
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const index = parseInt(dot.dataset.index);
+                this.goToSlide(index);
+            });
+        });
+
+        // Pause on hover
+        this.container.addEventListener('mouseenter', () => this.stopAutoAdvance());
+        this.container.addEventListener('mouseleave', () => this.startAutoAdvance());
+
+        // Touch support
+        let touchStartX = 0;
+        this.container.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            this.stopAutoAdvance();
+        }, { passive: true });
+
+        this.container.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].screenX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) this.nextSlide();
+                else this.prevSlide();
+            }
+            this.startAutoAdvance();
+        }, { passive: true });
+    }
+
+    showSlide(index) {
+        const slides = this.container.querySelectorAll('.hero-slide');
+        const dots = this.container.querySelectorAll('.hero-dot');
+
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        if (slides[index]) slides[index].classList.add('active');
+        if (dots[index]) dots[index].classList.add('active');
+
+        this.currentSlide = index;
+    }
+
+    nextSlide() {
+        const next = (this.currentSlide + 1) % this.slides.length;
+        this.showSlide(next);
+    }
+
+    prevSlide() {
+        const prev = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+        this.showSlide(prev);
+    }
+
+    goToSlide(index) {
+        this.showSlide(index);
+    }
+
+    startAutoAdvance() {
+        if (this.autoAdvanceInterval) return;
+        this.autoAdvanceInterval = setInterval(() => this.nextSlide(), 5000);
+    }
+
+    stopAutoAdvance() {
+        if (this.autoAdvanceInterval) {
+            clearInterval(this.autoAdvanceInterval);
+            this.autoAdvanceInterval = null;
+        }
+    }
+}
+
+// Initialize hero carousel if present
+document.addEventListener('DOMContentLoaded', () => {
+    const heroCarousel = document.querySelector('.hero-carousel');
+    if (heroCarousel) {
+        new HeroCarousel(heroCarousel);
+    }
+});
+
 // Photo Gallery JavaScript
 class PhotoGallery {
     constructor() {
@@ -174,167 +327,6 @@ function createGallery(containerId, images, options = {}) {
 
     container.innerHTML = galleryHTML;
 }/**
- * Blog Article Carousel Component
- * Transforms carousel shortcodes into interactive image carousels
- */
-
-class ArticleCarousel {
-    constructor() {
-        this.carousels = [];
-        this.init();
-    }
-
-    init() {
-        this.processCarouselShortcodes();
-        this.initializeCarousels();
-    }
-
-    /**
-     * Process carousel shortcodes in article content
-     * Syntax: [carousel]image1.jpg,image2.jpg,image3.jpg[/carousel]
-     */
-    processCarouselShortcodes() {
-        const content = document.querySelector('.article-content, .prose');
-        if (!content) return;
-
-        const shortcodeRegex = /\[carousel\](.*?)\[\/carousel\]/g;
-        let html = content.innerHTML;
-        let match;
-        let carouselId = 0;
-
-        while ((match = shortcodeRegex.exec(html)) !== null) {
-            const images = match[1].split(',').map(img => img.trim()).filter(img => img);
-            if (images.length > 0) {
-                const carouselHtml = this.generateCarouselHtml(images, carouselId);
-                html = html.replace(match[0], carouselHtml);
-                carouselId++;
-            }
-        }
-
-        content.innerHTML = html;
-    }
-
-    /**
-     * Generate HTML for a carousel
-     */
-    generateCarouselHtml(images, carouselId) {
-        const slides = images.map((img, index) => `
-            <div class="carousel-slide ${index === 0 ? 'active' : ''}" data-slide="${index}">
-                <img src="${img}" alt="Image ${index + 1}" class="w-full h-64 md:h-80 object-cover rounded-lg">
-            </div>
-        `).join('');
-
-        const indicators = images.map((_, index) => `
-            <button class="carousel-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></button>
-        `).join('');
-
-        return `
-            <div class="article-carousel my-8" data-carousel-id="${carouselId}">
-                <div class="relative overflow-hidden rounded-lg bg-gray-100">
-                    <div class="carousel-container relative">
-                        ${slides}
-                    </div>
-                    
-                    ${images.length > 1 ? `
-                        <!-- Navigation arrows -->
-                        <button class="carousel-prev absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                        </button>
-                        <button class="carousel-next absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </button>
-                        
-                        <!-- Indicators -->
-                        <div class="carousel-indicators absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                            ${indicators}
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-    }
-
-    /**
-     * Initialize carousel functionality
-     */
-    initializeCarousels() {
-        document.querySelectorAll('.article-carousel').forEach(carousel => {
-            this.setupCarousel(carousel);
-        });
-    }
-
-    setupCarousel(carousel) {
-        const slides = carousel.querySelectorAll('.carousel-slide');
-        const dots = carousel.querySelectorAll('.carousel-dot');
-        const prevBtn = carousel.querySelector('.carousel-prev');
-        const nextBtn = carousel.querySelector('.carousel-next');
-        
-        let currentSlide = 0;
-
-        const showSlide = (index) => {
-            // Hide all slides
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-            
-            // Show current slide
-            slides[index].classList.add('active');
-            if (dots[index]) dots[index].classList.add('active');
-            
-            currentSlide = index;
-        };
-
-        const nextSlide = () => {
-            const next = (currentSlide + 1) % slides.length;
-            showSlide(next);
-        };
-
-        const prevSlide = () => {
-            const prev = (currentSlide - 1 + slides.length) % slides.length;
-            showSlide(prev);
-        };
-
-        // Event listeners
-        if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-        if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => showSlide(index));
-        });
-
-        // Auto-advance (optional)
-        let autoAdvance = setInterval(nextSlide, 5000);
-
-        // Pause on hover
-        carousel.addEventListener('mouseenter', () => clearInterval(autoAdvance));
-        carousel.addEventListener('mouseleave', () => {
-            autoAdvance = setInterval(nextSlide, 5000);
-        });
-
-        // Store carousel instance
-        this.carousels.push({
-            element: carousel,
-            currentSlide,
-            totalSlides: slides.length,
-            showSlide,
-            nextSlide,
-            prevSlide
-        });
-    }
-}
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    new ArticleCarousel();
-});
-
-// Re-initialize if content is dynamically loaded
-window.initializeCarousels = () => {
-    new ArticleCarousel();
-};/**
  * Handle YouTube thumbnail loading errors with fallback images
  */
 function handleYouTubeThumbnailError(img) {

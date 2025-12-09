@@ -4,6 +4,7 @@ PHP = php
 COMPOSER = composer
 NODE = node
 NPM = npm
+DEV_PORT = 8012
 
 # Couleurs pour les messages
 GREEN = \033[0;32m
@@ -11,7 +12,7 @@ YELLOW = \033[0;33m
 RED = \033[0;31m
 NC = \033[0m # No Color
 
-.PHONY: help install install-dev start stop test lint fix migrate cache-clear assets deploy status
+.PHONY: help install install-dev start dev dev-stop dev-status stop test lint fix migrate cache-clear assets deploy status
 
 help: ## Affiche cette aide
 	@echo "$(GREEN)Makefile pour le site de plongée$(NC)"
@@ -33,9 +34,34 @@ install-dev: ## Installation complète (développement)
 	$(PHP) bin/console doctrine:migrations:migrate --no-interaction
 	@echo "$(GREEN)✅ Installation de développement terminée$(NC)"
 
-start: ## Démarre le serveur de développement
+start: ## Démarre le serveur de développement (port 8000)
 	@echo "$(GREEN)🚀 Démarrage du serveur...$(NC)"
 	$(PHP) -S localhost:8000 -t public
+
+dev: ## Démarre le serveur en arrière-plan sur le port dédié (8012)
+	@if lsof -i:$(DEV_PORT) > /dev/null 2>&1; then \
+		echo "$(YELLOW)⚠️  Le port $(DEV_PORT) est déjà utilisé$(NC)"; \
+	else \
+		APP_ENV=dev $(PHP) -S localhost:$(DEV_PORT) -t public > var/log/server.log 2>&1 & \
+		echo "$(GREEN)🚀 Serveur Vénètes démarré sur http://localhost:$(DEV_PORT)$(NC)"; \
+		echo "   Logs: var/log/server.log"; \
+		echo "   Arrêter: make dev-stop"; \
+	fi
+
+dev-stop: ## Arrête le serveur de développement détaché
+	@if lsof -i:$(DEV_PORT) > /dev/null 2>&1; then \
+		lsof -ti:$(DEV_PORT) | xargs kill -9 2>/dev/null; \
+		echo "$(GREEN)🛑 Serveur arrêté$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠️  Aucun serveur sur le port $(DEV_PORT)$(NC)"; \
+	fi
+
+dev-status: ## Vérifie si le serveur de dev tourne
+	@if lsof -i:$(DEV_PORT) > /dev/null 2>&1; then \
+		echo "$(GREEN)✅ Serveur actif sur http://localhost:$(DEV_PORT)$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠️  Serveur non démarré$(NC)"; \
+	fi
 
 stop: ## Arrête le serveur (Ctrl+C)
 	@echo "$(YELLOW)⚠️  Utilisez Ctrl+C pour arrêter le serveur$(NC)"

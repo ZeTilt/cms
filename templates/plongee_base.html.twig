@@ -72,8 +72,8 @@
     {% endblock %}
 
     {% block javascripts %}
-        <script src="{{ asset('assets/alpine.min.js') }}" defer></script>
         <script src="{{ asset('assets/app' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
+        <script src="{{ asset('assets/carousel' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
     {% endblock %}
 </head>
 <body class="body-bg">
@@ -124,131 +124,36 @@
                         </a>
                     </div>
 
-                    <!-- Desktop Navigation -->
+                    <!-- Desktop Navigation (dynamique) -->
                     <div class="nav-desktop">
-                        <!-- Le Club Dropdown -->
-                        <div class="nav-dropdown dropdown">
-                            <button class="nav-dropdown-btn">
-                                Le club
-                                <svg fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                                </svg>
-                            </button>
-                            <div class="dropdown-menu nav-dropdown-menu">
-                                <div class="nav-menu-inner">
-                                    <a href="{{ path('public_page_show', {slug: 'qui-sommes-nous'}) }}">
-                                        <span class="nav-emoji">👥</span>
-                                        Qui sommes nous
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'ou-nous-trouver'}) }}">
-                                        <span class="nav-emoji">📍</span>
-                                        Où nous trouver
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'tarifs-2025'}) }}">
-                                        <span class="nav-emoji">💰</span>
-                                        Tarifs Adhésion et licence 2025
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'nos-partenaires'}) }}">
-                                        <span class="nav-emoji">🤝</span>
-                                        Nos partenaires
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                        {% include 'partials/_menu.html.twig' with {location: 'main', mode: 'desktop'} %}
 
-                        <!-- Nos activités Dropdown -->
-                        <div class="nav-dropdown dropdown">
-                            <button class="nav-dropdown-btn">
-                                Nos activités
-                                <svg fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                                </svg>
-                            </button>
-                            <div class="dropdown-menu nav-dropdown-menu w-72">
-                                <div class="nav-menu-inner">
-                                    <div class="nav-menu-header">Formations</div>
-                                    <a href="{{ path('public_page_show', {slug: 'formation-niveau-1'}) }}">
-                                        <span class="nav-emoji">🤿</span>
-                                        Niveau 1
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'formation-niveau-2-et-3'}) }}">
-                                        <span class="nav-emoji">🔰</span>
-                                        Niveau 2 et 3
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'guide-de-palanquee'}) }}">
-                                        <span class="nav-emoji">👨‍🏫</span>
-                                        Guide de palanquée
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'autres-formations'}) }}">
-                                        <span class="nav-emoji">🎓</span>
-                                        Autres formations
-                                    </a>
-                                    <div class="nav-menu-header mt-2">Activités</div>
-                                    <a href="{{ path('public_page_show', {slug: 'les-sorties'}) }}">
-                                        <span class="nav-emoji">🏊</span>
-                                        Les sorties
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'plongeurs-exterieurs'}) }}">
-                                        <span class="nav-emoji">🏊‍♂️</span>
-                                        Plongeurs extérieurs
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'apnee'}) }}">
-                                        <span class="nav-emoji">🫁</span>
-                                        Apnée
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'la-piscine'}) }}">
-                                        <span class="nav-emoji">🏊‍♀️</span>
-                                        La piscine
-                                    </a>
-                                    <a href="{{ path('public_page_show', {slug: 'gonflage'}) }}">
-                                        <span class="nav-emoji">🫧</span>
-                                        Gonflage
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Calendrier -->
-                        <a href="{{ path('public_calendar') }}" class="nav-link">
-                            Calendrier
-                        </a>
-
-                        <!-- Actualités -->
-                        <a href="{{ path('blog_index') }}" class="nav-link">
-                            Actualités
-                        </a>
-
+                        {# Liens d'authentification - toujours présents, gérés par le template #}
                         {% if app.user %}
-                            <!-- Mon profil -->
                             <a href="{{ path('user_profile_index') }}" class="nav-link">
                                 Mon profil
                             </a>
 
                             {% if is_granted('ROLE_ADMIN') %}
-                                <!-- Administration (pour admin seulement) -->
                                 <a href="{{ path('admin_dashboard') }}" class="nav-btn nav-btn-blue">
                                     Administration
                                 </a>
                             {% else %}
-                                <!-- Déconnexion (pour utilisateurs non-admin) -->
                                 <a href="{{ path('app_logout') }}" class="nav-btn nav-btn-gray">
                                     Déconnexion
                                 </a>
                             {% endif %}
                         {% else %}
-                            <!-- Créer un compte -->
                             <a href="{{ path('app_register') }}" class="nav-link">
                                 Créer un compte
                             </a>
 
-                            <!-- Connexion -->
                             <a href="{{ path('app_login') }}" class="nav-link">
                                 Se connecter
                             </a>
                         {% endif %}
 
-                        <!-- Contact -->
-                        <a href="#contact" class="nav-btn nav-btn-orange">
+                        <a href="{{ path('app_contact') }}" class="nav-btn nav-btn-orange">
                             Contact
                         </a>
                     </div>
@@ -264,94 +169,41 @@
                 </div>
             </div>
 
-            <!-- Mobile menu (hidden par défaut) -->
+            <!-- Mobile menu (hidden par défaut, dynamique) -->
             <div id="mobile-menu" class="nav-mobile">
                 <div class="nav-mobile-inner">
-                    <!-- Accueil -->
                     <a href="{{ path('app_home') }}" class="nav-mobile-link">
                         Accueil
                     </a>
 
-                    <!-- Notre club mobile -->
-                    <div class="nav-mobile-dropdown">
-                        <button class="mobile-dropdown-toggle nav-mobile-dropdown-btn">
-                            Notre club
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                        <div class="mobile-dropdown-menu nav-mobile-dropdown-menu">
-                            <a href="{{ path('public_page_show', {slug: 'qui-sommes-nous'}) }}">Qui sommes nous</a>
-                            <a href="{{ path('public_page_show', {slug: 'ou-nous-trouver'}) }}">Où nous trouver</a>
-                            <a href="{{ path('public_page_show', {slug: 'tarifs-2025'}) }}">Tarifs 2025</a>
-                            <a href="{{ path('public_page_show', {slug: 'nos-partenaires'}) }}">Nos partenaires</a>
-                        </div>
-                    </div>
+                    {% include 'partials/_menu.html.twig' with {location: 'main', mode: 'mobile'} %}
 
-                    <!-- Nos activités mobile -->
-                    <div class="nav-mobile-dropdown">
-                        <button class="mobile-dropdown-toggle nav-mobile-dropdown-btn">
-                            Nos activités
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                        <div class="mobile-dropdown-menu nav-mobile-dropdown-menu">
-                            <div class="nav-mobile-header">Formations</div>
-                            <a href="{{ path('public_page_show', {slug: 'formation-niveau-1'}) }}">Niveau 1</a>
-                            <a href="{{ path('public_page_show', {slug: 'formation-niveau-2-et-3'}) }}">Niveau 2 et 3</a>
-                            <a href="{{ path('public_page_show', {slug: 'guide-de-palanquee'}) }}">Guide de palanquée</a>
-                            <a href="{{ path('public_page_show', {slug: 'autres-formations'}) }}">Autres formations</a>
-                            <div class="nav-mobile-header">Activités</div>
-                            <a href="{{ path('public_page_show', {slug: 'les-sorties'}) }}">Les sorties</a>
-                            <a href="{{ path('public_page_show', {slug: 'plongeurs-exterieurs'}) }}">Plongeurs extérieurs</a>
-                            <a href="{{ path('public_page_show', {slug: 'apnee'}) }}">Apnée</a>
-                            <a href="{{ path('public_page_show', {slug: 'la-piscine'}) }}">La piscine</a>
-                            <a href="{{ path('public_page_show', {slug: 'gonflage'}) }}">Gonflage</a>
-                        </div>
-                    </div>
-
-                    <!-- Calendrier -->
-                    <a href="{{ path('public_calendar') }}" class="nav-mobile-link">
-                        Calendrier
-                    </a>
-
-                    <!-- Actualités -->
-                    <a href="{{ path('blog_index') }}" class="nav-mobile-link">
-                        Actualités
-                    </a>
-
+                    {# Liens d'authentification - toujours présents, gérés par le template #}
                     {% if app.user %}
-                        <!-- Mon profil -->
                         <a href="{{ path('user_profile_index') }}" class="nav-mobile-link">
                             Mon profil
                         </a>
 
                         {% if is_granted('ROLE_ADMIN') %}
-                            <!-- Administration -->
                             <a href="{{ path('admin_dashboard') }}" class="nav-mobile-btn nav-mobile-btn-blue">
                                 Administration
                             </a>
                         {% else %}
-                            <!-- Déconnexion -->
                             <a href="{{ path('app_logout') }}" class="nav-mobile-btn nav-mobile-btn-gray">
                                 Déconnexion
                             </a>
                         {% endif %}
                     {% else %}
-                        <!-- Créer un compte -->
                         <a href="{{ path('app_register') }}" class="nav-mobile-link">
                             Créer un compte
                         </a>
 
-                        <!-- Se connecter -->
                         <a href="{{ path('app_login') }}" class="nav-mobile-link">
                             Se connecter
                         </a>
                     {% endif %}
 
-                    <!-- Contact -->
-                    <a href="#contact" class="nav-mobile-btn nav-mobile-btn-orange">
+                    <a href="{{ path('app_contact') }}" class="nav-mobile-btn nav-mobile-btn-orange">
                         Contact
                     </a>
                 </div>

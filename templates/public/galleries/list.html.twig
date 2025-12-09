@@ -48,8 +48,9 @@
                             <div class="aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden mb-4">
                                 {% set coverUrl = gallery.coverImageUrl %}
                                 {% if coverUrl %}
-                                    <img src="{{ coverUrl }}" 
-                                         alt="{{ gallery.title }}" 
+                                    <img src="{{ coverUrl }}"
+                                         alt="{{ gallery.title }}"
+                                         loading="lazy"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 {% else %}
                                     <div class="w-full h-full flex items-center justify-center">
