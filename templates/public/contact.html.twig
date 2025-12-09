@@ -1,0 +1,197 @@
+{% extends 'plongee_base.html.twig' %}
+
+{% block title %}Contact - Club Subaquatique des Vénètes{% endblock %}
+
+{% block meta_description %}Contactez le Club Subaquatique des Vénètes à Vannes. Questions sur nos formations, sorties plongée ou adhésions.{% endblock %}
+
+{% block body %}
+<div class="static-page" id="contact">
+    <div class="static-container">
+        <div class="static-content">
+            <!-- Header -->
+            <div class="static-header">
+                <h1 class="static-title">Contactez-nous</h1>
+                <p class="static-excerpt">Une question sur nos activités, nos formations ou nos tarifs ? N'hésitez pas à nous écrire !</p>
+            </div>
+
+            <div class="contact-grid">
+                <!-- Formulaire -->
+                <div class="contact-form-section">
+                    {% if submitted %}
+                        <div class="contact-success">
+                            <div class="contact-success-icon">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h2 class="contact-success-title">Message envoyé !</h2>
+                            <p class="contact-success-text">
+                                Merci pour votre message. Nous vous répondrons dans les plus brefs délais.
+                                <br>Un email de confirmation vous a été envoyé.
+                            </p>
+                            <a href="{{ path('app_home') }}" class="contact-success-btn">
+                                Retour à l'accueil
+                            </a>
+                        </div>
+                    {% else %}
+                        {% if error %}
+                            <div class="contact-error">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ error }}
+                            </div>
+                        {% endif %}
+
+                        <form method="POST" action="{{ path('app_contact') }}" class="contact-form">
+                            <!-- Honeypot anti-spam (caché) -->
+                            <div style="position: absolute; left: -9999px;">
+                                <label for="website">Ne pas remplir</label>
+                                <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+                            </div>
+
+                            <div class="contact-form-row">
+                                <div class="contact-form-group">
+                                    <label for="name" class="contact-label">Nom complet *</label>
+                                    <input type="text"
+                                           id="name"
+                                           name="name"
+                                           required
+                                           placeholder="Jean Dupont"
+                                           value="{{ app.request.request.get('name') }}"
+                                           class="contact-input">
+                                </div>
+
+                                <div class="contact-form-group">
+                                    <label for="email" class="contact-label">Email *</label>
+                                    <input type="email"
+                                           id="email"
+                                           name="email"
+                                           required
+                                           placeholder="jean.dupont@email.fr"
+                                           value="{{ app.request.request.get('email') }}"
+                                           class="contact-input">
+                                </div>
+                            </div>
+
+                            <div class="contact-form-group">
+                                <label for="subject" class="contact-label">Sujet</label>
+                                <select id="subject" name="subject" class="contact-input">
+                                    <option value="">-- Choisir un sujet --</option>
+                                    <option value="Demande d'information générale" {{ app.request.request.get('subject') == "Demande d'information générale" ? 'selected' }}>Demande d'information générale</option>
+                                    <option value="Inscription au club" {{ app.request.request.get('subject') == "Inscription au club" ? 'selected' }}>Inscription au club</option>
+                                    <option value="Question sur les formations" {{ app.request.request.get('subject') == "Question sur les formations" ? 'selected' }}>Question sur les formations</option>
+                                    <option value="Sorties et activités" {{ app.request.request.get('subject') == "Sorties et activités" ? 'selected' }}>Sorties et activités</option>
+                                    <option value="Plongeur extérieur" {{ app.request.request.get('subject') == "Plongeur extérieur" ? 'selected' }}>Plongeur extérieur</option>
+                                    <option value="Partenariat / Sponsoring" {{ app.request.request.get('subject') == "Partenariat / Sponsoring" ? 'selected' }}>Partenariat / Sponsoring</option>
+                                    <option value="Autre" {{ app.request.request.get('subject') == "Autre" ? 'selected' }}>Autre</option>
+                                </select>
+                            </div>
+
+                            <div class="contact-form-group">
+                                <label for="message" class="contact-label">Message *</label>
+                                <textarea id="message"
+                                          name="message"
+                                          required
+                                          rows="6"
+                                          placeholder="Votre message..."
+                                          class="contact-input">{{ app.request.request.get('message') }}</textarea>
+                            </div>
+
+                            <div class="contact-form-submit">
+                                <button type="submit" class="contact-btn">
+                                    <svg fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                                    </svg>
+                                    Envoyer le message
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+
+                <!-- Informations de contact -->
+                <div class="contact-info-section">
+                    <div class="contact-info-card">
+                        <h3 class="contact-info-title">Nos coordonnées</h3>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="contact-info-label">Adresse</h4>
+                                <p class="contact-info-text">{{ clubInfo.address|nl2br }}</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="contact-info-label">Email</h4>
+                                <p class="contact-info-text">
+                                    <a href="mailto:{{ clubInfo.email }}">{{ clubInfo.email }}</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="contact-info-label">Téléphone</h4>
+                                <p class="contact-info-text">{{ clubInfo.phone }}</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon contact-info-icon-facebook">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="contact-info-label">Facebook</h4>
+                                <p class="contact-info-text">
+                                    <a href="{{ clubInfo.facebook }}" target="_blank" rel="noopener">Suivez-nous</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-horaires-card">
+                        <h3 class="contact-info-title">Horaires d'entraînement</h3>
+                        <div class="contact-horaires-list">
+                            <div class="contact-horaire">
+                                <span class="contact-horaire-day">Mardi</span>
+                                <span class="contact-horaire-time">20h - 22h</span>
+                            </div>
+                            <div class="contact-horaire">
+                                <span class="contact-horaire-day">Jeudi</span>
+                                <span class="contact-horaire-time">20h - 22h</span>
+                            </div>
+                            <div class="contact-horaire">
+                                <span class="contact-horaire-day">Samedi</span>
+                                <span class="contact-horaire-time">14h - 16h</span>
+                            </div>
+                        </div>
+                        <p class="contact-horaires-note">
+                            Piscine de Kercado, Vannes
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
