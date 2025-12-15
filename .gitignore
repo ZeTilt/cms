@@ -11,6 +11,7 @@
 /.idea/
 /docs/
 /public/assets/images/
+/.claude/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
