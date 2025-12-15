@@ -83,4 +83,21 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Find active participations for a user (for CACI access control)
+     */
+    public function findActiveParticipationsForUser(User $user): array
+    {
+        return $this->createQueryBuilder('ep')
+            ->innerJoin('ep.event', 'e')
+            ->andWhere('ep.participant = :user')
+            ->andWhere('ep.status IN (:activeStatuses)')
+            ->andWhere('e.startDate >= :today')
+            ->setParameter('user', $user)
+            ->setParameter('activeStatuses', ['registered', 'confirmed'])
+            ->setParameter('today', new \DateTime('today'))
+            ->getQuery()
+            ->getResult();
+    }
 }

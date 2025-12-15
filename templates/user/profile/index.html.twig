@@ -257,13 +257,12 @@
     <div class="profile-card">
         <div class="profile-card-header">
             <h2 class="profile-card-title">🏥 Certificat Médical (CACI)</h2>
-            <p class="profile-card-subtitle">Déclarez la date d'expiration de votre CACI. Un Directeur de Plongée vérifiera votre certificat.</p>
+            <p class="profile-card-subtitle">Téléchargez votre certificat médical pour validation par un référent CACI.</p>
         </div>
 
         <div class="profile-card-body">
             <!-- Statut actuel du CACI -->
-            {% set caciStatus = user.caciStatus %}
-            {% if caciStatus == 'valid' %}
+            {% if caciStatus.status == 'valid' %}
                 <div class="profile-status-box profile-status-box-green">
                     <div class="profile-status-icon profile-status-icon-green">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
@@ -271,14 +270,16 @@
                         </svg>
                     </div>
                     <div class="profile-status-content">
-                        <h3 class="profile-status-title profile-status-title-green">✓ CACI vérifié et valide</h3>
+                        <h3 class="profile-status-title profile-status-title-green">CACI validé</h3>
                         <div class="profile-status-text profile-status-text-green">
-                            <p>Date d'expiration : {{ user.medicalCertificateExpiry|date('d/m/Y') }}</p>
-                            <p>Vérifié le {{ user.medicalCertificateVerifiedAt|date('d/m/Y') }} par {{ user.medicalCertificateVerifiedBy.fullName }}</p>
+                            <p>Date d'expiration : {{ caciStatus.certificate.expiryDate|date('d/m/Y') }}</p>
+                            {% if caciStatus.certificate.validatedAt %}
+                                <p>Validé le {{ caciStatus.certificate.validatedAt|date('d/m/Y') }}{% if caciStatus.certificate.validatedBy %} par {{ caciStatus.certificate.validatedBy.fullName }}{% endif %}</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-            {% elseif caciStatus == 'pending' %}
+            {% elseif caciStatus.status == 'pending' %}
                 <div class="profile-status-box profile-status-box-yellow">
                     <div class="profile-status-icon profile-status-icon-yellow">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
@@ -286,15 +287,15 @@
                         </svg>
                     </div>
                     <div class="profile-status-content">
-                        <h3 class="profile-status-title profile-status-title-yellow">⏳ En attente de vérification</h3>
+                        <h3 class="profile-status-title profile-status-title-yellow">En attente de validation</h3>
                         <div class="profile-status-text profile-status-text-yellow">
-                            <p>Date d'expiration déclarée : {{ user.medicalCertificateExpiry|date('d/m/Y') }}</p>
-                            <p>Un Directeur de Plongée doit vérifier votre certificat.</p>
+                            <p>Date d'expiration : {{ caciStatus.certificate.expiryDate|date('d/m/Y') }}</p>
+                            <p>Ajouté le {{ caciStatus.certificate.uploadedAt|date('d/m/Y à H:i') }}</p>
                             <p><em>Vous pouvez vous inscrire aux événements en attendant.</em></p>
                         </div>
                     </div>
                 </div>
-            {% elseif caciStatus == 'expired' %}
+            {% elseif caciStatus.status == 'expired' %}
                 <div class="profile-status-box profile-status-box-red">
                     <div class="profile-status-icon profile-status-icon-red">
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
@@ -302,10 +303,25 @@
                         </svg>
                     </div>
                     <div class="profile-status-content">
-                        <h3 class="profile-status-title profile-status-title-red">⚠️ CACI expiré</h3>
+                        <h3 class="profile-status-title profile-status-title-red">CACI expiré</h3>
                         <div class="profile-status-text profile-status-text-red">
-                            <p>Expiré depuis le : {{ user.medicalCertificateExpiry|date('d/m/Y') }}</p>
+                            <p>Expiré depuis le : {{ caciStatus.certificate.expiryDate|date('d/m/Y') }}</p>
                             <p><strong>Vous ne pouvez pas vous inscrire aux événements.</strong></p>
+                        </div>
+                    </div>
+                </div>
+            {% elseif caciStatus.status == 'rejected' %}
+                <div class="profile-status-box profile-status-box-red">
+                    <div class="profile-status-icon profile-status-icon-red">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="profile-status-content">
+                        <h3 class="profile-status-title profile-status-title-red">CACI rejeté</h3>
+                        <div class="profile-status-text profile-status-text-red">
+                            <p><strong>Motif :</strong> {{ caciStatus.certificate.rejectionReason }}</p>
+                            <p>Veuillez soumettre un nouveau certificat.</p>
                         </div>
                     </div>
                 </div>
@@ -317,57 +333,96 @@
                         </svg>
                     </div>
                     <div class="profile-status-content">
-                        <h3 class="profile-status-title profile-status-title-yellow">Aucun CACI déclaré</h3>
-                        <p class="profile-status-text profile-status-text-yellow">Déclarez la date d'expiration de votre certificat médical pour pouvoir participer aux plongées.</p>
+                        <h3 class="profile-status-title profile-status-title-yellow">Aucun CACI</h3>
+                        <p class="profile-status-text profile-status-text-yellow">Téléchargez votre certificat médical pour pouvoir participer aux plongées.</p>
                     </div>
                 </div>
             {% endif %}
 
-            <form method="POST" action="{{ path('user_profile_medical_certificate') }}" class="profile-form">
-                <input type="hidden" name="_token" value="{{ csrf_token('medical_certificate') }}">
+            <!-- Actions sur CACI existant -->
+            {% if caciStatus.certificate %}
+            <div style="margin: 1rem 0; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{{ path('member_caci_view', {id: caciStatus.certificate.id}) }}"
+                   target="_blank" class="profile-btn profile-btn-secondary">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    Voir mon CACI
+                </a>
+                <a href="{{ path('member_caci_download', {id: caciStatus.certificate.id}) }}"
+                   class="profile-btn profile-btn-outline">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Télécharger
+                </a>
+                {% if caciStatus.certificate.isPending %}
+                <form method="POST" action="{{ path('member_caci_delete', {id: caciStatus.certificate.id}) }}" style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('caci_delete_' ~ caciStatus.certificate.id) }}">
+                    <button type="submit" class="profile-btn profile-btn-danger"
+                            onclick="return confirm('Supprimer ce CACI ?')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Supprimer
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {% endif %}
 
-                <!-- Date d'expiration -->
+            <!-- Formulaire d'upload -->
+            <form method="POST" action="{{ path('member_caci_upload') }}" enctype="multipart/form-data" class="profile-form" style="margin-top: 1.5rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">
+                    {% if caciStatus.certificate %}Remplacer mon CACI{% else %}Ajouter mon CACI{% endif %}
+                </h3>
+                <input type="hidden" name="_token" value="{{ csrf_token('caci_upload') }}">
+
                 <div class="profile-form-group">
-                    <label for="medical_certificate_expiry">Date d'expiration du CACI *</label>
-                    <input type="date"
-                           name="medical_certificate_expiry"
-                           id="medical_certificate_expiry"
-                           value="{{ user.medicalCertificateExpiry ? user.medicalCertificateExpiry|date('Y-m-d') : '' }}"
-                           required
-                           class="profile-input profile-input-small">
-                    <p class="profile-hint">Généralement 1 an après la date d'établissement du certificat</p>
+                    <label for="caci_file">Fichier CACI (PDF, JPG, PNG, WebP - max 5 Mo)</label>
+                    <input type="file" id="caci_file" name="caci_file"
+                           accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+                           required class="profile-input-file">
                 </div>
 
-                <!-- Attestation sur l'honneur -->
+                <div class="profile-form-group">
+                    <label for="expiry_date">Date d'expiration</label>
+                    <input type="date" id="expiry_date" name="expiry_date"
+                           min="{{ 'now'|date('Y-m-d') }}"
+                           required class="profile-input profile-input-small">
+                    <p class="profile-hint">La date d'expiration est généralement indiquée sur le certificat (1 an après la date de délivrance).</p>
+                </div>
+
+                <!-- RGPD Consent -->
                 <div class="profile-form-group">
                     <label class="profile-checkbox-label">
-                        <input type="checkbox"
-                               name="caci_attestation"
-                               value="1"
-                               class="profile-checkbox"
-                               required>
+                        <input type="checkbox" name="consent" value="1" required class="profile-checkbox">
                         <span class="profile-checkbox-text">
-                            J'atteste être en possession d'un Certificat d'Absence de Contre-Indication (CACI) à la pratique de la plongée subaquatique, établi par un médecin habilité et valide jusqu'à la date indiquée ci-dessus.
+                            J'accepte que mon certificat médical soit stocké de manière sécurisée et consulté uniquement par les référents CACI (pour validation) et les directeurs de plongée des événements auxquels je suis inscrit.
                         </span>
                     </label>
+                    <p class="profile-hint">
+                        Conformément au RGPD, vos données de santé sont chiffrées et seront automatiquement supprimées 1 an après l'expiration du certificat.
+                    </p>
                 </div>
 
                 <div class="profile-form-footer profile-form-footer-between">
                     <div class="profile-form-info">
                         <p><strong>Comment ça marche :</strong></p>
                         <ul>
-                            <li>Vous déclarez la date d'expiration de votre CACI</li>
-                            <li>Un DP vérifiera votre certificat original lors d'une sortie</li>
+                            <li>Téléchargez un scan de votre CACI</li>
+                            <li>Un référent CACI validera votre certificat</li>
                             <li>En attendant, vous pouvez vous inscrire aux événements</li>
-                            <li>Votre certificat n'est jamais stocké (conformité RGPD)</li>
+                            <li>Votre certificat est chiffré (conformité RGPD)</li>
                         </ul>
                     </div>
 
                     <button type="submit" class="profile-btn profile-btn-primary">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                         </svg>
-                        {% if user.medicalCertificateExpiry %}Mettre à jour{% else %}Déclarer mon CACI{% endif %}
+                        {% if caciStatus.certificate %}Remplacer mon CACI{% else %}Télécharger mon CACI{% endif %}
                     </button>
                 </div>
             </form>

@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Repository\DivingLevelRepository;
 use App\Repository\FreedivingLevelRepository;
+use App\Repository\MedicalCertificateRepository;
 use App\Repository\UserRepository;
+use App\Service\CaciService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,22 +32,29 @@ class UserProfileController extends AbstractController
         private SluggerInterface $slugger,
         private UserRepository $userRepository,
         private MailerInterface $mailer,
-        private CsrfTokenManagerInterface $csrfTokenManager
+        private CsrfTokenManagerInterface $csrfTokenManager,
+        private CaciService $caciService,
+        private MedicalCertificateRepository $certificateRepository
     ) {}
 
     #[Route('', name: 'user_profile_index')]
     public function index(): Response
     {
         try {
+            /** @var User $user */
             $user = $this->getUser();
             $divingLevels = $this->divingLevelRepository->findAllOrdered();
             $freedivingLevels = $this->freedivingLevelRepository->findAllOrdered();
+
+            // CACI status (new workflow with file upload)
+            $caciStatus = $this->caciService->getCaciStatusForUser($user);
 
             return $this->render('user/profile/index.html.twig', [
                 'user' => $user,
                 'divingLevels' => $divingLevels,
                 'freedivingLevels' => $freedivingLevels,
                 'currentSeason' => User::getCurrentSeason(),
+                'caciStatus' => $caciStatus,
             ]);
         } catch (\Exception $e) {
             // Debug temporaire

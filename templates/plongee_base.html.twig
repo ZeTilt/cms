@@ -27,8 +27,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('pwa-icons/icon-152x152.png') }}">
     
     {% block stylesheets %}
-        {# Tailwind uniquement pour le backoffice (admin/dp) - pas besoin pour le front public #}
-        {% if app.request.pathInfo starts with '/admin' or app.request.pathInfo starts with '/dp' %}
+        {# Tailwind pour backoffice et pages publiques qui l'utilisent #}
+        {% if app.request.pathInfo starts with '/admin' or app.request.pathInfo starts with '/dp' or app.request.pathInfo starts with '/calendrier' %}
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {

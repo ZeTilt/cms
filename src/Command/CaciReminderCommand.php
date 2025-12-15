@@ -2,7 +2,8 @@
 
 namespace App\Command;
 
-use App\Repository\UserRepository;
+use App\Entity\MedicalCertificate;
+use App\Repository\MedicalCertificateRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,7 +21,7 @@ use Symfony\Component\Mime\Address;
 class CaciReminderCommand extends Command
 {
     public function __construct(
-        private UserRepository $userRepository,
+        private MedicalCertificateRepository $certificateRepository,
         private MailerInterface $mailer
     ) {
         parent::__construct();
@@ -50,27 +51,28 @@ class CaciReminderCommand extends Command
         foreach ($daysArray as $days) {
             $io->section("Rappels J-{$days}");
 
-            // Trouver les utilisateurs dont le CACI expire exactement dans X jours
-            $users = $this->findUsersExpiringIn($days);
+            // Trouver les certificats expirant exactement dans X jours
+            $certificates = $this->findCertificatesExpiringIn($days);
 
-            if (empty($users)) {
+            if (empty($certificates)) {
                 $io->info("Aucun CACI n'expire dans {$days} jours.");
                 continue;
             }
 
-            $io->info(sprintf('%d CACI expire(nt) dans %d jours.', count($users), $days));
+            $io->info(sprintf('%d CACI expire(nt) dans %d jours.', count($certificates), $days));
 
-            foreach ($users as $user) {
+            foreach ($certificates as $certificate) {
+                $user = $certificate->getUser();
                 $io->text(sprintf(
                     '  - %s <%s> (expire le %s)',
                     $user->getFullName(),
                     $user->getEmail(),
-                    $user->getMedicalCertificateExpiry()->format('d/m/Y')
+                    $certificate->getExpiryDate()->format('d/m/Y')
                 ));
 
                 if (!$dryRun) {
                     try {
-                        $this->sendReminderEmail($user, $days);
+                        $this->sendReminderEmail($certificate, $days);
                         $totalSent++;
                     } catch (\Exception $e) {
                         $io->error(sprintf('Erreur envoi email à %s: %s', $user->getEmail(), $e->getMessage()));
@@ -88,26 +90,27 @@ class CaciReminderCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function findUsersExpiringIn(int $days): array
+    private function findCertificatesExpiringIn(int $days): array
     {
-        // On cherche les CACI expirant exactement dans X jours (entre 00:00 et 23:59)
-        $startOfDay = (new \DateTime('today'))->modify("+{$days} days")->setTime(0, 0, 0);
-        $endOfDay = (new \DateTime('today'))->modify("+{$days} days")->setTime(23, 59, 59);
+        // On cherche les CACI validés expirant exactement dans X jours
+        $targetDate = (new \DateTime('today'))->modify("+{$days} days");
 
-        return $this->userRepository->createQueryBuilder('u')
+        return $this->certificateRepository->createQueryBuilder('mc')
+            ->innerJoin('mc.user', 'u')
             ->andWhere('u.active = :active')
-            ->andWhere('u.medicalCertificateExpiry IS NOT NULL')
-            ->andWhere('u.medicalCertificateExpiry >= :startOfDay')
-            ->andWhere('u.medicalCertificateExpiry <= :endOfDay')
+            ->andWhere('mc.status = :validated')
+            ->andWhere('mc.expiryDate = :targetDate')
             ->setParameter('active', true)
-            ->setParameter('startOfDay', $startOfDay)
-            ->setParameter('endOfDay', $endOfDay)
+            ->setParameter('validated', MedicalCertificate::STATUS_VALIDATED)
+            ->setParameter('targetDate', $targetDate)
             ->getQuery()
             ->getResult();
     }
 
-    private function sendReminderEmail($user, int $daysRemaining): void
+    private function sendReminderEmail(MedicalCertificate $certificate, int $daysRemaining): void
     {
+        $user = $certificate->getUser();
+
         $email = (new TemplatedEmail())
             ->from(new Address('noreply@plongee-venetes.fr', 'Club Vénètes'))
             ->to($user->getEmail())
@@ -115,8 +118,9 @@ class CaciReminderCommand extends Command
             ->htmlTemplate('emails/caci_reminder.html.twig')
             ->context([
                 'user' => $user,
+                'certificate' => $certificate,
                 'daysRemaining' => $daysRemaining,
-                'expiryDate' => $user->getMedicalCertificateExpiry(),
+                'expiryDate' => $certificate->getExpiryDate(),
             ]);
 
         $this->mailer->send($email);
@@ -125,7 +129,7 @@ class CaciReminderCommand extends Command
     private function getSubject(int $daysRemaining): string
     {
         if ($daysRemaining <= 7) {
-            return sprintf('⚠️ Votre CACI expire dans %d jour(s) !', $daysRemaining);
+            return sprintf('Votre CACI expire dans %d jour(s) !', $daysRemaining);
         }
         return sprintf('Rappel : Votre CACI expire dans %d jours', $daysRemaining);
     }
